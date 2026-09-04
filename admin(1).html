@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>UDAN CAB - Admin Dashboard</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+            background: #f5f5f5;
+            color: #111;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+
+            height: 70px;
+
+            background: #111;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 5%;
+
+        }
+
+
+        .logo {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+        }
+
+
+        .logo span {
+
+            color: #ffd000;
+
+        }
+
+
+        .admin-title {
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+        }
+
+
+        .logout {
+
+            background: #ffd000;
+
+            border: none;
+
+            padding: 10px 18px;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+
+            max-width: 1250px;
+
+            margin: 30px auto;
+
+            padding: 20px;
+
+        }
+
+
+        .welcome {
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .welcome h1 {
+
+            font-size: 32px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .welcome p {
+
+            color: #666;
+
+        }
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-box {
+
+            display: none;
+
+            background: #ffe0e0;
+
+            color: #b00000;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .stat-card {
+
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.07);
+
+        }
+
+
+        .stat-icon {
+
+            font-size: 30px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .stat-title {
+
+            color: #666;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .stat-number {
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 14px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.07);
+
+        }
+
+
+        .section-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .section-header h2 {
+
+            font-size: 22px;
+
+        }
+
+
+        .refresh-btn {
+
+            border: none;
+
+            background: #111;
+
+            color: white;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           SERVER STATUS
+        ========================= */
+
+        .server-box {
+
+            background: #f7f7f7;
+
+            padding: 16px;
+
+            border-radius: 10px;
+
+        }
+
+
+        .server-online {
+
+            color: green;
+
+            font-weight: bold;
+
+        }
+
+
+        .server-offline {
+
+            color: red;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-container {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 750px;
+
+        }
+
+
+        th {
+
+            background: #111;
+
+            color: white;
+
+            padding: 13px;
+
+            text-align: left;
+
+            white-space: nowrap;
+
+        }
+
+
+        td {
+
+            padding: 13px;
+
+            border-bottom:
+                1px solid #eee;
+
+            white-space: nowrap;
+
+        }
+
+
+        tr:hover {
+
+            background: #fafafa;
+
+        }
+
+
+        .empty {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+
+        }
+
+
+        /* =========================
+           BADGES
+        ========================= */
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+        }
+
+
+        .online {
+
+            background: #d9fbe3;
+
+            color: #16833b;
+
+        }
+
+
+        .offline {
+
+            background: #eeeeee;
+
+            color: #666;
+
+        }
+
+
+        .driver-badge {
+
+            background: #fff1c7;
+
+            color: #8a6500;
+
+        }
+
+
+        .passenger-badge {
+
+            background: #e4efff;
+
+            color: #1765c0;
+
+        }
+
+
+        .searching {
+
+            background: #fff4bd;
+
+            color: #705b00;
+
+        }
+
+
+        .accepted {
+
+            background: #d9fbe3;
+
+            color: #16833b;
+
+        }
+
+
+        .started {
+
+            background: #e4efff;
+
+            color: #1765c0;
+
+        }
+
+
+        .completed {
+
+            background: #d9fbe3;
+
+            color: #16833b;
+
+        }
+
+
+        .cancelled {
+
+            background: #ffe0e0;
+
+            color: #b00000;
+
+        }
+
+
+        /* =========================
+           LOCATION
+        ========================= */
+
+        .location {
+
+            font-size: 12px;
+
+            color: #555;
+
+        }
+
+
+        .location-active {
+
+            color: green;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           VEHICLE
+        ========================= */
+
+        .vehicle-icon {
+
+            font-size: 22px;
+
+            margin-right: 5px;
+
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width:900px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media(max-width:600px) {
+
+            .navbar {
+
+                padding: 0 20px;
+
+            }
+
+
+            .admin-title {
+
+                display: none;
+
+            }
+
+
+            .main {
+
+                margin: 15px auto;
+
+                padding: 12px;
+
+            }
+
+
+            .welcome h1 {
+
+                font-size: 26px;
+
+            }
+
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 10px;
+
+            }
+
+
+            .stat-card {
+
+                padding: 16px;
+
+            }
+
+
+            .stat-number {
+
+                font-size: 24px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <div class="navbar">
+
+
+        <div class="logo">
+
+            UDAN<span>CAB</span>
+
+        </div>
+
+
+        <div class="admin-title">
+
+            🛡️ Admin Dashboard
+
+        </div>
+
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+
+            Logout
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <div class="main">
+
+
+        <div class="welcome">
+
+            <h1>
+
+                UDAN CAB Control Center 🚕
+                
+            </h1>
+
+
+            <p>
+
+                Monitor drivers, passengers,
+                vehicles, locations and rides.
+
+            </p>
+
+        </div>
+
+
+
+        <div
+            class="error-box"
+            id="errorBox"
+        ></div>
+
+
+
+        <!-- =========================
+             STATISTICS
+        ========================= -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <div class="stat-title">
+                    Total Users
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalUsers"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    👨‍✈️
+                </div>
+
+                <div class="stat-title">
+                    Total Drivers
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalDrivers"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🟢
+                </div>
+
+                <div class="stat-title">
+                    Online Drivers
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="onlineDrivers"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🚕
+                </div>
+
+                <div class="stat-title">
+                    Total Rides
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalRides"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =========================
+             SERVER STATUS
+        ========================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <h2>
+                    🌐 Backend Status
+                </h2>
+
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadAllData()"
+                >
+
+                    🔄 Refresh
+
+                </button>
+
+            </div>
+
+
+            <div class="server-box">
+
+                <p>
+
+                    Server:
+
+                    <strong
+                        id="serverStatus"
+                    >
+
+                        Checking...
+
+                    </strong>
+
+                </p>
+
+
+                <br>
+
+
+                <p>
+
+                    Last Updated:
+
+                    <strong
+                        id="lastUpdated"
+                    >
+
+                        -
+
+                    </strong>
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             DRIVERS
+        ========================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <h2>
+                    👨‍✈️ All Drivers
+                </h2>
+
+            </div>
+
+
+            <div class="table-container">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Driver
+                            </th>
+
+                            <th>
+                                Contact
+                            </th>
+
+                            <th>
+                                Vehicle Type
+                            </th>
+
+                            <th>
+                                Vehicle Number
+                            </th>
+
+                            <th>
+                                Rating
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Live Location
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="driversTable"
+                    >
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="empty"
+                            >
+
+                                Loading drivers...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             PASSENGERS
+        ========================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <h2>
+                    👥 All Passengers
+                </h2>
+
+            </div>
+
+
+            <div class="table-container">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Passenger
+                            </th>
+
+                            <th>
+                                Contact
+                            </th>
+
+                            <th>
+                                Location
+                            </th>
+
+                            <th>
+                                Last Update
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="passengersTable"
+                    >
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="empty"
+                            >
+
+                                Loading passengers...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             RIDES
+        ========================= -->
+
+        <div class="section">
+
+
+            <div class="section-header">
+
+                <h2>
+                    🚕 All Rides
+                </h2>
+
+            </div>
+
+
+            <div class="table-container">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Ride ID
+                            </th>
+
+                            <th>
+                                Passenger
+                            </th>
+
+                            <th>
+                                Pickup
+                            </th>
+
+                            <th>
+                                Destination
+                            </th>
+
+                            <th>
+                                Vehicle
+                            </th>
+
+                            <th>
+                                Driver
+                            </th>
+
+                            <th>
+                                Fare
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="ridesTable"
+                    >
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="empty"
+                            >
+
+                                Loading rides...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+const API="http://localhost:5000";const TOKEN=localStorage.getItem("udanToken");const ME=JSON.parse(localStorage.getItem("udanUser")||"null");
+if(!TOKEN||!ME||ME.role!=="admin"){alert("Please login as admin first.");location.href="login.html";}
+async function getJSON(path){const r=await fetch(API+path,{headers:{Authorization:"Bearer "+TOKEN}});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.message||"Request failed");return d;}
+function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");location.href="login.html";}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function loc(x){return x&&x.lat!=null&&x.lng!=null?`🟢 ${Number(x.lat).toFixed(5)}, ${Number(x.lng).toFixed(5)}`:"Not available"}
+async function loadAllData(){
+ try{
+  const [drivers,passengers,rides]=await Promise.all([getJSON("/api/admin/drivers"),getJSON("/api/admin/passengers"),getJSON("/api/admin/rides")]);
+  const ds=drivers.drivers||[],ps=passengers.passengers||[],rs=rides.rides||[];
+  document.getElementById("totalUsers").innerText=ds.length+ps.length;document.getElementById("totalDrivers").innerText=ds.length;document.getElementById("onlineDrivers").innerText=ds.filter(x=>x.online).length;document.getElementById("totalRides").innerText=rs.length;document.getElementById("serverStatus").innerText="🟢 Online";document.getElementById("serverStatus").className="server-online";document.getElementById("lastUpdated").innerText=new Date().toLocaleString();
+  document.getElementById("driversTable").innerHTML=ds.length?ds.map(d=>`<tr><td>#${esc(String(d._id).slice(-6))}</td><td>👨‍✈️ <strong>${esc(d.name)}</strong></td><td>${esc(d.email)}</td><td>${esc(d.vehicleType||"-")}</td><td>${esc(d.vehicleNumber||"-")}</td><td>⭐ ${esc(d.rating)}</td><td><span class="badge ${d.online?"online":"offline"}">${d.online?"🟢 Online":"⚪ Offline"}</span></td><td class="location">${loc(d.location)}</td></tr>`).join(""):`<tr><td colspan="8" class="empty">No drivers registered.</td></tr>`;
+  document.getElementById("passengersTable").innerHTML=ps.length?ps.map(x=>`<tr><td>#${esc(String(x._id).slice(-6))}</td><td>👤 <strong>${esc(x.name)}</strong></td><td>${esc(x.email)}</td><td class="location">${loc(x.location)}</td><td>${x.location?.updatedAt?new Date(x.location.updatedAt).toLocaleString():"-"}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">No passengers registered.</td></tr>`;
+  document.getElementById("ridesTable").innerHTML=rs.length?rs.map(x=>`<tr><td><strong>#${esc(String(x._id).slice(-6))}</strong></td><td>${esc(x.userId?.name||String(x.userId||"-"))}</td><td>${esc(x.pickup)}</td><td>${esc(x.destination)}</td><td>${esc(x.cabType)}</td><td>${esc(x.driverName||"🔍 Searching...")}</td><td>₹${esc(x.fare)}</td><td>${esc(x.status)}</td></tr>`).join(""):`<tr><td colspan="8" class="empty">No rides.</td></tr>`;
+ }catch(e){document.getElementById("serverStatus").innerText="🔴 "+e.message;document.getElementById("serverStatus").className="server-offline";document.getElementById("errorBox").style.display="block";document.getElementById("errorBox").innerText="❌ "+e.message;}
+}
+loadAllData();setInterval(loadAllData,5000);
+</script></script>
+
+
+</body>
+
+</html>

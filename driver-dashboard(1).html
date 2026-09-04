@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>UDAN CAB - Driver Dashboard</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 70px;
+            background: #111;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ffd000;
+        }
+
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 7px;
+            background: #ffd000;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* MAIN */
+
+        .main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        /* TOP BAR */
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn {
+            padding: 11px 18px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #111;
+            color: white;
+
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* RIDES */
+
+        .rides {
+            display: grid;
+            gap: 20px;
+        }
+
+        .ride-card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.08);
+        }
+
+        .ride-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .ride-id {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            background: #fff4bd;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .location {
+            margin: 12px 0;
+
+            font-size: 16px;
+
+            line-height: 1.5;
+        }
+
+        .fare {
+            margin: 20px 0;
+
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* BUTTONS */
+
+        .action-btn {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-top: 10px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #111;
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #333;
+        }
+
+        .start-btn {
+            background: #16803c;
+        }
+
+        .start-btn:hover {
+            background: #11652f;
+        }
+
+        .complete-btn {
+            background: #0066cc;
+        }
+
+        .complete-btn:hover {
+            background: #0052a3;
+        }
+
+        .disabled-btn {
+            background: #888;
+            cursor: not-allowed;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            background: white;
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+            border-radius: 15px;
+
+            color: #777;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.05);
+        }
+
+        /* MOBILE */
+
+        @media(max-width:700px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .driver-info span {
+                display: none;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .refresh-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <div class="navbar">
+
+        <div class="logo">
+            UDAN<span>CAB</span>
+        </div>
+
+        <div class="driver-info">
+
+            <span>
+                🚕 Driver
+            </span>
+
+            <button
+                class="logout"
+                onclick="logout()">
+
+                Logout
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+
+        <div class="welcome">
+
+            <h1>
+                Driver Dashboard 🚕
+            </h1>
+
+            <p>
+                Find and manage passenger rides.
+            </p>
+
+        </div>
+
+
+
+        <div class="top-bar">
+
+            <h2>
+                Available Rides
+            </h2>
+
+            <button
+                class="refresh-btn"
+                onclick="loadRides()">
+
+                🔄 Refresh
+
+            </button>
+
+        </div>
+
+
+
+        <!-- RIDES -->
+
+        <div
+            class="rides"
+            id="rides">
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+const API="http://localhost:5000";
+const TOKEN=localStorage.getItem("udanToken");
+const USER=JSON.parse(localStorage.getItem("udanUser")||"null");
+if(!TOKEN||!USER||USER.role!=="driver"){alert("Please login as driver first.");location.href="login.html";}
+const AUTH={"Content-Type":"application/json","Authorization":"Bearer "+TOKEN};
+let activeRide=null;
+let gpsWatch=null;
+
+async function api(url,options={}){
+  options.headers={...(options.headers||{}),Authorization:"Bearer "+TOKEN};
+  if(options.body&&!options.headers["Content-Type"])options.headers["Content-Type"]="application/json";
+  const r=await fetch(API+url,options);
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.message||"Request failed");
+  return d;
+}
+
+function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");location.href="login.html";}
+
+async function setOnline(){
+ try{await api("/api/driver/status",{method:"POST",headers:AUTH,body:JSON.stringify({online:true})});}catch(e){console.error(e)}
+}
+
+function startGPS(){
+ if(!navigator.geolocation)return;
+ if(gpsWatch!==null)navigator.geolocation.clearWatch(gpsWatch);
+ gpsWatch=navigator.geolocation.watchPosition(async p=>{
+   try{await api("/api/location/update",{method:"POST",headers:AUTH,body:JSON.stringify({latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy})});
+   if(activeRide)await api("/api/rides/"+activeRide+"/driver-location",{method:"POST",headers:AUTH,body:JSON.stringify({latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy})});
+   }catch(e){console.error("GPS",e)}
+ },e=>console.log("GPS",e.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+}
+
+async function loadRides(){
+ const box=document.getElementById("rides");box.innerHTML='<div class="empty">⏳ Loading rides...</div>';
+ try{
+   const d=await api("/api/driver/rides");
+   const rides=d.rides||[];
+   if(!rides.length){box.innerHTML='<div class="empty">🚕 No rides available right now.<br><br>Click Refresh to check again.</div>';return;}
+   box.innerHTML="";
+   rides.forEach(ride=>{
+     const id=ride._id; const card=document.createElement("div");card.className="ride-card";
+     card.innerHTML=`<div class="ride-header"><div class="ride-id">🚕 Ride #${id.slice(-6)}</div><div class="status">${ride.status}</div></div>
+     <div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div>
+     <div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div>
+     <div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||ride.vehicleType||"-")}</div>
+     <div class="fare">💰 ₹${Number(ride.fare||0)}</div>
+     <button class="action-btn" onclick="acceptRide('${id}')">✅ Accept Ride</button>`;
+     box.appendChild(card);
+   });
+ }catch(e){box.innerHTML='<div class="empty">❌ '+escapeHtml(e.message)+'</div>';if(e.message.toLowerCase().includes("token"))logout();}
+}
+
+async function acceptRide(id){
+ try{const d=await api("/api/rides/"+id+"/accept",{method:"POST",headers:AUTH});activeRide=d.ride._id;renderActive(d.ride);startGPS();alert("🎉 Ride Accepted!");}
+ catch(e){alert("❌ "+e.message);loadRides();}
+}
+
+function renderActive(ride){
+ const box=document.getElementById("rides");let action="";
+ if(ride.status==="Driver accepted")action=`<button class="action-btn start-btn" onclick="startRide('${ride._id}')">🚕 Start Ride</button>`;
+ if(ride.status==="Ride started")action=`<button class="action-btn complete-btn" onclick="completeRide('${ride._id}')">🎉 Complete Ride</button>`;
+ box.innerHTML=`<div class="ride-card"><div class="ride-header"><div class="ride-id">🚕 Ride #${ride._id.slice(-6)}</div><div class="status">${escapeHtml(ride.status)}</div></div><div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div><div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div><div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||"-")}</div><div class="fare">💰 ₹${Number(ride.fare||0)}</div>${action}</div>`;
+}
+async function startRide(id){try{const d=await api("/api/rides/"+id+"/start",{method:"PATCH",headers:AUTH});activeRide=id;renderActive(d.ride);startGPS();alert("🚕 Ride Started!")}catch(e){alert("❌ "+e.message)}}
+async function completeRide(id){try{const d=await api("/api/rides/"+id+"/complete",{method:"PATCH",headers:AUTH});activeRide=null;alert("🎉 Ride Completed Successfully!");loadRides()}catch(e){alert("❌ "+e.message)}}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+setOnline();startGPS();loadRides();
+setInterval(loadRides,5000);
+</script></script>
+
+
+</body>
+
+</html>
