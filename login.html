@@ -12,39 +12,55 @@
 
     <title>UDAN CAB - Login</title>
 
+
     <style>
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            font-family: Arial, sans-serif;
             min-height: 100vh;
-            background: #f5f5f5;
+            background: linear-gradient(
+                135deg,
+                #111,
+                #252525
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         .container {
-            min-height: 100vh;
+            width: 900px;
+            max-width: 100%;
+            min-height: 550px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
             display: flex;
+            box-shadow:
+                0 20px 50px rgba(0,0,0,.4);
         }
 
         .left {
-            width: 50%;
+            width: 45%;
             background: #111;
             color: white;
-            padding: 70px;
+            padding: 50px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         .logo {
-            font-size: 30px;
+            font-size: 35px;
             font-weight: bold;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
         }
 
         .logo span {
@@ -52,41 +68,29 @@
         }
 
         .left h1 {
-            font-size: 52px;
-            line-height: 1.1;
-            margin-bottom: 25px;
+            font-size: 40px;
+            margin-bottom: 20px;
         }
 
         .left p {
             color: #ccc;
-            font-size: 18px;
             line-height: 1.6;
-            max-width: 500px;
+            font-size: 17px;
         }
 
         .cab-icon {
-            font-size: 70px;
+            font-size: 80px;
             margin-top: 40px;
         }
 
         .right {
-            width: 50%;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 60px 10%;
+            width: 55%;
+            padding: 45px;
+            position: relative;
         }
 
-        .back {
-            color: #111;
-            text-decoration: none;
-            margin-bottom: 35px;
-            font-weight: bold;
-        }
-
-        h2 {
-            font-size: 35px;
+        .right h2 {
+            font-size: 30px;
             margin-bottom: 10px;
         }
 
@@ -97,7 +101,7 @@
 
         .role-container {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 25px;
         }
 
@@ -109,13 +113,11 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 15px;
         }
 
         .role-btn.active {
-            background: #111;
-            color: white;
-            border-color: #111;
+            background: #ffd000;
+            border-color: #ffd000;
         }
 
         .input-box {
@@ -132,13 +134,55 @@
             width: 100%;
             padding: 14px;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 7px;
             font-size: 15px;
             outline: none;
         }
 
         .input-box input:focus {
             border-color: #111;
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 15px;
+            background: #111;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .main-btn:hover {
+            background: #333;
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .switch span {
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            text-decoration: none;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .back:hover {
+            color: #111;
         }
 
         #vehicleFields {
@@ -149,60 +193,30 @@
             display: none;
         }
 
-        .main-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            background: #111;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .main-btn:hover {
-            background: #333;
-        }
-
-        .switch {
-            text-align: center;
-            margin-top: 20px;
-            color: #777;
-        }
-
-        .switch span {
-            color: #111;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        @media(max-width: 700px) {
+        @media(max-width:700px) {
 
             .container {
                 flex-direction: column;
             }
 
-            .left,
-            .right {
-                width: 100%;
-            }
-
             .left {
-                padding: 35px;
+                width: 100%;
+                padding: 30px;
             }
 
             .left h1 {
-                font-size: 35px;
-            }
-
-            .right {
-                padding: 35px;
+                font-size: 30px;
             }
 
             .cab-icon {
                 display: none;
             }
+
+            .right {
+                width: 100%;
+                padding: 30px;
+            }
+
         }
 
     </style>
@@ -212,7 +226,11 @@
 
 <body>
 
+
     <div class="container">
+
+
+        <!-- LEFT SIDE -->
 
         <div class="left">
 
@@ -238,18 +256,23 @@
         </div>
 
 
+        <!-- RIGHT SIDE -->
+
         <div class="right">
 
+
             <a
-                href="index.html"
+                href="/index.html"
                 class="back"
             >
                 ← Back to Home
             </a>
 
+
             <h2 id="formTitle">
                 Welcome Back!
             </h2>
+
 
             <p
                 class="subtitle"
@@ -259,7 +282,10 @@
             </p>
 
 
+            <!-- ROLE -->
+
             <div class="role-container">
+
 
                 <button
                     class="role-btn active"
@@ -269,6 +295,7 @@
                     👤 Passenger
                 </button>
 
+
                 <button
                     class="role-btn"
                     id="driverRole"
@@ -277,8 +304,11 @@
                     🚕 Driver
                 </button>
 
+
             </div>
 
+
+            <!-- NAME -->
 
             <div
                 class="input-box"
@@ -298,6 +328,8 @@
             </div>
 
 
+            <!-- EMAIL -->
+
             <div class="input-box">
 
                 <label>
@@ -312,6 +344,8 @@
 
             </div>
 
+
+            <!-- PASSWORD -->
 
             <div class="input-box">
 
@@ -328,7 +362,10 @@
             </div>
 
 
+            <!-- DRIVER -->
+
             <div id="vehicleFields">
+
 
                 <div class="input-box">
 
@@ -359,8 +396,11 @@
 
                 </div>
 
+
             </div>
 
+
+            <!-- BUTTON -->
 
             <button
                 class="main-btn"
@@ -370,7 +410,12 @@
             </button>
 
 
-            <p class="switch" id="switchText">
+            <!-- SWITCH -->
+
+            <p
+                class="switch"
+                id="switchText"
+            >
 
                 Don't have an account?
 
@@ -380,6 +425,7 @@
 
             </p>
 
+
         </div>
 
     </div>
@@ -387,9 +433,18 @@
 
 <script>
 
+
+    /* =====================================================
+       RENDER BACKEND
+    ===================================================== */
+
     const API =
         "https://udan-cab.onrender.com";
 
+
+    /* =====================================================
+       VARIABLES
+    ===================================================== */
 
     let selectedRole =
         "user";
@@ -399,7 +454,7 @@
 
 
     /* =====================================================
-       ROLE
+       SELECT ROLE
     ===================================================== */
 
     function selectRole(role) {
@@ -408,15 +463,17 @@
             role;
 
 
-        const userBtn =
+        const userButton =
             document.getElementById(
                 "userRole"
             );
 
-        const driverBtn =
+
+        const driverButton =
             document.getElementById(
                 "driverRole"
             );
+
 
         const vehicleFields =
             document.getElementById(
@@ -428,28 +485,33 @@
             role === "user"
         ) {
 
-            userBtn.classList.add(
+            userButton.classList.add(
                 "active"
             );
 
-            driverBtn.classList.remove(
+
+            driverButton.classList.remove(
                 "active"
             );
+
 
             vehicleFields.style.display =
                 "none";
+
 
         }
 
         else {
 
-            driverBtn.classList.add(
+            driverButton.classList.add(
                 "active"
             );
 
-            userBtn.classList.remove(
+
+            userButton.classList.remove(
                 "active"
             );
+
 
             vehicleFields.style.display =
                 "block";
@@ -460,7 +522,7 @@
 
 
     /* =====================================================
-       TOGGLE LOGIN / REGISTER
+       LOGIN / REGISTER TOGGLE
     ===================================================== */
 
     function toggleForm() {
@@ -474,20 +536,24 @@
                 "formTitle"
             );
 
+
         const subtitle =
             document.getElementById(
                 "formSubtitle"
             );
+
 
         const button =
             document.querySelector(
                 ".main-btn"
             );
 
+
         const switchText =
             document.getElementById(
                 "switchText"
             );
+
 
         const nameField =
             document.getElementById(
@@ -502,18 +568,23 @@
             title.innerText =
                 "Create Account";
 
+
             subtitle.innerText =
                 "Register to start using UDAN CAB.";
+
 
             button.innerText =
                 "Register";
 
+
             nameField.style.display =
                 "block";
+
 
             switchText.innerHTML =
                 'Already have an account? ' +
                 '<span onclick="toggleForm()">Login</span>';
+
 
         }
 
@@ -522,14 +593,18 @@
             title.innerText =
                 "Welcome Back!";
 
+
             subtitle.innerText =
                 "Login to continue your journey.";
+
 
             button.innerText =
                 "Login";
 
+
             nameField.style.display =
                 "none";
+
 
             switchText.innerHTML =
                 "Don't have an account? " +
@@ -541,30 +616,33 @@
 
 
     /* =====================================================
-       SUBMIT
+       SUBMIT FORM
     ===================================================== */
 
     async function submitForm() {
 
+
         const email =
-            document.getElementById(
-                "email"
-            ).value.trim();
+            document
+                .getElementById("email")
+                .value
+                .trim();
 
 
         const password =
-            document.getElementById(
-                "password"
-            ).value.trim();
+            document
+                .getElementById("password")
+                .value
+                .trim();
 
 
         if (
-            !email ||
-            !password
+            email === "" ||
+            password === ""
         ) {
 
             alert(
-                "Please enter email and password."
+                "Please fill all required fields."
             );
 
             return;
@@ -575,25 +653,32 @@
         let name =
             "";
 
+
         let vehicleNumber =
             "";
+
 
         let license =
             "";
 
+
+        /* =================================================
+           REGISTER NAME
+        ================================================= */
 
         if (
             isRegister
         ) {
 
             name =
-                document.getElementById(
-                    "name"
-                ).value.trim();
+                document
+                    .getElementById("name")
+                    .value
+                    .trim();
 
 
             if (
-                !name
+                name === ""
             ) {
 
                 alert(
@@ -607,26 +692,36 @@
         }
 
 
+        /* =================================================
+           DRIVER DETAILS
+        ================================================= */
+
         if (
             selectedRole ===
             "driver"
         ) {
 
             vehicleNumber =
-                document.getElementById(
-                    "vehicleNumber"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "vehicleNumber"
+                    )
+                    .value
+                    .trim();
 
 
             license =
-                document.getElementById(
-                    "license"
-                ).value.trim();
+                document
+                    .getElementById(
+                        "license"
+                    )
+                    .value
+                    .trim();
 
 
             if (
-                !vehicleNumber ||
-                !license
+                vehicleNumber === "" ||
+                license === ""
             ) {
 
                 alert(
@@ -639,6 +734,10 @@
 
         }
 
+
+        /* =================================================
+           USER DATA
+        ================================================= */
 
         const userData = {
 
@@ -671,13 +770,15 @@
 
         try {
 
-            /* =================================================
+
+            /* =============================================
                REGISTER
-            ================================================= */
+            ============================================= */
 
             if (
                 isRegister
             ) {
+
 
                 const response =
                     await fetch(
@@ -689,8 +790,10 @@
                                 "POST",
 
                             headers: {
+
                                 "Content-Type":
                                     "application/json"
+
                             },
 
                             body:
@@ -724,11 +827,20 @@
 
 
                 alert(
-                    "🎉 Registration Successful!\n\nNow login with your account."
+                    "🎉 Registration Successful!\n\n" +
+                    "Now login with your account."
                 );
 
 
                 toggleForm();
+
+
+                document
+                    .getElementById(
+                        "password"
+                    )
+                    .value =
+                    "";
 
 
                 return;
@@ -736,9 +848,9 @@
             }
 
 
-            /* =================================================
+            /* =============================================
                LOGIN
-            ================================================= */
+            ============================================= */
 
             const response =
                 await fetch(
@@ -750,8 +862,10 @@
                             "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json"
+
                         },
 
                         body:
@@ -784,9 +898,9 @@
             }
 
 
-            /* =================================================
-               SAVE LOGIN
-            ================================================= */
+            /* =============================================
+               SAVE TOKEN
+            ============================================= */
 
             localStorage.setItem(
                 "udanToken",
@@ -802,63 +916,87 @@
             );
 
 
-            alert(
-                "✅ Login Successful!\n\nWelcome to UDAN CAB!"
+            console.log(
+                "Logged in user:",
+                data.user
             );
 
 
-            /* =================================================
-               IMPORTANT REDIRECT
-            ================================================= */
+            alert(
+                "✅ Login Successful!\n\n" +
+                "Welcome to UDAN CAB!"
+            );
+
+
+            /* =============================================
+               REDIRECT
+            ============================================= */
+
+            const role =
+                data.user.role;
+
 
             if (
-                data.user.role ===
+                role ===
                 "driver"
             ) {
 
                 /*
-                   Actual file in your GitHub:
+                   File actually exists in ROOT:
                    driver-dashboard(1).html
                 */
 
                 window.location.href =
-                    "/backend/driver-dashboard(1).html";
+                    "/driver-dashboard(1).html";
+
 
             }
 
             else if (
-                data.user.role ===
+                role ===
                 "admin"
             ) {
 
+                /*
+                   File actually exists in ROOT:
+                   admin(1).html
+                */
+
                 window.location.href =
-                    "/backend/admin(1).html";
+                    "/admin(1).html";
+
 
             }
 
             else {
 
                 /*
-                   Actual file in your GitHub:
+                   File actually exists in ROOT:
                    dashboard(1).html
                 */
 
                 window.location.href =
-                    "/backend/dashboard(1).html";
+                    "/dashboard(1).html";
 
             }
 
+
         }
 
-        catch (error) {
+        catch (
+            error
+        ) {
+
 
             console.error(
+                "LOGIN ERROR:",
                 error
             );
 
 
             alert(
-                "❌ Render backend se connection nahi ho pa raha."
+                "❌ Render backend se connection nahi ho pa raha.\n\n" +
+                "Please try again."
             );
 
         }
@@ -866,7 +1004,17 @@
     }
 
 
+    /* =====================================================
+       DEFAULT ROLE
+    ===================================================== */
+
+    selectRole(
+        "user"
+    );
+
+
 </script>
+
 
 </body>
 
