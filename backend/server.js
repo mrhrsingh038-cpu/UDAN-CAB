@@ -1,11 +1,12 @@
 require("dotenv").config();
 
+const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const path = require("path");
 
 const User = require("../model/user");
 const Ride = require("../model/ride");
@@ -13,23 +14,27 @@ const Ride = require("../model/ride");
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-
 const MONGODB_URI = process.env.MONGODB_URI;
-
 const JWT_SECRET = process.env.JWT_SECRET;
+
+const FRONTEND_DIR = __dirname;
 
 
 /* =====================================================
-   BASIC CHECK
+   ENVIRONMENT CHECK
 ===================================================== */
 
 if (!MONGODB_URI) {
-    console.error("❌ MONGODB_URI is missing.");
+    console.error(
+        "❌ MONGODB_URI missing in Render Environment Variables"
+    );
     process.exit(1);
 }
 
 if (!JWT_SECRET) {
-    console.error("❌ JWT_SECRET is missing.");
+    console.error(
+        "❌ JWT_SECRET missing in Render Environment Variables"
+    );
     process.exit(1);
 }
 
@@ -51,342 +56,83 @@ app.use(
 
 
 /* =====================================================
-   FRONTEND FILES
+   FRONTEND STATIC FILES
 ===================================================== */
 
-/*
-   IMPORTANT:
-
-   All frontend HTML files are inside:
-
-   backend/
-
-   So we serve files from __dirname.
-*/
-
 app.use(
-    express.static(__dirname)
+    express.static(FRONTEND_DIR)
 );
 
 
 /* =====================================================
-   MONGODB CONNECTION
+   MONGODB
 ===================================================== */
 
 mongoose
     .connect(MONGODB_URI)
     .then(() => {
-
-        console.log(
-            "========================================"
-        );
-
         console.log(
             "✅ MongoDB Connected Successfully"
         );
-
-        console.log(
-            "🗄️ Database: udan"
-        );
-
-        console.log(
-            "========================================"
-        );
-
     })
     .catch((error) => {
-
         console.error(
-            "❌ MongoDB Connection Failed"
-        );
-
-        console.error(
+            "❌ MongoDB Connection Failed:",
             error.message
         );
-
     });
 
 
 /* =====================================================
-   CREATE JWT TOKEN
-===================================================== */
-
-function createToken(user) {
-
-    return jwt.sign(
-
-        {
-            id:
-                user._id.toString(),
-
-            role:
-                user.role,
-
-            email:
-                user.email
-        },
-
-        JWT_SECRET,
-
-        {
-            expiresIn:
-                "7d"
-        }
-
-    );
-
-}
-
-
-/* =====================================================
-   ROLE NORMALIZATION
+   HELPERS
 ===================================================== */
 
 function normalizeRole(role) {
-
-    if (
-        role === "user"
-    ) {
-
-        return "passenger";
-
-    }
-
-    return role;
-
+    return role === "user"
+        ? "passenger"
+        : role;
 }
 
 
 function frontendRole(role) {
-
-    if (
-        role === "passenger"
-    ) {
-
-        return "user";
-
-    }
-
-    return role;
-
+    return role === "passenger"
+        ? "user"
+        : role;
 }
 
 
-/* =====================================================
-   SAFE USER
-===================================================== */
+function createToken(user) {
+    return jwt.sign(
+        {
+            id: user._id.toString(),
+            role: user.role,
+            email: user.email
+        },
+        JWT_SECRET,
+        {
+            expiresIn: "7d"
+        }
+    );
+}
+
 
 function safeUser(user) {
-
     return {
-
-        id:
-            user._id,
-
-        name:
-            user.name,
-
-        email:
-            user.email,
-
-        role:
-            frontendRole(
-                user.role
-            ),
-
-        city:
-            user.city,
-
-        vehicleNumber:
-            user.vehicleNumber,
-
-        vehicleType:
-            user.vehicleType,
-
-        license:
-            user.license,
-
-        rating:
-            user.rating,
-
-        online:
-            user.online,
-
-        blocked:
-            user.blocked === true,
-
-        location:
-            user.location
-
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: frontendRole(user.role),
+        city: user.city,
+        vehicleNumber: user.vehicleNumber,
+        vehicleType: user.vehicleType,
+        license: user.license,
+        rating: user.rating,
+        online: user.online,
+        blocked: user.blocked === true,
+        location: user.location
     };
-
 }
 
-
-/* =====================================================
-   AUTHENTICATION MIDDLEWARE
-===================================================== */
-
-async function authenticate(
-    req,
-    res,
-    next
-) {
-
-    try {
-
-        const authHeader =
-            req.headers.authorization;
-
-
-        if (
-            !authHeader ||
-            !authHeader.startsWith(
-                "Bearer "
-            )
-        ) {
-
-            return res.status(401).json({
-
-                success:
-                    false,
-
-                message:
-                    "Authentication token required."
-
-            });
-
-        }
-
-
-        const token =
-            authHeader.split(
-                " "
-            )[1];
-
-
-        const decoded =
-            jwt.verify(
-                token,
-                JWT_SECRET
-            );
-
-
-        const user =
-            await User.findById(
-                decoded.id
-            );
-
-
-        if (!user) {
-
-            return res.status(401).json({
-
-                success:
-                    false,
-
-                message:
-                    "User account not found."
-
-            });
-
-        }
-
-
-        /*
-           BLOCKED DRIVER CHECK
-        */
-
-        if (
-            user.role === "driver" &&
-            user.blocked === true
-        ) {
-
-            return res.status(403).json({
-
-                success:
-                    false,
-
-                blocked:
-                    true,
-
-                message:
-                    "🚫 Your driver account has been blocked by UDAN Admin."
-
-            });
-
-        }
-
-
-        req.user =
-            user;
-
-
-        next();
-
-    }
-
-    catch (error) {
-
-        return res.status(401).json({
-
-            success:
-                false,
-
-            message:
-                "Invalid or expired authentication token."
-
-        });
-
-    }
-
-}
-
-
-/* =====================================================
-   ROLE MIDDLEWARE
-===================================================== */
-
-function requireRole(
-    ...roles
-) {
-
-    return function (
-        req,
-        res,
-        next
-    ) {
-
-        if (
-            !req.user ||
-            !roles.includes(
-                req.user.role
-            )
-        ) {
-
-            return res.status(403).json({
-
-                success:
-                    false,
-
-                message:
-                    "You are not authorized for this action."
-
-            });
-
-        }
-
-
-        next();
-
-    };
-
-}
-
-
-/* =====================================================
-   DISTANCE CALCULATION
-===================================================== */
 
 function distanceKm(
     lat1,
@@ -394,35 +140,21 @@ function distanceKm(
     lat2,
     lng2
 ) {
-
     const R = 6371;
 
-
     const dLat =
-        (
-            Number(lat2) -
-            Number(lat1)
-        ) *
+        (Number(lat2) - Number(lat1)) *
         Math.PI /
         180;
-
 
     const dLng =
-        (
-            Number(lng2) -
-            Number(lng1)
-        ) *
+        (Number(lng2) - Number(lng1)) *
         Math.PI /
         180;
 
-
     const a =
-        Math.sin(
-            dLat / 2
-        ) *
-        Math.sin(
-            dLat / 2
-        ) +
+        Math.sin(dLat / 2) *
+        Math.sin(dLat / 2) +
 
         Math.cos(
             Number(lat1) *
@@ -436,13 +168,8 @@ function distanceKm(
             180
         ) *
 
-        Math.sin(
-            dLng / 2
-        ) *
-        Math.sin(
-            dLng / 2
-        );
-
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
 
     const c =
         2 *
@@ -451,9 +178,137 @@ function distanceKm(
             Math.sqrt(1 - a)
         );
 
-
     return R * c;
+}
 
+
+function sendPage(
+    res,
+    names,
+    notFoundMessage
+) {
+    for (const name of names) {
+        const fullPath =
+            path.join(
+                FRONTEND_DIR,
+                name
+            );
+
+        if (
+            fs.existsSync(
+                fullPath
+            )
+        ) {
+            return res.sendFile(
+                fullPath
+            );
+        }
+    }
+
+    return res.status(404).send(
+        notFoundMessage
+    );
+}
+
+
+/* =====================================================
+   AUTHENTICATION
+===================================================== */
+
+async function authenticate(
+    req,
+    res,
+    next
+) {
+    try {
+        const authHeader =
+            req.headers.authorization;
+
+        if (
+            !authHeader ||
+            !authHeader.startsWith(
+                "Bearer "
+            )
+        ) {
+            return res.status(401).json({
+                success: false,
+                message:
+                    "Authentication token required."
+            });
+        }
+
+        const token =
+            authHeader.split(" ")[1];
+
+        const decoded =
+            jwt.verify(
+                token,
+                JWT_SECRET
+            );
+
+        const user =
+            await User.findById(
+                decoded.id
+            );
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message:
+                    "User account not found."
+            });
+        }
+
+        if (
+            user.role === "driver" &&
+            user.blocked === true
+        ) {
+            return res.status(403).json({
+                success: false,
+                blocked: true,
+                message:
+                    "🚫 Your driver account has been blocked by UDAN Admin."
+            });
+        }
+
+        req.user = user;
+
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message:
+                "Invalid or expired authentication token."
+        });
+    }
+}
+
+
+/* =====================================================
+   ROLE CHECK
+===================================================== */
+
+function requireRole(...roles) {
+    return (
+        req,
+        res,
+        next
+    ) => {
+        if (
+            !req.user ||
+            !roles.includes(
+                req.user.role
+            )
+        ) {
+            return res.status(403).json({
+                success: false,
+                message:
+                    "You are not authorized for this action."
+            });
+        }
+
+        next();
+    };
 }
 
 
@@ -464,14 +319,27 @@ function distanceKm(
 app.get(
     "/",
     (req, res) => {
-
-        res.sendFile(
+        const indexPath =
             path.join(
-                __dirname,
+                FRONTEND_DIR,
                 "index.html"
-            )
-        );
+            );
 
+        if (
+            fs.existsSync(
+                indexPath
+            )
+        ) {
+            return res.sendFile(
+                indexPath
+            );
+        }
+
+        return res.json({
+            success: true,
+            message:
+                "🚕 UDAN CAB Backend is Running!"
+        });
     }
 );
 
@@ -483,107 +351,66 @@ app.get(
 app.post(
     "/api/register",
     async (req, res) => {
-
         try {
-
             const {
-
                 name,
-
                 email,
-
                 password,
-
-                role,
-
-                city,
-
+                role: rawRole,
                 vehicleNumber,
-
                 vehicleType,
-
-                license
-
+                license,
+                city
             } = req.body;
-
 
             if (
                 !email ||
                 !password ||
-                !role
+                !rawRole
             ) {
-
                 return res.status(400).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Email, password and role are required."
-
                 });
-
             }
 
-
-            const normalizedRole =
+            const role =
                 normalizeRole(
-                    role
+                    rawRole
                 );
-
 
             if (
                 ![
                     "passenger",
                     "driver",
                     "admin"
-                ].includes(
-                    normalizedRole
-                )
+                ].includes(role)
             ) {
-
                 return res.status(400).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Invalid role."
-
+                        "Invalid user role."
                 });
-
             }
-
 
             const cleanEmail =
                 String(email)
                     .trim()
                     .toLowerCase();
 
-
             const existingUser =
                 await User.findOne({
-
-                    email:
-                        cleanEmail
-
+                    email: cleanEmail
                 });
-
 
             if (existingUser) {
-
                 return res.status(409).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "This email is already registered."
-
                 });
-
             }
-
 
             const hashedPassword =
                 await bcrypt.hash(
@@ -591,10 +418,8 @@ app.post(
                     12
                 );
 
-
-            const newUser =
+            const user =
                 await User.create({
-
                     name:
                         name ||
                         "UDAN User",
@@ -606,7 +431,7 @@ app.post(
                         hashedPassword,
 
                     role:
-                        normalizedRole,
+                        role,
 
                     city:
                         city ||
@@ -638,57 +463,30 @@ app.post(
 
                     blockedAt:
                         null
-
                 });
 
-
-            console.log(
-                "✅ New user:",
-                newUser.email,
-                newUser.role
-            );
-
-
             res.status(201).json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Registration successful!",
-
                 user:
-                    safeUser(
-                        newUser
-                    )
-
+                    safeUser(user)
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
                 "REGISTER ERROR:",
                 error
             );
 
-
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Registration failed.",
-
                 error:
                     error.message
-
             });
-
         }
-
     }
 );
 
@@ -700,98 +498,63 @@ app.post(
 app.post(
     "/api/login",
     async (req, res) => {
-
         try {
-
             const {
-
                 email,
-
                 password,
-
-                role
-
+                role: rawRole
             } = req.body;
-
 
             if (
                 !email ||
                 !password ||
-                !role
+                !rawRole
             ) {
-
                 return res.status(400).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Email, password and role are required."
-
                 });
-
             }
 
-
-            const normalizedRole =
+            const role =
                 normalizeRole(
-                    role
+                    rawRole
                 );
-
 
             const cleanEmail =
                 String(email)
                     .trim()
                     .toLowerCase();
 
-
             const user =
                 await User.findOne({
-
                     email:
                         cleanEmail,
 
                     role:
-                        normalizedRole
-
+                        role
                 });
-
 
             if (!user) {
-
                 return res.status(401).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Invalid email, password or role."
-
                 });
-
             }
-
 
             if (
-                user.blocked === true &&
-                user.role === "driver"
+                user.role === "driver" &&
+                user.blocked === true
             ) {
-
                 return res.status(403).json({
-
-                    success:
-                        false,
-
-                    blocked:
-                        true,
-
+                    success: false,
+                    blocked: true,
                     message:
                         "🚫 Your driver account has been blocked by UDAN Admin."
-
                 });
-
             }
-
 
             const passwordMatch =
                 await bcrypt.compare(
@@ -799,71 +562,41 @@ app.post(
                     user.password
                 );
 
-
             if (!passwordMatch) {
-
                 return res.status(401).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Invalid email, password or role."
-
                 });
-
             }
 
-
             const token =
-                createToken(
-                    user
-                );
-
+                createToken(user);
 
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Login successful!",
-
                 token:
                     token,
-
                 user:
-                    safeUser(
-                        user
-                    )
-
+                    safeUser(user)
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
                 "LOGIN ERROR:",
                 error
             );
 
-
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Login failed.",
-
                 error:
                     error.message
-
             });
-
         }
-
     }
 );
 
@@ -875,26 +608,18 @@ app.post(
 app.get(
     "/api/me",
     authenticate,
-    async (req, res) => {
-
+    (req, res) => {
         res.json({
-
-            success:
-                true,
-
+            success: true,
             user:
-                safeUser(
-                    req.user
-                )
-
+                safeUser(req.user)
         });
-
     }
 );
 
 
 /* =====================================================
-   DRIVER ONLINE / OFFLINE
+   DRIVER STATUS
 ===================================================== */
 
 app.post(
@@ -902,80 +627,46 @@ app.post(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
-
-            const online =
+            req.user.online =
                 Boolean(
                     req.body.online
                 );
 
-
-            req.user.online =
-                online;
-
-
-            if (!online) {
-
+            if (
+                !req.user.online
+            ) {
                 req.user.location = {
-
-                    lat:
-                        null,
-
-                    lng:
-                        null,
-
-                    accuracy:
-                        null,
-
-                    updatedAt:
-                        null
-
+                    lat: null,
+                    lng: null,
+                    accuracy: null,
+                    updatedAt: null
                 };
-
             }
-
 
             await req.user.save();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
-                    online
+                    req.user.online
                         ? "Driver is online."
                         : "Driver is offline.",
-
-                online:
-                    req.user.online
-
+                driver: {
+                    id:
+                        req.user._id,
+                    online:
+                        req.user.online
+                }
             });
 
-        }
-
-        catch (error) {
-
-            console.error(
-                "DRIVER STATUS ERROR:",
-                error
-            );
-
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to update driver status."
-
             });
-
         }
-
     }
 );
 
@@ -988,52 +679,34 @@ app.post(
     "/api/location/update",
     authenticate,
     async (req, res) => {
-
         try {
-
-            const {
-
-                latitude,
-
-                longitude,
-
-                accuracy
-
-            } = req.body;
-
-
             const lat =
                 Number(
-                    latitude
+                    req.body.latitude
                 );
-
 
             const lng =
                 Number(
-                    longitude
+                    req.body.longitude
                 );
 
+            const accuracy =
+                Number(
+                    req.body.accuracy
+                );
 
             if (
                 !Number.isFinite(lat) ||
                 !Number.isFinite(lng)
             ) {
-
                 return res.status(400).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Invalid latitude or longitude."
-
                 });
-
             }
 
-
             req.user.location = {
-
                 lat:
                     lat,
 
@@ -1042,69 +715,40 @@ app.post(
 
                 accuracy:
                     Number.isFinite(
-                        Number(
-                            accuracy
-                        )
+                        accuracy
                     )
-                        ? Number(
-                            accuracy
-                        )
+                        ? accuracy
                         : null,
 
                 updatedAt:
                     new Date()
-
             };
 
-
             if (
-                req.user.role === "driver"
+                req.user.role ===
+                "driver"
             ) {
-
                 req.user.online =
                     true;
-
             }
-
 
             await req.user.save();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Location updated.",
-
                 location:
                     req.user.location
-
             });
 
-        }
-
-        catch (error) {
-
-            console.error(
-                "LOCATION ERROR:",
-                error
-            );
-
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to update location."
-
             });
-
         }
-
     }
 );
 
@@ -1118,15 +762,12 @@ app.get(
     authenticate,
     requireRole("passenger"),
     async (req, res) => {
-
         try {
-
             const lat =
                 Number(
                     req.query.lat ??
                     req.query.latitude
                 );
-
 
             const lng =
                 Number(
@@ -1134,13 +775,11 @@ app.get(
                     req.query.longitude
                 );
 
-
             const vehicleType =
                 String(
                     req.query.vehicleType ||
                     ""
                 ).trim();
-
 
             const serviceArea =
                 String(
@@ -1149,31 +788,20 @@ app.get(
                     "Nalanda"
                 ).trim();
 
-
             if (
                 !Number.isFinite(lat) ||
                 !Number.isFinite(lng)
             ) {
-
                 return res.status(400).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Valid latitude and longitude are required.",
-
-                    drivers:
-                        []
-
+                    drivers: []
                 });
-
             }
-
 
             let drivers =
                 await User.find({
-
                     role:
                         "driver",
 
@@ -1188,127 +816,94 @@ app.get(
 
                     city:
                         serviceArea
-
                 })
                 .select(
                     "name email vehicleType vehicleNumber rating location city online"
                 )
                 .lean();
 
-
             if (vehicleType) {
-
                 drivers =
                     drivers.filter(
                         driver =>
                             driver.vehicleType ===
                             vehicleType
                     );
-
             }
-
 
             drivers =
                 drivers
                     .filter(
                         driver =>
-
                             driver.location &&
-
                             Number.isFinite(
                                 Number(
                                     driver.location.lat
                                 )
                             ) &&
-
                             Number.isFinite(
                                 Number(
                                     driver.location.lng
                                 )
                             )
-
                     )
                     .map(
-                        driver => {
+                        driver => ({
+                            ...driver,
 
-                            const d =
-                                distanceKm(
+                            distanceKm:
+                                Number(
+                                    distanceKm(
+                                        lat,
+                                        lng,
+                                        driver.location.lat,
+                                        driver.location.lng
+                                    ).toFixed(2)
+                                ),
 
-                                    lat,
+                            latitude:
+                                driver.location.lat,
 
-                                    lng,
-
-                                    driver.location.lat,
-
-                                    driver.location.lng
-
-                                );
-
-
-                            return {
-
-                                ...driver,
-
-                                distanceKm:
-                                    Number(
-                                        d.toFixed(2)
-                                    )
-
-                            };
-
-                        }
+                            longitude:
+                                driver.location.lng
+                        })
                     )
                     .sort(
-                        (
-                            a,
-                            b
-                        ) =>
+                        (a, b) =>
                             a.distanceKm -
                             b.distanceKm
                     );
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
+                serviceArea:
+                    serviceArea,
+                vehicleType:
+                    vehicleType ||
+                    null,
                 drivers:
                     drivers
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
-                "NEARBY ERROR:",
+                "NEARBY DRIVERS ERROR:",
                 error
             );
 
-
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to find nearby drivers.",
-
-                drivers:
-                    []
-
+                drivers: []
             });
-
         }
-
     }
 );
 
 
 /* =====================================================
-   BOOK RIDE
+   BOOK RIDE / PARCEL
 ===================================================== */
 
 app.post(
@@ -1316,43 +911,38 @@ app.post(
     authenticate,
     requireRole("passenger"),
     async (req, res) => {
-
         try {
-
             const {
-
                 pickup,
-
                 destination,
-
                 cabType,
-
                 fare,
-
                 vehicleType,
-
                 parcelType,
-
                 parcelWeight,
-
                 serviceArea,
-
                 pickupLatitude,
-
                 pickupLongitude,
-
                 destinationLatitude,
-
                 destinationLongitude,
-
                 passengerLatitude,
-
                 passengerLongitude
-
             } = req.body;
 
+            if (
+                !pickup ||
+                !destination ||
+                !cabType ||
+                fare === undefined
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Pickup, destination, cab type and fare are required."
+                });
+            }
 
-            const finalPickupLat =
+            const finalLat =
                 pickupLatitude !== undefined
                     ? Number(
                         pickupLatitude
@@ -1361,8 +951,7 @@ app.post(
                         passengerLatitude
                     );
 
-
-            const finalPickupLng =
+            const finalLng =
                 pickupLongitude !== undefined
                     ? Number(
                         pickupLongitude
@@ -1371,30 +960,8 @@ app.post(
                         passengerLongitude
                     );
 
-
-            if (
-                !pickup ||
-                !destination ||
-                !cabType ||
-                fare === undefined
-            ) {
-
-                return res.status(400).json({
-
-                    success:
-                        false,
-
-                    message:
-                        "Pickup, destination, cab type and fare are required."
-
-                });
-
-            }
-
-
             const ride =
                 await Ride.create({
-
                     userId:
                         req.user._id,
 
@@ -1408,9 +975,7 @@ app.post(
                         cabType,
 
                     fare:
-                        Number(
-                            fare
-                        ),
+                        Number(fare),
 
                     vehicleType:
                         vehicleType ||
@@ -1421,7 +986,8 @@ app.post(
                         null,
 
                     parcelWeight:
-                        parcelWeight !== undefined
+                        parcelWeight !==
+                        undefined
                             ? String(
                                 parcelWeight
                             )
@@ -1436,19 +1002,18 @@ app.post(
                         "Searching for driver",
 
                     passengerLocation: {
-
                         lat:
                             Number.isFinite(
-                                finalPickupLat
+                                finalLat
                             )
-                                ? finalPickupLat
+                                ? finalLat
                                 : null,
 
                         lng:
                             Number.isFinite(
-                                finalPickupLng
+                                finalLng
                             )
-                                ? finalPickupLng
+                                ? finalLng
                                 : null,
 
                         accuracy:
@@ -1456,11 +1021,9 @@ app.post(
 
                         updatedAt:
                             new Date()
-
                     },
 
                     destinationLocation: {
-
                         lat:
                             Number.isFinite(
                                 Number(
@@ -1482,28 +1045,23 @@ app.post(
                                     destinationLongitude
                                 )
                                 : null
-
                     }
-
                 });
 
 
-            /*
-               AUTO ASSIGN NEAREST DRIVER
-            */
+            /* Find nearest available driver */
 
             if (
                 Number.isFinite(
-                    finalPickupLat
+                    finalLat
                 ) &&
                 Number.isFinite(
-                    finalPickupLng
+                    finalLng
                 )
             ) {
 
                 let drivers =
                     await User.find({
-
                         role:
                             "driver",
 
@@ -1518,88 +1076,63 @@ app.post(
 
                         city:
                             ride.serviceArea
-
-                    }).lean();
-
+                    })
+                    .lean();
 
                 if (
                     ride.vehicleType
                 ) {
-
                     drivers =
                         drivers.filter(
                             driver =>
                                 driver.vehicleType ===
                                 ride.vehicleType
                         );
-
                 }
-
 
                 drivers =
                     drivers
                         .filter(
                             driver =>
-
                                 driver.location &&
-
                                 Number.isFinite(
                                     Number(
                                         driver.location.lat
                                     )
                                 ) &&
-
                                 Number.isFinite(
                                     Number(
                                         driver.location.lng
                                     )
                                 )
-
                         )
                         .map(
-                            driver => {
+                            driver => ({
+                                driver:
+                                    driver,
 
-                                return {
-
-                                    driver:
-                                        driver,
-
-                                    distanceKm:
-                                        distanceKm(
-
-                                            finalPickupLat,
-
-                                            finalPickupLng,
-
-                                            driver.location.lat,
-
-                                            driver.location.lng
-
-                                        )
-
-                                };
-
-                            }
+                                distanceKm:
+                                    distanceKm(
+                                        finalLat,
+                                        finalLng,
+                                        driver.location.lat,
+                                        driver.location.lng
+                                    )
+                            })
                         )
                         .sort(
-                            (
-                                a,
-                                b
-                            ) =>
+                            (a, b) =>
                                 a.distanceKm -
                                 b.distanceKm
                         );
 
-
                 if (
                     drivers.length > 0
                 ) {
-
                     ride.assignedDriverId =
                         drivers[0]
                             .driver
                             ._id;
-
 
                     ride.assignedDistanceKm =
                         Number(
@@ -1608,52 +1141,32 @@ app.post(
                                 .toFixed(2)
                         );
 
-
                     await ride.save();
-
                 }
-
             }
 
-
             res.status(201).json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Ride booked successfully!",
-
                 ride:
                     ride
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
                 "BOOK RIDE ERROR:",
                 error
             );
 
-
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to book ride.",
-
                 error:
                     error.message
-
             });
-
         }
-
     }
 );
 
@@ -1667,12 +1180,9 @@ app.get(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
-
             const rides =
                 await Ride.find({
-
                     status:
                         "Searching for driver",
 
@@ -1680,7 +1190,6 @@ app.get(
                         null,
 
                     $or: [
-
                         {
                             assignedDriverId:
                                 req.user._id
@@ -1698,61 +1207,42 @@ app.get(
                                         false
                                 }
                         }
-
                     ]
-
                 })
                 .populate(
                     "userId",
-                    "name email city"
+                    "name email phone rating"
                 )
                 .sort({
                     createdAt:
                         -1
                 });
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 rides:
                     rides
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
                 "DRIVER RIDES ERROR:",
                 error
             );
 
-
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load available rides.",
-
-                rides:
-                    []
-
+                rides: []
             });
-
         }
-
     }
 );
 
 
 /* =====================================================
-   ACCEPT RIDE
+   DRIVER ACCEPT RIDE
 ===================================================== */
 
 app.post(
@@ -1760,143 +1250,97 @@ app.post(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
-
             if (
                 req.user.blocked === true
             ) {
-
                 return res.status(403).json({
-
-                    success:
-                        false,
-
-                    blocked:
-                        true,
-
+                    success: false,
+                    blocked: true,
                     message:
-                        "🚫 Driver account is blocked."
-
+                        "🚫 Your driver account has been blocked by UDAN Admin."
                 });
-
             }
-
 
             const ride =
                 await Ride.findById(
                     req.params.id
                 );
 
-
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Ride not found."
-
                 });
-
             }
-
 
             if (
                 ride.assignedDriverId &&
-                ride.assignedDriverId.toString() !==
+                ride.assignedDriverId
+                    .toString() !==
                     req.user._id.toString()
             ) {
-
                 return res.status(403).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "This ride is assigned to another driver."
-
+                        "This ride was assigned to another nearby driver."
                 });
-
             }
-
 
             if (
                 ride.driverId
             ) {
-
                 return res.status(409).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Ride already accepted."
-
+                        "This ride has already been accepted by another driver."
                 });
-
             }
-
 
             if (
                 ride.status !==
                 "Searching for driver"
             ) {
-
                 return res.status(409).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Ride is no longer available."
-
+                        "This ride is no longer available."
                 });
-
             }
-
 
             ride.driverId =
                 req.user._id;
 
-
             ride.driverName =
                 req.user.name;
 
-
             ride.driverEmail =
                 req.user.email;
-
 
             ride.driverVehicle =
                 req.user.vehicleNumber ||
                 null;
 
-
             ride.driverVehicleType =
                 req.user.vehicleType ||
                 null;
-
 
             ride.driverRating =
                 req.user.rating ||
                 null;
 
-
             ride.status =
                 "Driver assigned";
 
-
             if (
                 req.user.location &&
-                req.user.location.lat !== null &&
-                req.user.location.lng !== null
+                req.user.location.lat !==
+                    null &&
+                req.user.location.lng !==
+                    null
             ) {
-
                 ride.driverLocation = {
-
                     lat:
                         req.user.location.lat,
 
@@ -1908,50 +1352,33 @@ app.post(
 
                     updatedAt:
                         new Date()
-
                 };
-
             }
-
 
             await ride.save();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "🚕 Ride accepted successfully!",
-
                 ride:
                     ride
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             console.error(
                 "ACCEPT RIDE ERROR:",
                 error
             );
 
-
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
-                    "Unable to accept ride."
-
+                    "Unable to accept ride.",
+                error:
+                    error.message
             });
-
         }
-
     }
 );
 
@@ -1965,15 +1392,11 @@ app.get(
     authenticate,
     requireRole("passenger"),
     async (req, res) => {
-
         try {
-
             const rides =
                 await Ride.find({
-
                     userId:
                         req.user._id
-
                 })
                 .populate(
                     "driverId",
@@ -1984,36 +1407,20 @@ app.get(
                         -1
                 });
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 rides:
                     rides
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load your rides.",
-
-                rides:
-                    []
-
+                rides: []
             });
-
         }
-
     }
 );
 
@@ -2027,15 +1434,11 @@ app.get(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
-
             const rides =
                 await Ride.find({
-
                     driverId:
                         req.user._id
-
                 })
                 .populate(
                     "userId",
@@ -2046,36 +1449,20 @@ app.get(
                         -1
                 });
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 rides:
                     rides
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load driver rides.",
-
-                rides:
-                    []
-
+                rides: []
             });
-
         }
-
     }
 );
 
@@ -2088,9 +1475,7 @@ app.get(
     "/api/rides/:id",
     authenticate,
     async (req, res) => {
-
         try {
-
             const ride =
                 await Ride.findById(
                     req.params.id
@@ -2101,87 +1486,60 @@ app.get(
                 )
                 .populate(
                     "driverId",
-                    "name email vehicleNumber vehicleType rating location online blocked"
+                    "name email vehicleNumber vehicleType rating location online"
                 );
 
-
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Ride not found."
-
                 });
-
             }
-
 
             const passengerAllowed =
                 ride.userId &&
-                ride.userId._id.toString() ===
+                ride.userId
+                    ._id
+                    .toString() ===
                     req.user._id.toString();
-
 
             const driverAllowed =
                 ride.driverId &&
-                ride.driverId._id.toString() ===
+                ride.driverId
+                    ._id
+                    .toString() ===
                     req.user._id.toString();
-
 
             const adminAllowed =
                 req.user.role ===
                 "admin";
-
 
             if (
                 !passengerAllowed &&
                 !driverAllowed &&
                 !adminAllowed
             ) {
-
                 return res.status(403).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "You are not allowed to view this ride."
-
                 });
-
             }
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 ride:
                     ride
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load ride."
-
             });
-
         }
-
     }
 );
 
@@ -2195,72 +1553,55 @@ app.patch(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
-
             const ride =
                 await Ride.findOne({
-
                     _id:
                         req.params.id,
 
                     driverId:
                         req.user._id
-
                 });
-
 
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Ride not found."
-
+                        "Assigned ride not found."
                 });
-
             }
 
+            if (
+                ride.status !==
+                "Driver assigned"
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Ride cannot be started in its current status."
+                });
+            }
 
             ride.status =
                 "Ride started";
 
-
             await ride.save();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "🚕 Ride started.",
-
                 ride:
                     ride
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to start ride."
-
             });
-
         }
-
     }
 );
 
@@ -2274,72 +1615,44 @@ app.patch(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
-
             const ride =
                 await Ride.findOne({
-
                     _id:
                         req.params.id,
 
                     driverId:
                         req.user._id
-
                 });
-
 
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Ride not found."
-
+                        "Assigned ride not found."
                 });
-
             }
-
 
             ride.status =
                 "Completed";
 
-
             await ride.save();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "✅ Ride completed successfully.",
-
                 ride:
                     ride
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to complete ride."
-
             });
-
         }
-
     }
 );
 
@@ -2352,108 +1665,83 @@ app.patch(
     "/api/rides/:id/cancel",
     authenticate,
     async (req, res) => {
-
         try {
-
             const ride =
                 await Ride.findById(
                     req.params.id
                 );
 
-
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Ride not found."
-
                 });
-
             }
-
 
             const passengerAllowed =
                 ride.userId &&
                 ride.userId.toString() ===
-                    req.user._id.toString();
-
+                req.user._id.toString();
 
             const driverAllowed =
                 ride.driverId &&
                 ride.driverId.toString() ===
-                    req.user._id.toString();
-
+                req.user._id.toString();
 
             const adminAllowed =
                 req.user.role ===
                 "admin";
-
 
             if (
                 !passengerAllowed &&
                 !driverAllowed &&
                 !adminAllowed
             ) {
-
                 return res.status(403).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "You are not allowed to cancel this ride."
-
                 });
-
             }
 
+            if (
+                ride.status ===
+                "Completed"
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Completed ride cannot be cancelled."
+                });
+            }
 
             ride.status =
                 "Cancelled";
 
-
             await ride.save();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Ride cancelled.",
-
                 ride:
                     ride
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to cancel ride."
-
             });
-
         }
-
     }
 );
 
 
 /* =====================================================
-   PASSENGER LOCATION FOR RIDE
+   PASSENGER RIDE LOCATION
 ===================================================== */
 
 app.patch(
@@ -2461,108 +1749,111 @@ app.patch(
     authenticate,
     requireRole("passenger"),
     async (req, res) => {
-
         try {
+            const lat =
+                Number(
+                    req.body.latitude
+                );
 
-            const {
+            const lng =
+                Number(
+                    req.body.longitude
+                );
 
-                latitude,
+            const accuracy =
+                Number(
+                    req.body.accuracy
+                );
 
-                longitude,
-
-                accuracy
-
-            } = req.body;
-
+            if (
+                !Number.isFinite(lat) ||
+                !Number.isFinite(lng)
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Invalid location."
+                });
+            }
 
             const ride =
                 await Ride.findOne({
-
                     _id:
                         req.params.id,
 
                     userId:
                         req.user._id
-
                 });
-
 
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Ride not found."
-
                 });
-
             }
 
-
             ride.passengerLocation = {
-
                 lat:
-                    Number(
-                        latitude
-                    ),
+                    lat,
 
                 lng:
-                    Number(
-                        longitude
-                    ),
+                    lng,
 
                 accuracy:
-                    Number(
+                    Number.isFinite(
                         accuracy
-                    ) || null,
+                    )
+                        ? accuracy
+                        : null,
 
                 updatedAt:
                     new Date()
-
             };
-
 
             await ride.save();
 
+            req.user.location = {
+                lat:
+                    lat,
+
+                lng:
+                    lng,
+
+                accuracy:
+                    Number.isFinite(
+                        accuracy
+                    )
+                        ? accuracy
+                        : null,
+
+                updatedAt:
+                    new Date()
+            };
+
+            await req.user.save();
 
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Passenger location updated.",
-
                 location:
                     ride.passengerLocation
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to update passenger location."
-
             });
-
         }
-
     }
 );
 
 
 /* =====================================================
-   DRIVER LOCATION FOR RIDE
+   DRIVER RIDE LOCATION
 ===================================================== */
 
 app.patch(
@@ -2570,102 +1861,157 @@ app.patch(
     authenticate,
     requireRole("driver"),
     async (req, res) => {
-
         try {
+            const lat =
+                Number(
+                    req.body.latitude
+                );
 
-            const {
+            const lng =
+                Number(
+                    req.body.longitude
+                );
 
-                latitude,
+            const accuracy =
+                Number(
+                    req.body.accuracy
+                );
 
-                longitude,
-
-                accuracy
-
-            } = req.body;
-
+            if (
+                !Number.isFinite(lat) ||
+                !Number.isFinite(lng)
+            ) {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Invalid location."
+                });
+            }
 
             const ride =
                 await Ride.findOne({
-
                     _id:
                         req.params.id,
 
                     driverId:
                         req.user._id
-
                 });
-
 
             if (!ride) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Ride not found."
-
+                        "Assigned ride not found."
                 });
-
             }
 
-
             ride.driverLocation = {
-
                 lat:
-                    Number(
-                        latitude
-                    ),
+                    lat,
 
                 lng:
-                    Number(
-                        longitude
-                    ),
+                    lng,
 
                 accuracy:
-                    Number(
+                    Number.isFinite(
                         accuracy
-                    ) || null,
+                    )
+                        ? accuracy
+                        : null,
 
                 updatedAt:
                     new Date()
-
             };
-
 
             await ride.save();
 
+            req.user.location = {
+                lat:
+                    lat,
+
+                lng:
+                    lng,
+
+                accuracy:
+                    Number.isFinite(
+                        accuracy
+                    )
+                        ? accuracy
+                        : null,
+
+                updatedAt:
+                    new Date()
+            };
+
+            req.user.online =
+                true;
+
+            await req.user.save();
 
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "Driver location updated.",
-
                 location:
                     ride.driverLocation
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to update driver location."
+            });
+        }
+    }
+);
 
+
+/* =====================================================
+   LIVE LOCATION
+===================================================== */
+
+app.get(
+    "/api/rides/:id/live-location",
+    authenticate,
+    async (req, res) => {
+        try {
+            const ride =
+                await Ride.findById(
+                    req.params.id
+                );
+
+            if (!ride) {
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Ride not found."
+                });
+            }
+
+            res.json({
+                success: true,
+
+                rideId:
+                    ride._id,
+
+                status:
+                    ride.status,
+
+                passengerLocation:
+                    ride.passengerLocation,
+
+                driverLocation:
+                    ride.driverLocation
             });
 
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message:
+                    "Unable to load live location."
+            });
         }
-
     }
 );
 
@@ -2679,18 +2025,14 @@ app.get(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const passengers =
                 await User.find({
-
                     role:
                         "passenger"
-
                 })
                 .select(
-                    "name email city rating location createdAt"
+                    "name email phone city rating location createdAt"
                 )
                 .sort({
                     createdAt:
@@ -2698,36 +2040,20 @@ app.get(
                 })
                 .lean();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 passengers:
                     passengers
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load passengers.",
-
-                passengers:
-                    []
-
+                passengers: []
             });
-
         }
-
     }
 );
 
@@ -2741,15 +2067,11 @@ app.get(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const drivers =
                 await User.find({
-
                     role:
                         "driver"
-
                 })
                 .select(
                     "-password"
@@ -2760,36 +2082,20 @@ app.get(
                 })
                 .lean();
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 drivers:
                     drivers
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load drivers.",
-
-                drivers:
-                    []
-
+                drivers: []
             });
-
         }
-
     }
 );
 
@@ -2803,29 +2109,23 @@ app.patch(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const reason =
                 req.body?.reason ||
                 "Blocked by UDAN Admin";
 
-
             const driver =
                 await User.findOneAndUpdate(
-
                     {
                         _id:
                             req.params.id,
 
                         role:
                             "driver"
-
                     },
 
                     {
                         $set: {
-
                             blocked:
                                 true,
 
@@ -2837,67 +2137,44 @@ app.patch(
 
                             online:
                                 false
-
                         }
-
                     },
 
                     {
                         new:
                             true
                     }
-
                 )
                 .select(
                     "-password"
                 )
                 .lean();
 
-
             if (!driver) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Driver not found."
-
                 });
-
             }
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "🚫 Driver blocked successfully.",
-
                 driver:
                     driver
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
-                    "Unable to block driver."
-
+                    "Unable to block driver.",
+                error:
+                    error.message
             });
-
         }
-
     }
 );
 
@@ -2911,24 +2188,19 @@ app.patch(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const driver =
                 await User.findOneAndUpdate(
-
                     {
                         _id:
                             req.params.id,
 
                         role:
                             "driver"
-
                     },
 
                     {
                         $set: {
-
                             blocked:
                                 false,
 
@@ -2937,67 +2209,44 @@ app.patch(
 
                             blockedAt:
                                 null
-
                         }
-
                     },
 
                     {
                         new:
                             true
                     }
-
                 )
                 .select(
                     "-password"
                 )
                 .lean();
 
-
             if (!driver) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Driver not found."
-
                 });
-
             }
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
                     "✅ Driver unblocked successfully.",
-
                 driver:
                     driver
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
-                    "Unable to unblock driver."
-
+                    "Unable to unblock driver.",
+                error:
+                    error.message
             });
-
         }
-
     }
 );
 
@@ -3011,112 +2260,71 @@ app.delete(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const driver =
                 await User.findOne({
-
                     _id:
                         req.params.id,
 
                     role:
                         "driver"
-
                 });
-
 
             if (!driver) {
-
                 return res.status(404).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
                         "Driver not found."
-
                 });
-
             }
-
 
             const activeRide =
                 await Ride.findOne({
-
                     driverId:
                         driver._id,
 
                     status: {
-
                         $nin: [
-
                             "Completed",
-
                             "Cancelled"
-
                         ]
-
                     }
-
                 });
-
 
             if (activeRide) {
-
                 return res.status(409).json({
-
-                    success:
-                        false,
-
+                    success: false,
                     message:
-                        "Driver has an active ride."
-
+                        "This driver has an active ride. Complete or cancel the ride before removing the driver."
                 });
-
             }
 
-
             await User.deleteOne({
-
                 _id:
                     driver._id
-
             });
-
 
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 message:
-                    "🗑️ Driver removed successfully."
-
+                    "🗑️ Driver removed permanently."
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
-                    "Unable to remove driver."
-
+                    "Unable to remove driver.",
+                error:
+                    error.message
             });
-
         }
-
     }
 );
 
 
 /* =====================================================
-   ADMIN ALL RIDES
+   ADMIN RIDES
 ===================================================== */
 
 app.get(
@@ -3124,9 +2332,7 @@ app.get(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const rides =
                 await Ride.find({})
                 .populate(
@@ -3142,36 +2348,20 @@ app.get(
                         -1
                 });
 
-
             res.json({
-
-                success:
-                    true,
-
+                success: true,
                 rides:
                     rides
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
                     "Unable to load rides.",
-
-                rides:
-                    []
-
+                rides: []
             });
-
         }
-
     }
 );
 
@@ -3185,112 +2375,78 @@ app.get(
     authenticate,
     requireRole("admin"),
     async (req, res) => {
-
         try {
-
             const [
-
                 totalUsers,
-
                 totalDrivers,
-
                 blockedDrivers,
-
                 totalRides,
-
                 completedRides,
-
                 activeRides
+            ] = await Promise.all([
+                User.countDocuments({}),
 
-            ] =
-                await Promise.all([
+                User.countDocuments({
+                    role:
+                        "driver"
+                }),
 
-                    User.countDocuments({}),
+                User.countDocuments({
+                    role:
+                        "driver",
 
-                    User.countDocuments({
+                    blocked:
+                        true
+                }),
 
-                        role:
-                            "driver"
+                Ride.countDocuments({}),
 
-                    }),
+                Ride.countDocuments({
+                    status:
+                        "Completed"
+                }),
 
-                    User.countDocuments({
-
-                        role:
-                            "driver",
-
-                        blocked:
-                            true
-
-                    }),
-
-                    Ride.countDocuments({}),
-
-                    Ride.countDocuments({
-
-                        status:
-                            "Completed"
-
-                    }),
-
-                    Ride.countDocuments({
-
-                        status: {
-
-                            $nin: [
-
-                                "Completed",
-
-                                "Cancelled"
-
-                            ]
-
-                        }
-
-                    })
-
-                ]);
-
+                Ride.countDocuments({
+                    status: {
+                        $nin: [
+                            "Completed",
+                            "Cancelled"
+                        ]
+                    }
+                })
+            ]);
 
             res.json({
-
-                success:
-                    true,
+                success: true,
 
                 stats: {
+                    totalUsers:
+                        totalUsers,
 
-                    totalUsers,
+                    totalDrivers:
+                        totalDrivers,
 
-                    totalDrivers,
+                    blockedDrivers:
+                        blockedDrivers,
 
-                    blockedDrivers,
+                    totalRides:
+                        totalRides,
 
-                    totalRides,
+                    completedRides:
+                        completedRides,
 
-                    completedRides,
-
-                    activeRides
-
+                    activeRides:
+                        activeRides
                 }
-
             });
 
-        }
-
-        catch (error) {
-
+        } catch (error) {
             res.status(500).json({
-
-                success:
-                    false,
-
+                success: false,
                 message:
-                    "Unable to load admin stats."
-
+                    "Unable to load admin statistics."
             });
-
         }
-
     }
 );
 
@@ -3299,210 +2455,101 @@ app.get(
    FRONTEND PAGE ALIASES
 ===================================================== */
 
-/*
-   GitHub screenshot me filenames:
-
-   dashboard(1).html
-   driver-dashboard(1).html
-   admin(1).html
-   parcel(1).html
-
-   Lekin frontend normally:
-
-   dashboard.html
-   driver-dashboard.html
-   admin.html
-   parcel.html
-
-   request karta hai.
-
-   Isliye yaha aliases diye gaye hain.
-*/
-
-
-/* ================= LOGIN ================= */
-
 app.get(
     "/login.html",
     (req, res) => {
-
-        res.sendFile(
-            path.join(
-                __dirname,
-                "login.html"
-            )
+        sendPage(
+            res,
+            [
+                "login.html",
+                "login(2).html"
+            ],
+            "login.html not found"
         );
-
     }
 );
 
-
-/* ================= DASHBOARD ================= */
 
 app.get(
     "/dashboard.html",
     (req, res) => {
-
-        const normalFile =
-            path.join(
-                __dirname,
-                "dashboard.html"
-            );
-
-
-        res.sendFile(
-            normalFile,
-            (error) => {
-
-                if (error) {
-
-                    res.sendFile(
-                        path.join(
-                            __dirname,
-                            "dashboard(1).html"
-                        )
-                    );
-
-                }
-
-            }
+        sendPage(
+            res,
+            [
+                "dashboard.html",
+                "dashboard(1).html"
+            ],
+            "dashboard.html not found"
         );
-
     }
 );
 
-
-/* ================= DRIVER DASHBOARD ================= */
 
 app.get(
     "/driver-dashboard.html",
     (req, res) => {
-
-        const normalFile =
-            path.join(
-                __dirname,
-                "driver-dashboard.html"
-            );
-
-
-        res.sendFile(
-            normalFile,
-            (error) => {
-
-                if (error) {
-
-                    res.sendFile(
-                        path.join(
-                            __dirname,
-                            "driver-dashboard(1).html"
-                        )
-                    );
-
-                }
-
-            }
+        sendPage(
+            res,
+            [
+                "driver-dashboard.html",
+                "driver-dashboard(1).html"
+            ],
+            "driver-dashboard.html not found"
         );
-
     }
 );
 
-
-/* ================= ADMIN ================= */
 
 app.get(
     "/admin.html",
     (req, res) => {
-
-        const normalFile =
-            path.join(
-                __dirname,
-                "admin.html"
-            );
-
-
-        res.sendFile(
-            normalFile,
-            (error) => {
-
-                if (error) {
-
-                    res.sendFile(
-                        path.join(
-                            __dirname,
-                            "admin(1).html"
-                        )
-                    );
-
-                }
-
-            }
+        sendPage(
+            res,
+            [
+                "admin.html",
+                "admin(1).html"
+            ],
+            "admin.html not found"
         );
-
     }
 );
 
-
-/* ================= PARCEL ================= */
 
 app.get(
     "/parcel.html",
     (req, res) => {
-
-        const normalFile =
-            path.join(
-                __dirname,
-                "parcel.html"
-            );
-
-
-        res.sendFile(
-            normalFile,
-            (error) => {
-
-                if (error) {
-
-                    res.sendFile(
-                        path.join(
-                            __dirname,
-                            "parcel(1).html"
-                        )
-                    );
-
-                }
-
-            }
+        sendPage(
+            res,
+            [
+                "parcel.html",
+                "parcel(1).html"
+            ],
+            "parcel.html not found"
         );
-
     }
 );
 
 
 /* =====================================================
-   404
+   API 404
 ===================================================== */
 
 app.use(
+    "/api",
     (req, res) => {
-
         res.status(404).json({
-
-            success:
-                false,
-
+            success: false,
             message:
                 "API route not found.",
-
             path:
                 req.originalUrl
-
         });
-
     }
 );
 
 
 /* =====================================================
-   GLOBAL ERROR HANDLER
+   GLOBAL ERROR
 ===================================================== */
 
 app.use(
@@ -3512,26 +2559,18 @@ app.use(
         res,
         next
     ) => {
-
         console.error(
             "GLOBAL ERROR:",
             error
         );
 
-
         res.status(500).json({
-
-            success:
-                false,
-
+            success: false,
             message:
                 "Internal server error.",
-
             error:
                 error.message
-
         });
-
     }
 );
 
@@ -3543,7 +2582,6 @@ app.use(
 app.listen(
     PORT,
     () => {
-
         console.log(
             "========================================"
         );
@@ -3569,19 +2607,15 @@ app.listen(
         );
 
         console.log(
-            "✅ Admin system enabled"
-        );
-
-        console.log(
-            "✅ GPS system enabled"
-        );
-
-        console.log(
             "✅ Ride booking enabled"
         );
 
         console.log(
-            "✅ Parcel system enabled"
+            "✅ GPS enabled"
+        );
+
+        console.log(
+            "✅ Admin system enabled"
         );
 
         console.log(
@@ -3591,6 +2625,5 @@ app.listen(
         console.log(
             "========================================"
         );
-
     }
 );
