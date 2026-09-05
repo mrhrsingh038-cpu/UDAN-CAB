@@ -313,12 +313,15 @@
 
         </div>
 
+
         <h1>
 
             Your Ride.<br>
+
             Your Way.
 
         </h1>
+
 
         <p>
 
@@ -328,6 +331,7 @@
 
         </p>
 
+
         <div class="cab-icon">
 
             🚕 🛺 🏍️
@@ -335,6 +339,7 @@
         </div>
 
     </div>
+
 
 
     <!-- RIGHT -->
@@ -367,9 +372,11 @@
         </p>
 
 
+
         <!-- ROLE -->
 
         <div class="role-container">
+
 
             <button
                 class="role-btn active"
@@ -379,6 +386,7 @@
                 👤 Passenger
 
             </button>
+
 
 
             <button
@@ -393,6 +401,7 @@
         </div>
 
 
+
         <!-- NAME -->
 
         <div
@@ -401,8 +410,11 @@
             style="display:none;">
 
             <label>
+
                 Full Name
+
             </label>
+
 
             <input
                 type="text"
@@ -412,13 +424,17 @@
         </div>
 
 
+
         <!-- EMAIL -->
 
         <div class="input-box">
 
             <label>
+
                 Email / Phone
+
             </label>
+
 
             <input
                 type="text"
@@ -428,13 +444,17 @@
         </div>
 
 
+
         <!-- PASSWORD -->
 
         <div class="input-box">
 
             <label>
+
                 Password
+
             </label>
+
 
             <input
                 type="password"
@@ -442,6 +462,7 @@
                 placeholder="Enter password">
 
         </div>
+
 
 
         <!-- DRIVER -->
@@ -452,8 +473,11 @@
             <div class="input-box">
 
                 <label>
+
                     Vehicle Number
+
                 </label>
+
 
                 <input
                     type="text"
@@ -463,11 +487,15 @@
             </div>
 
 
+
             <div class="input-box">
 
                 <label>
+
                     Driving License
+
                 </label>
+
 
                 <input
                     type="text"
@@ -478,6 +506,7 @@
 
 
         </div>
+
 
 
         <!-- BUTTON -->
@@ -492,6 +521,7 @@
         </button>
 
 
+
         <!-- SWITCH -->
 
         <p
@@ -501,7 +531,9 @@
             Don't have an account?
 
             <span onclick="toggleForm()">
+
                 Create Account
+
             </span>
 
         </p>
@@ -509,11 +541,20 @@
 
     </div>
 
+
 </div>
 
 
 
 <script>
+
+
+/* =========================
+   LIVE BACKEND
+========================= */
+
+const API = "https://udan-cab.onrender.com";
+
 
 
 /* =========================
@@ -525,6 +566,7 @@ let selectedRole = "user";
 let isRegister = false;
 
 
+
 /* =========================
    SELECT ROLE
 ========================= */
@@ -533,14 +575,18 @@ function selectRole(role) {
 
     selectedRole = role;
 
+
     const userRole =
         document.getElementById("userRole");
+
 
     const driverRole =
         document.getElementById("driverRole");
 
+
     const driverFields =
         document.getElementById("driverFields");
+
 
     if (role === "user") {
 
@@ -559,6 +605,7 @@ function selectRole(role) {
 
         userRole.classList.remove("active");
 
+
         if (isRegister) {
 
             driverFields.style.display =
@@ -571,11 +618,13 @@ function selectRole(role) {
 }
 
 
+
 /* =========================
    TOGGLE LOGIN / REGISTER
 ========================= */
 
 function toggleForm() {
+
 
     isRegister =
         !isRegister;
@@ -586,25 +635,30 @@ function toggleForm() {
             "formTitle"
         );
 
+
     const subtitle =
         document.getElementById(
             "formSubtitle"
         );
+
 
     const button =
         document.getElementById(
             "mainButton"
         );
 
+
     const switchText =
         document.getElementById(
             "switchText"
         );
 
+
     const nameField =
         document.getElementById(
             "nameField"
         );
+
 
     const driverFields =
         document.getElementById(
@@ -612,13 +666,17 @@ function toggleForm() {
         );
 
 
+
     if (isRegister) {
+
 
         title.innerText =
             "Create Account";
 
+
         subtitle.innerText =
             "Register to start using UDAN CAB.";
+
 
         button.innerText =
             "Register";
@@ -626,6 +684,7 @@ function toggleForm() {
 
         nameField.style.display =
             "block";
+
 
 
         if (selectedRole === "driver") {
@@ -636,19 +695,24 @@ function toggleForm() {
         }
 
 
+
         switchText.innerHTML =
             'Already have an account? ' +
             '<span onclick="toggleForm()">Login</span>';
 
     }
 
+
     else {
+
 
         title.innerText =
             "Welcome Back!";
 
+
         subtitle.innerText =
             "Login to continue your journey.";
+
 
         button.innerText =
             "Login";
@@ -657,8 +721,10 @@ function toggleForm() {
         nameField.style.display =
             "none";
 
+
         driverFields.style.display =
             "none";
+
 
 
         switchText.innerHTML =
@@ -670,17 +736,20 @@ function toggleForm() {
 }
 
 
+
 /* =========================
    SUBMIT
 ========================= */
 
 async function submitForm() {
 
+
     const email =
         document
         .getElementById("email")
         .value
         .trim();
+
 
 
     const password =
@@ -690,18 +759,22 @@ async function submitForm() {
         .trim();
 
 
+
     if (
         email === "" ||
         password === ""
     ) {
 
+
         alert(
             "Please fill email/phone and password."
         );
 
+
         return;
 
     }
+
 
 
     /* =========================
@@ -710,6 +783,7 @@ async function submitForm() {
 
     if (isRegister) {
 
+
         const name =
             document
             .getElementById("name")
@@ -717,15 +791,19 @@ async function submitForm() {
             .trim();
 
 
+
         if (name === "") {
+
 
             alert(
                 "Please enter your name."
             );
 
+
             return;
 
         }
+
 
 
         let vehicleNumber = "";
@@ -733,10 +811,12 @@ async function submitForm() {
         let license = "";
 
 
+
         if (
             selectedRole ===
             "driver"
         ) {
+
 
             vehicleNumber =
                 document
@@ -745,6 +825,7 @@ async function submitForm() {
                 )
                 .value
                 .trim();
+
 
 
             license =
@@ -756,14 +837,17 @@ async function submitForm() {
                 .trim();
 
 
+
             if (
                 vehicleNumber === "" ||
                 license === ""
             ) {
 
+
                 alert(
                     "Please enter vehicle number and driving license."
                 );
+
 
                 return;
 
@@ -772,11 +856,13 @@ async function submitForm() {
         }
 
 
+
         try {
+
 
             const response =
                 await fetch(
-                    "http://localhost:5000/api/register",
+                    API + "/api/register",
                     {
 
                         method: "POST",
@@ -788,46 +874,52 @@ async function submitForm() {
 
                         },
 
-                        body: JSON.stringify({
+                        body:
+                            JSON.stringify({
 
-                            name:
-                                name,
+                                name:
+                                    name,
 
-                            email:
-                                email,
+                                email:
+                                    email,
 
-                            password:
-                                password,
+                                password:
+                                    password,
 
-                            role:
-                                selectedRole,
+                                role:
+                                    selectedRole,
 
-                            vehicleNumber:
-                                vehicleNumber,
+                                vehicleNumber:
+                                    vehicleNumber,
 
-                            license:
-                                license
+                                license:
+                                    license
 
-                        })
+                            })
 
                     }
                 );
+
 
 
             const data =
                 await response.json();
 
 
+
             if (!response.ok) {
+
 
                 alert(
                     "❌ " +
                     data.message
                 );
 
+
                 return;
 
             }
+
 
 
             alert(
@@ -835,9 +927,11 @@ async function submitForm() {
             );
 
 
+
             /* GO LOGIN */
 
             toggleForm();
+
 
 
             document
@@ -846,12 +940,14 @@ async function submitForm() {
                 )
                 .value = "";
 
-
         }
+
 
         catch (error) {
 
+
             console.error(error);
+
 
             alert(
                 "❌ Backend se connection nahi ho raha."
@@ -859,9 +955,12 @@ async function submitForm() {
 
         }
 
+
+
         return;
 
     }
+
 
 
     /* =========================
@@ -870,9 +969,10 @@ async function submitForm() {
 
     try {
 
+
         const response =
             await fetch(
-                "http://localhost:5000/api/login",
+                API + "/api/login",
                 {
 
                     method: "POST",
@@ -884,37 +984,43 @@ async function submitForm() {
 
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        email:
-                            email,
+                            email:
+                                email,
 
-                        password:
-                            password,
+                            password:
+                                password,
 
-                        role:
-                            selectedRole
+                            role:
+                                selectedRole
 
-                    })
+                        })
 
                 }
             );
+
 
 
         const data =
             await response.json();
 
 
+
         if (!response.ok) {
+
 
             alert(
                 "❌ " +
                 data.message
             );
 
+
             return;
 
         }
+
 
 
         /* SAVE AUTH TOKEN + USER */
@@ -924,6 +1030,8 @@ async function submitForm() {
             data.token
         );
 
+
+
         localStorage.setItem(
             "udanUser",
             JSON.stringify(
@@ -932,17 +1040,21 @@ async function submitForm() {
         );
 
 
+
         alert(
             "✅ Login Successful!"
         );
 
 
+
         /* REDIRECT */
+
 
         if (
             selectedRole ===
             "driver"
         ) {
+
 
             window.location.href =
                 "driver-dashboard.html";
@@ -951,6 +1063,7 @@ async function submitForm() {
 
         else {
 
+
             window.location.href =
                 "dashboard.html";
 
@@ -958,18 +1071,23 @@ async function submitForm() {
 
     }
 
+
     catch (error) {
+
 
         console.error(error);
 
+
         alert(
             "❌ Backend se connection nahi ho raha.\n\n" +
-            "Check karo server.js running hai."
+            "Live backend check karo:\n" +
+            API
         );
 
     }
 
 }
+
 
 </script>
 
