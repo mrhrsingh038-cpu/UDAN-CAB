@@ -1,26 +1,19 @@
 require("dotenv").config();
 
-const path = require("path");
-const fs = require("fs");
-
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const path = require("path");
+const fs = require("fs");
 
 const User = require("../model/user");
 const Ride = require("../model/ride");
 
-
-/* =====================================================
-   APP
-===================================================== */
-
 const app = express();
 
-const PORT =
-    process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 const MONGODB_URI =
     process.env.MONGODB_URI;
@@ -30,24 +23,28 @@ const JWT_SECRET =
 
 
 /* =====================================================
-   CHECK ENVIRONMENT
+   BASIC CHECK
 ===================================================== */
 
 if (!MONGODB_URI) {
+
     console.error(
-        "❌ MONGODB_URI missing in Render Environment Variables."
+        "❌ MONGODB_URI missing in .env"
     );
 
     process.exit(1);
+
 }
 
 
 if (!JWT_SECRET) {
+
     console.error(
-        "❌ JWT_SECRET missing in Render Environment Variables."
+        "❌ JWT_SECRET missing in .env"
     );
 
     process.exit(1);
+
 }
 
 
@@ -62,31 +59,85 @@ app.use(
     })
 );
 
+
 app.use(
     express.json()
 );
 
 
 /* =====================================================
-   IMPORTANT FRONTEND PATH
+   FRONTEND STATIC FILES
 ===================================================== */
 
 /*
-   server.js:
-       UDAN-CAB/backend/server.js
+   server.js is here:
 
-   HTML files:
-       UDAN-CAB/login.html
-       UDAN-CAB/dashboard(1).html
-       UDAN-CAB/driver-dashboard(1).html
-       UDAN-CAB/admin(1).html
-       UDAN-CAB/parcel(1).html
-       UDAN-CAB/index.html
+   UDAN-CAB/backend/server.js
 
-   Therefore frontend directory is:
-       path.join(__dirname, "..")
+   HTML files are here:
+
+   UDAN-CAB/login.html
+   UDAN-CAB/index.html
+   UDAN-CAB/dashboard(1).html
+   UDAN-CAB/driver-dashboard(1).html
+   UDAN-CAB/admin(1).html
+   UDAN-CAB/parcel(1).html
+
+   So we need to go one folder UP.
 */
 
+const FRONTEND_DIR =
+    path.join(
+        __dirname,
+        ".."
+    );
+
+
+app.use(
+    express.static(
+        FRONTEND_DIR
+    )
+);
+
+
+/* =====================================================
+   MONGODB
+===================================================== */
+
+mongoose
+    .connect(
+        MONGODB_URI
+    )
+    .then(() => {
+
+        console.log(
+            "================================="
+        );
+
+        console.log(
+            "✅ MongoDB Connected Successfully!"
+        );
+
+        console.log(
+            "🗄️ Database: udan"
+        );
+
+        console.log(
+            "================================="
+        );
+
+    })
+    .catch((error) => {
+
+        console.error(
+            "❌ MongoDB Connection Failed!"
+        );
+
+        console.error(
+            error.message
+        );
+
+    });
 const FRONTEND_DIR =
     path.join(
         __dirname,
