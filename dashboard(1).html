@@ -8,10 +8,10 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>UDAN CAB</title>
+    <title>UDAN CAB - Passenger Dashboard</title>
 
 
-    <!-- Leaflet Map CSS -->
+    <!-- LEAFLET -->
 
     <link
         rel="stylesheet"
@@ -28,134 +28,63 @@
             font-family: Arial, sans-serif;
         }
 
+
         body {
             background: #f5f5f5;
+            color: #111;
         }
 
 
-        /* NAVBAR */
+        /* =========================
+           NAVBAR
+        ========================= */
 
         .navbar {
-
-            height: 70px;
-
+            min-height: 70px;
             background: #111;
-
             color: white;
 
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
 
             padding: 0 7%;
         }
 
+
         .logo {
-
             font-size: 28px;
-
             font-weight: bold;
         }
+
 
         .logo span {
-
             color: #ffd000;
         }
 
-        .nav-links {
 
+        .nav-right {
             display: flex;
-
-            gap: 30px;
-        }
-
-        .nav-links a {
-
-            color: white;
-
-            text-decoration: none;
-        }
-
-        .login-btn {
-
-            background: #ffd000;
-
-            color: black;
-
-            padding: 10px 20px;
-
-            border-radius: 6px;
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-
-        /* HERO */
-
-        .hero {
-
-            min-height: 600px;
-
-            display: flex;
-
-            justify-content: space-between;
-
             align-items: center;
-
-            padding: 50px 7%;
-
-            background: linear-gradient(
-                120deg,
-                #111 50%,
-                #222 50%
-            );
-
-            color: white;
+            gap: 15px;
         }
 
-        .hero-text {
 
-            width: 50%;
-        }
-
-        .hero-text h1 {
-
-            font-size: 55px;
-
-            margin-bottom: 20px;
-        }
-
-        .hero-text h1 span {
-
-            color: #ffd000;
-        }
-
-        .hero-text p {
-
-            font-size: 20px;
-
+        #welcomeUser {
+            font-size: 15px;
             color: #ddd;
-
-            line-height: 1.6;
-
-            margin-bottom: 30px;
         }
 
-        .book-btn {
 
-            padding: 15px 30px;
-
+        .logout-btn {
             background: #ffd000;
+            color: #111;
 
             border: none;
 
-            border-radius: 8px;
+            padding: 10px 18px;
 
-            font-size: 18px;
+            border-radius: 7px;
 
             font-weight: bold;
 
@@ -163,15 +92,91 @@
         }
 
 
-        /* BOOKING */
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+
+            min-height: 560px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 40px;
+
+            padding: 50px 7%;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    #111 50%,
+                    #222 50%
+                );
+
+            color: white;
+        }
+
+
+        .hero-text {
+            width: 50%;
+        }
+
+
+        .hero-text h1 {
+            font-size: 52px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+
+        .hero-text h1 span {
+            color: #ffd000;
+        }
+
+
+        .hero-text p {
+            font-size: 19px;
+            color: #ddd;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 25px;
+        }
+
+
+        .user-badge {
+
+            display: inline-block;
+
+            background: #ffd000;
+
+            color: #111;
+
+            padding: 10px 16px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           BOOKING BOX
+        ========================= */
 
         .booking-box {
 
             width: 390px;
 
+            max-width: 100%;
+
             background: white;
 
-            color: black;
+            color: #111;
 
             padding: 30px;
 
@@ -182,24 +187,26 @@
                 rgba(0,0,0,.4);
         }
 
-        .booking-box h2 {
 
+        .booking-box h2 {
             margin-bottom: 20px;
         }
 
-        .input-box {
 
+        .input-box {
             margin-bottom: 15px;
         }
+
 
         .input-box label {
 
             display: block;
 
-            margin-bottom: 6px;
-
             font-weight: bold;
+
+            margin-bottom: 7px;
         }
+
 
         .input-box input {
 
@@ -209,9 +216,16 @@
 
             border: 1px solid #ccc;
 
-            border-radius: 6px;
+            border-radius: 7px;
 
             font-size: 15px;
+
+            outline: none;
+        }
+
+
+        .input-box input:focus {
+            border-color: #111;
         }
 
 
@@ -225,11 +239,11 @@
 
             background: white;
 
-            color: #111;
-
             border: 2px solid #111;
 
-            border-radius: 6px;
+            color: #111;
+
+            border-radius: 7px;
 
             font-weight: bold;
 
@@ -249,7 +263,7 @@
 
             border: none;
 
-            border-radius: 6px;
+            border-radius: 7px;
 
             font-size: 16px;
 
@@ -259,7 +273,63 @@
         }
 
 
-        /* MAP SECTION */
+        .search-btn:hover {
+            background: #333;
+        }
+
+
+        .search-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        #statusMessage {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
+            text-align: center;
+
+            font-weight: bold;
+
+        }
+
+
+        #statusMessage.success {
+
+            display: block;
+
+            background: #e8f8e8;
+
+            color: green;
+
+        }
+
+
+        #statusMessage.error {
+
+            display: block;
+
+            background: #ffe8e8;
+
+            color: red;
+
+        }
+
+
+        /* =========================
+           MAP
+        ========================= */
 
         #mapSection {
 
@@ -267,23 +337,28 @@
 
             background: white;
 
-            padding: 50px 7%;
+            padding: 55px 7%;
 
             text-align: center;
+
         }
+
 
         #mapSection h2 {
 
             font-size: 32px;
 
             margin-bottom: 10px;
+
         }
+
 
         .map-info {
 
             color: #666;
 
             margin-bottom: 20px;
+
         }
 
 
@@ -291,86 +366,99 @@
 
             width: 100%;
 
-            height: 450px;
+            height: 430px;
 
             border-radius: 15px;
 
             box-shadow:
                 0 5px 20px
                 rgba(0,0,0,.15);
+
         }
 
 
         .route-info {
 
-            margin-top: 20px;
-
             display: flex;
 
             justify-content: center;
 
-            gap: 30px;
+            gap: 25px;
 
             flex-wrap: wrap;
+
+            margin-top: 20px;
+
         }
 
 
         .info-card {
 
+            min-width: 180px;
+
             background: #f5f5f5;
 
-            padding: 20px 30px;
+            padding: 20px;
 
             border-radius: 10px;
 
-            min-width: 180px;
         }
 
 
         .info-card h3 {
 
-            font-size: 15px;
+            font-size: 14px;
 
             color: #666;
 
             margin-bottom: 8px;
+
         }
 
 
         .info-card p {
 
-            font-size: 22px;
+            font-size: 21px;
 
             font-weight: bold;
+
         }
 
 
-        /* CAB RESULTS */
+        /* =========================
+           CABS
+        ========================= */
 
         #cabResults {
 
             display: none;
 
-            background: white;
+            background: #fff;
 
             padding: 60px 7%;
 
             text-align: center;
+
         }
+
 
         #cabResults h2 {
 
-            font-size: 35px;
+            font-size: 34px;
 
             margin-bottom: 10px;
+
         }
+
 
         .route {
 
             color: #666;
 
             margin-bottom: 35px;
+
         }
+
 
         .cab-container {
 
@@ -381,11 +469,13 @@
             gap: 25px;
 
             flex-wrap: wrap;
+
         }
+
 
         .cab-card {
 
-            width: 260px;
+            width: 250px;
 
             background: white;
 
@@ -393,29 +483,37 @@
 
             border-radius: 12px;
 
+            border: 1px solid #eee;
+
             box-shadow:
                 0 5px 20px
-                rgba(0,0,0,.12);
+                rgba(0,0,0,.10);
 
-            border: 1px solid #eee;
         }
+
 
         .cab-icon {
 
             font-size: 55px;
+
         }
+
 
         .cab-card h3 {
 
             margin: 15px 0 8px;
+
         }
+
 
         .cab-card p {
 
             color: #666;
 
-            margin-bottom: 8px;
+            margin-bottom: 7px;
+
         }
+
 
         .price {
 
@@ -424,7 +522,9 @@
             font-weight: bold;
 
             margin: 15px 0;
+
         }
+
 
         .select-btn {
 
@@ -436,15 +536,25 @@
 
             border: none;
 
-            border-radius: 6px;
+            border-radius: 7px;
 
             font-weight: bold;
 
             cursor: pointer;
+
         }
 
 
-        /* CONFIRMATION */
+        .select-btn:hover {
+
+            background: #e6bd00;
+
+        }
+
+
+        /* =========================
+           CONFIRMATION
+        ========================= */
 
         #confirmation {
 
@@ -453,11 +563,13 @@
             padding: 60px 7%;
 
             text-align: center;
+
         }
+
 
         .confirmation-box {
 
-            max-width: 500px;
+            max-width: 550px;
 
             margin: auto;
 
@@ -470,31 +582,73 @@
             box-shadow:
                 0 5px 20px
                 rgba(0,0,0,.1);
+
         }
 
-        .success {
 
-            font-size: 55px;
+        .success-icon {
+
+            font-size: 60px;
 
             margin-bottom: 15px;
+
         }
 
 
-        /* SERVICES */
+        #selectedCab,
+        #selectedRoute,
+        #selectedFare,
+        #rideStatus {
+
+            margin-top: 10px;
+
+            font-weight: bold;
+
+        }
+
+
+        .cancel-btn {
+
+            margin-top: 20px;
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #e53935;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =========================
+           SERVICES
+        ========================= */
 
         .services {
 
             padding: 60px 7%;
 
             text-align: center;
+
         }
+
 
         .services h2 {
 
-            font-size: 35px;
+            font-size: 34px;
 
-            margin-bottom: 40px;
+            margin-bottom: 35px;
+
         }
+
 
         .service-container {
 
@@ -505,13 +659,15 @@
             gap: 25px;
 
             flex-wrap: wrap;
+
         }
+
 
         .service-card {
 
-            background: white;
-
             width: 250px;
+
+            background: white;
 
             padding: 30px 20px;
 
@@ -520,25 +676,36 @@
             box-shadow:
                 0 5px 20px
                 rgba(0,0,0,.1);
+
         }
 
-        .icon {
+
+        .service-card .icon {
 
             font-size: 45px;
+
         }
+
 
         .service-card h3 {
 
             margin: 15px 0;
+
         }
+
 
         .service-card p {
 
             color: #666;
+
+            line-height: 1.5;
+
         }
 
 
-        /* FOOTER */
+        /* =========================
+           FOOTER
+        ========================= */
 
         footer {
 
@@ -549,43 +716,73 @@
             text-align: center;
 
             padding: 25px;
+
         }
 
 
-        /* MOBILE */
+        /* =========================
+           MOBILE
+        ========================= */
 
         @media(max-width:800px) {
 
-            .nav-links {
+            .navbar {
+
+                padding: 15px 5%;
+
+            }
+
+
+            .nav-right {
+
+                gap: 7px;
+
+            }
+
+
+            #welcomeUser {
 
                 display: none;
+
             }
+
 
             .hero {
 
                 flex-direction: column;
 
-                gap: 40px;
+                align-items: stretch;
+
+                padding: 40px 5%;
+
             }
+
 
             .hero-text {
 
                 width: 100%;
+
             }
+
 
             .hero-text h1 {
 
                 font-size: 40px;
+
             }
+
 
             .booking-box {
 
                 width: 100%;
+
             }
+
 
             #map {
 
                 height: 350px;
+
             }
 
         }
@@ -598,1180 +795,2050 @@
 <body>
 
 
-    <!-- NAVBAR -->
+<!-- =========================
+     NAVBAR
+========================= -->
 
-    <nav class="navbar">
+<nav class="navbar">
 
-        <div class="logo">
 
-            UDAN<span>CAB</span>
+    <div class="logo">
+
+        UDAN<span>CAB</span>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <span id="welcomeUser">
+            Loading...
+        </span>
+
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+
+    <div class="hero-text">
+
+
+        <h1>
+
+            Your Ride.<br>
+
+            <span>Your Way.</span>
+
+        </h1>
+
+
+        <p>
+
+            Book a comfortable and affordable
+            cab anytime, anywhere with UDAN CAB.
+
+        </p>
+
+
+        <div
+            class="user-badge"
+            id="userBadge">
+
+            Passenger Dashboard
+
+        </div>
+
+    </div>
+
+
+
+    <!-- BOOKING BOX -->
+
+    <div
+        class="booking-box"
+        id="bookingBox">
+
+
+        <h2>
+
+            Book Your Ride 🚕
+            
+        </h2>
+
+
+        <!-- PICKUP -->
+
+        <div class="input-box">
+
+            <label>
+
+                Pickup Location
+
+            </label>
+
+
+            <input
+                type="text"
+                id="pickup"
+                placeholder="Enter pickup location">
 
         </div>
 
 
-        <div class="nav-links">
+        <!-- GPS -->
 
-            <a href="#">
-                Home
-            </a>
+        <button
+            class="location-btn"
+            onclick="getMyLocation()">
 
-            <a href="#mapSection">
-                Ride
-            </a>
+            📍 Use My Current Location
 
-            <a href="#services">
-                Services
-            </a>
+        </button>
 
-            <a href="#">
-                About
-            </a>
 
-            <a href="#">
-                Contact
-            </a>
+        <!-- DESTINATION -->
+
+        <div class="input-box">
+
+            <label>
+
+                Destination
+
+            </label>
+
+
+            <input
+                type="text"
+                id="destination"
+                placeholder="Example: Nalanda Railway Station">
 
         </div>
 
 
-        <a
-            href="#"
-            class="login-btn">
+        <!-- FIND ROUTE -->
 
-            Login
+        <button
+            class="search-btn"
+            id="routeButton"
+            onclick="findRoute()">
 
-        </a>
+            🗺️ Find Route
 
-    </nav>
-
-
-
-    <!-- HERO -->
-
-    <section class="hero">
+        </button>
 
 
-        <div class="hero-text">
+        <div id="statusMessage"></div>
 
-            <h1>
 
-                Your Ride.<br>
+    </div>
 
-                <span>Your Way.</span>
+</section>
 
-            </h1>
+
+
+<!-- =========================
+     MAP
+========================= -->
+
+<section id="mapSection">
+
+
+    <h2>
+
+        Your Route 🗺️
+
+    </h2>
+
+
+    <p class="map-info">
+
+        Pickup और destination का route यहाँ दिखाई देगा।
+
+    </p>
+
+
+    <div id="map"></div>
+
+
+    <div class="route-info">
+
+
+        <div class="info-card">
+
+            <h3>
+                Distance
+            </h3>
+
+            <p id="distanceText">
+                --
+            </p>
+
+        </div>
+
+
+        <div class="info-card">
+
+            <h3>
+                Estimated Time
+            </h3>
+
+            <p id="timeText">
+                --
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     CAB RESULTS
+========================= -->
+
+<section id="cabResults">
+
+
+    <h2>
+
+        Available Cabs 🚕
+
+    </h2>
+
+
+    <p
+        class="route"
+        id="routeText">
+
+    </p>
+
+
+    <div class="cab-container">
+
+
+        <!-- MINI -->
+
+        <div class="cab-card">
+
+
+            <div class="cab-icon">
+
+                🚕
+
+            </div>
+
+
+            <h3>
+
+                Mini Car
+
+            </h3>
 
 
             <p>
 
-                Book a comfortable and affordable
-                cab anytime, anywhere.
+                4 Seats
 
             </p>
 
 
-            <button
-                class="book-btn"
-                onclick="scrollToBooking()">
+            <p>
 
-                Book a Ride
+                ⭐ 4.7 Rating
 
-            </button>
-
-        </div>
+            </p>
 
 
+            <div
+                class="price"
+                id="miniPrice">
 
-        <!-- BOOKING BOX -->
-
-        <div
-            class="booking-box"
-            id="bookingBox">
-
-
-            <h2>
-
-                Book Your Ride 🚕
-
-            </h2>
-
-
-            <div class="input-box">
-
-                <label>
-                    Pickup Location
-                </label>
-
-                <input
-                    type="text"
-                    id="pickup"
-                    placeholder="Enter pickup location">
+                ₹0
 
             </div>
 
 
             <button
-                class="location-btn"
-                onclick="getMyLocation()">
+                class="select-btn"
+                onclick="selectCab('Mini Car')">
 
-                📍 Use My Current Location
+                Select Cab
 
             </button>
 
 
-            <div class="input-box">
+        </div>
 
-                <label>
-                    Destination
-                </label>
 
-                <input
-                    type="text"
-                    id="destination"
-                    placeholder="Example: Railway Station">
+
+        <!-- SEDAN -->
+
+        <div class="cab-card">
+
+
+            <div class="cab-icon">
+
+                🚗
+
+            </div>
+
+
+            <h3>
+
+                Sedan
+
+            </h3>
+
+
+            <p>
+
+                4 Seats
+
+            </p>
+
+
+            <p>
+
+                ⭐ 4.8 Rating
+
+            </p>
+
+
+            <div
+                class="price"
+                id="sedanPrice">
+
+                ₹0
 
             </div>
 
 
             <button
-                class="search-btn"
-                onclick="findRoute()">
+                class="select-btn"
+                onclick="selectCab('Sedan')">
 
-                🗺️ Find Route
+                Select Cab
 
             </button>
 
+
         </div>
 
-    </section>
+
+
+        <!-- AUTO -->
+
+        <div class="cab-card">
+
+
+            <div class="cab-icon">
+
+                🛺
+
+            </div>
+
+
+            <h3>
+
+                Auto
+
+            </h3>
+
+
+            <p>
+
+                3 Seats
+
+            </p>
+
+
+            <p>
+
+                ⭐ 4.6 Rating
+
+            </p>
+
+
+            <div
+                class="price"
+                id="autoPrice">
+
+                ₹0
+
+            </div>
+
+
+            <button
+                class="select-btn"
+                onclick="selectCab('Auto')">
+
+                Select Cab
+
+            </button>
+
+
+        </div>
 
 
 
-    <!-- MAP -->
+        <!-- BIKE -->
 
-    <section id="mapSection">
+        <div class="cab-card">
+
+
+            <div class="cab-icon">
+
+                🏍️
+
+            </div>
+
+
+            <h3>
+
+                Bike
+
+            </h3>
+
+
+            <p>
+
+                1 Seat
+
+            </p>
+
+
+            <p>
+
+                ⭐ 4.9 Rating
+
+            </p>
+
+
+            <div
+                class="price"
+                id="bikePrice">
+
+                ₹0
+
+            </div>
+
+
+            <button
+                class="select-btn"
+                onclick="selectCab('Bike')">
+
+                Select Cab
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     CONFIRMATION
+========================= -->
+
+<section id="confirmation">
+
+
+    <div class="confirmation-box">
+
+
+        <div class="success-icon">
+
+            ✅
+
+        </div>
+
 
         <h2>
-            Your Route 🗺️
-        </h2>
 
-        <p class="map-info">
+            Ride Booked Successfully!
 
-            Pickup और destination का route यहाँ दिखाई देगा।
-
-        </p>
-
-
-        <div id="map"></div>
-
-
-        <div class="route-info">
-
-
-            <div class="info-card">
-
-                <h3>
-                    Distance
-                </h3>
-
-                <p id="distanceText">
-                    --
-                </p>
-
-            </div>
-
-
-            <div class="info-card">
-
-                <h3>
-                    Estimated Time
-                </h3>
-
-                <p id="timeText">
-                    --
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- CAB RESULTS -->
-
-    <section id="cabResults">
-
-        <h2>
-            Available Cabs 🚕
-        </h2>
-
-        <p
-            class="route"
-            id="routeText">
-        </p>
-
-
-        <div class="cab-container">
-
-
-            <!-- MINI -->
-
-            <div class="cab-card">
-
-                <div class="cab-icon">
-                    🚕
-                </div>
-
-                <h3>
-                    Mini Car
-                </h3>
-
-                <p>
-                    4 Seats
-                </p>
-
-                <p>
-                    ⭐ 4.7 Rating
-                </p>
-
-                <div
-                    class="price"
-                    id="miniPrice">
-
-                    ₹0
-
-                </div>
-
-                <button
-                    class="select-btn"
-                    onclick="selectCab('Mini Car')">
-
-                    Select Cab
-
-                </button>
-
-            </div>
-
-
-
-            <!-- SEDAN -->
-
-            <div class="cab-card">
-
-                <div class="cab-icon">
-                    🚗
-                </div>
-
-                <h3>
-                    Sedan
-                </h3>
-
-                <p>
-                    4 Seats
-                </p>
-
-                <p>
-                    ⭐ 4.8 Rating
-                </p>
-
-                <div
-                    class="price"
-                    id="sedanPrice">
-
-                    ₹0
-
-                </div>
-
-                <button
-                    class="select-btn"
-                    onclick="selectCab('Sedan')">
-
-                    Select Cab
-
-                </button>
-
-            </div>
-
-
-
-            <!-- AUTO -->
-
-            <div class="cab-card">
-
-                <div class="cab-icon">
-                    🛺
-                </div>
-
-                <h3>
-                    Auto
-                </h3>
-
-                <p>
-                    3 Seats
-                </p>
-
-                <p>
-                    ⭐ 4.6 Rating
-                </p>
-
-                <div
-                    class="price"
-                    id="autoPrice">
-
-                    ₹0
-
-                </div>
-
-                <button
-                    class="select-btn"
-                    onclick="selectCab('Auto')">
-
-                    Select Cab
-
-                </button>
-
-            </div>
-
-
-
-            <!-- BIKE -->
-
-            <div class="cab-card">
-
-                <div class="cab-icon">
-                    🏍️
-                </div>
-
-                <h3>
-                    Bike
-                </h3>
-
-                <p>
-                    1 Seat
-                </p>
-
-                <p>
-                    ⭐ 4.9 Rating
-                </p>
-
-                <div
-                    class="price"
-                    id="bikePrice">
-
-                    ₹0
-
-                </div>
-
-                <button
-                    class="select-btn"
-                    onclick="selectCab('Bike')">
-
-                    Select Cab
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- CONFIRMATION -->
-
-    <section id="confirmation">
-
-        <div class="confirmation-box">
-
-            <div class="success">
-                ✅
-            </div>
-
-            <h2>
-                Cab Selected Successfully!
-            </h2>
-
-            <p id="selectedCab"></p>
-
-            <p id="selectedRoute"></p>
-
-            <p id="selectedFare"></p>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- SERVICES -->
-
-    <section
-        class="services"
-        id="services">
-
-        <h2>
-            Our Services
         </h2>
 
 
-        <div class="service-container">
+        <p id="selectedCab"></p>
+
+        <p id="selectedRoute"></p>
+
+        <p id="selectedFare"></p>
+
+        <p id="rideStatus">
+            Status: Searching for driver
+        </p>
 
 
-            <div class="service-card">
+        <button
+            class="cancel-btn"
+            onclick="cancelCurrentRide()">
 
-                <div class="icon">
-                    🚕
-                </div>
+            Cancel Ride
 
-                <h3>
-                    Car
-                </h3>
-
-                <p>
-                    Comfortable cars for your
-                    daily and long-distance rides.
-                </p>
-
-            </div>
+        </button>
 
 
-            <div class="service-card">
+    </div>
 
-                <div class="icon">
-                    🛺
-                </div>
-
-                <h3>
-                    Auto
-                </h3>
-
-                <p>
-                    Affordable auto rides for
-                    short-distance travel.
-                </p>
-
-            </div>
+</section>
 
 
-            <div class="service-card">
 
-                <div class="icon">
-                    🏍️
-                </div>
+<!-- =========================
+     SERVICES
+========================= -->
 
-                <h3>
-                    Bike
-                </h3>
+<section
+    class="services"
+    id="services">
 
-                <p>
-                    Fast and affordable bike rides
-                    for quick travel.
-                </p>
+
+    <h2>
+
+        Our Services
+
+    </h2>
+
+
+    <div class="service-container">
+
+
+        <div class="service-card">
+
+
+            <div class="icon">
+
+                🚕
 
             </div>
+
+
+            <h3>
+
+                Car
+
+            </h3>
+
+
+            <p>
+
+                Comfortable cars for daily
+                and long-distance rides.
+
+            </p>
+
 
         </div>
 
-    </section>
+
+
+        <div class="service-card">
+
+
+            <div class="icon">
+
+                🛺
+
+            </div>
+
+
+            <h3>
+
+                Auto
+
+            </h3>
+
+
+            <p>
+
+                Affordable auto rides for
+                short-distance travel.
+
+            </p>
+
+
+        </div>
 
 
 
-    <!-- FOOTER -->
-
-    <footer>
-
-        <p>
-            © 2026 UDAN CAB. All Rights Reserved.
-        </p>
-
-    </footer>
+        <div class="service-card">
 
 
+            <div class="icon">
 
-    <!-- LEAFLET JS -->
+                🏍️
 
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
-
+            </div>
 
 
-    <script>
+            <h3>
+
+                Bike
+
+            </h3>
 
 
-        /* MAP VARIABLES */
+            <p>
 
-        let map;
+                Fast and affordable bike rides
+                for quick travel.
 
-        let pickupMarker;
+            </p>
 
-        let destinationMarker;
 
-        let routeLine;
+        </div>
 
-        let currentLatitude;
 
-        let currentLongitude;
+    </div>
 
-        let routeDistance = 0;
+</section>
 
 
 
-        /* BOOK BUTTON */
+<footer>
 
-        function scrollToBooking() {
+    <p>
 
-            document
-                .getElementById("bookingBox")
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
+        © 2026 UDAN CAB. All Rights Reserved.
+
+    </p>
+
+</footer>
+
+
+
+<!-- LEAFLET -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+
+<script>
+
+/* =====================================================
+   UDAN RENDER SERVER
+===================================================== */
+
+const UDAN_API =
+    "https://udan-cab.onrender.com";
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let map = null;
+
+let pickupMarker = null;
+
+let destinationMarker = null;
+
+let routeLine = null;
+
+let currentLatitude = null;
+
+let currentLongitude = null;
+
+let destinationLatitude = null;
+
+let destinationLongitude = null;
+
+let routeDistance = 0;
+
+let currentRideId = null;
+
+let rideTimer = null;
+
+let currentUser = null;
+
+
+/* =====================================================
+   TOKEN
+===================================================== */
+
+const UDAN_TOKEN =
+    localStorage.getItem("udanToken");
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+    text,
+    type = "error"
+) {
+
+    const box =
+        document.getElementById(
+            "statusMessage"
+        );
+
+    box.innerText = text;
+
+    box.className =
+        type;
+
+}
+
+
+/* =====================================================
+   AUTH CHECK
+===================================================== */
+
+async function checkLogin() {
+
+    /*
+       Token nahi hai to login page.
+    */
+
+    if (!UDAN_TOKEN) {
+
+        window.location.href =
+            "/login.html";
+
+        return false;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                UDAN_API +
+                "/api/me",
+                {
+                    method: "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            UDAN_TOKEN
+
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            localStorage.removeItem(
+                "udanToken"
+            );
+
+            localStorage.removeItem(
+                "udanUser"
+            );
+
+            window.location.href =
+                "/login.html";
+
+            return false;
 
         }
 
 
+        if (
+            !data.user ||
+            (
+                data.user.role !== "user" &&
+                data.user.role !== "passenger"
+            )
+        ) {
 
-        /* CURRENT LOCATION */
+            alert(
+                "Please login as passenger."
+            );
 
-        function getMyLocation() {
+            window.location.href =
+                "/login.html";
 
+            return false;
 
-            if (!navigator.geolocation) {
-
-                alert(
-                    "Your browser does not support GPS."
-                );
-
-                return;
-
-            }
-
-
-            navigator.geolocation.getCurrentPosition(
-
-                function(position) {
+        }
 
 
-                    currentLatitude =
-                        position.coords.latitude;
+        currentUser =
+            data.user;
 
 
-                    currentLongitude =
-                        position.coords.longitude;
+        /*
+           Save latest user.
+        */
+
+        localStorage.setItem(
+            "udanUser",
+            JSON.stringify(
+                data.user
+            )
+        );
 
 
-                    document
-                        .getElementById("pickup")
-                        .value =
-
-                        "Current Location";
-
-
-                    alert(
-                        "📍 Your current location has been selected!"
-                    );
-
-                },
+        document.getElementById(
+            "welcomeUser"
+        ).innerText =
+            "Hi, " +
+            (
+                data.user.name ||
+                "Passenger"
+            );
 
 
-                function() {
+        return true;
 
-                    alert(
-                        "Please allow location permission."
-                    );
 
+    }
+
+    catch (error) {
+
+        console.error(
+            "AUTH ERROR:",
+            error
+        );
+
+
+        showMessage(
+            "Server se connection nahi ho raha.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   CURRENT LOCATION
+===================================================== */
+
+function getMyLocation() {
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        showMessage(
+            "Your browser does not support GPS.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        "📍 Location detect ho rahi hai...",
+        "success"
+    );
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+
+            currentLatitude =
+                position.coords.latitude;
+
+
+            currentLongitude =
+                position.coords.longitude;
+
+
+            document.getElementById(
+                "pickup"
+            ).value =
+                "Current Location";
+
+
+            showMessage(
+                "✅ Current location selected.",
+                "success"
+            );
+
+
+        },
+
+
+        function(error) {
+
+            console.error(
+                "GPS ERROR:",
+                error
+            );
+
+
+            showMessage(
+                "Please allow location permission.",
+                "error"
+            );
+
+        },
+
+
+        {
+            enableHighAccuracy: true,
+
+            timeout: 15000,
+
+            maximumAge: 0
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   FIND ROUTE
+===================================================== */
+
+async function findRoute() {
+
+
+    const pickup =
+        document
+            .getElementById(
+                "pickup"
+            )
+            .value
+            .trim();
+
+
+    const destination =
+        document
+            .getElementById(
+                "destination"
+            )
+            .value
+            .trim();
+
+
+    if (!pickup) {
+
+        showMessage(
+            "Please enter pickup location.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!destination) {
+
+        showMessage(
+            "Please enter destination.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        currentLatitude === null ||
+        currentLongitude === null
+    ) {
+
+        showMessage(
+            "Please click 'Use My Current Location' first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "routeButton"
+        );
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Searching...";
+
+
+    try {
+
+
+        /*
+           Destination coordinates
+           Nominatim se.
+        */
+
+        const geocodeURL =
+            "https://nominatim.openstreetmap.org/search" +
+            "?format=json" +
+            "&q=" +
+            encodeURIComponent(
+                destination
+            );
+
+
+        const geocodeResponse =
+            await fetch(
+                geocodeURL,
+                {
+                    headers: {
+                        "Accept-Language":
+                            "en"
+                    }
                 }
+            );
 
+
+        if (!geocodeResponse.ok) {
+
+            throw new Error(
+                "Destination service unavailable."
             );
 
         }
 
 
-
-        /* FIND ROUTE */
-
-        async function findRoute() {
+        const places =
+            await geocodeResponse.json();
 
 
-            let pickup =
-                document
-                .getElementById("pickup")
-                .value
-                .trim();
+        if (
+            !places ||
+            places.length === 0
+        ) {
 
-
-            let destination =
-                document
-                .getElementById("destination")
-                .value
-                .trim();
-
-
-            if (
-                pickup === "" ||
-                destination === ""
-            ) {
-
-                alert(
-                    "Please enter pickup and destination."
-                );
-
-                return;
-
-            }
-
-
-            if (
-                !currentLatitude ||
-                !currentLongitude
-            ) {
-
-                alert(
-                    "Please click 'Use My Current Location' first."
-                );
-
-                return;
-
-            }
-
-
-            /*
-                For this first version,
-                destination is converted into
-                coordinates using Nominatim.
-            */
-
-
-            try {
-
-
-                let response = await fetch(
-
-                    "https://nominatim.openstreetmap.org/search?format=json&q=" +
-
-                    encodeURIComponent(destination)
-
-                );
-
-
-                let data =
-                    await response.json();
-
-
-                if (data.length === 0) {
-
-                    alert(
-                        "Destination not found. Try a more specific location."
-                    );
-
-                    return;
-
-                }
-
-
-                let destinationLatitude =
-                    parseFloat(data[0].lat);
-
-
-                let destinationLongitude =
-                    parseFloat(data[0].lon);
-
-
-
-                showMap(
-
-                    currentLatitude,
-                    currentLongitude,
-
-                    destinationLatitude,
-                    destinationLongitude,
-
-                    pickup,
-                    destination
-
-                );
-
-
-            }
-
-            catch(error) {
-
-                alert(
-                    "Unable to find destination."
-                );
-
-                console.log(error);
-
-            }
+            throw new Error(
+                "Destination not found. Try a more specific location."
+            );
 
         }
 
 
+        destinationLatitude =
+            parseFloat(
+                places[0].lat
+            );
 
-        /* SHOW MAP */
 
-        async function showMap(
+        destinationLongitude =
+            parseFloat(
+                places[0].lon
+            );
 
-            pickupLat,
-            pickupLng,
 
-            destinationLat,
-            destinationLng,
+        await showMap();
 
-            pickupName,
-            destinationName
+    }
 
+    catch (error) {
+
+        console.error(
+            "ROUTE ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to find route.",
+            "error"
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "🗺️ Find Route";
+
+    }
+
+}
+
+
+/* =====================================================
+   SHOW MAP
+===================================================== */
+
+async function showMap() {
+
+
+    document.getElementById(
+        "mapSection"
+    ).style.display =
+        "block";
+
+
+    if (!map) {
+
+
+        map =
+            L.map(
+                "map"
+            );
+
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+
+            }
+        ).addTo(map);
+
+    }
+
+
+    if (pickupMarker) {
+
+        map.removeLayer(
+            pickupMarker
+        );
+
+    }
+
+
+    if (destinationMarker) {
+
+        map.removeLayer(
+            destinationMarker
+        );
+
+    }
+
+
+    if (routeLine) {
+
+        map.removeLayer(
+            routeLine
+        );
+
+    }
+
+
+    pickupMarker =
+        L.marker([
+            currentLatitude,
+            currentLongitude
+        ])
+            .addTo(map)
+            .bindPopup(
+                "📍 Pickup"
+            );
+
+
+    destinationMarker =
+        L.marker([
+            destinationLatitude,
+            destinationLongitude
+        ])
+            .addTo(map)
+            .bindPopup(
+                "🏁 Destination"
+            );
+
+
+    /*
+       OSRM route
+    */
+
+    const routeURL =
+        "https://router.project-osrm.org/route/v1/driving/" +
+        currentLongitude +
+        "," +
+        currentLatitude +
+        ";" +
+        destinationLongitude +
+        "," +
+        destinationLatitude +
+        "?overview=full&geometries=geojson";
+
+
+    const response =
+        await fetch(
+            routeURL
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Route service unavailable."
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        !data.routes ||
+        data.routes.length === 0
+    ) {
+
+        throw new Error(
+            "Route not found."
+        );
+
+    }
+
+
+    const route =
+        data.routes[0];
+
+
+    routeDistance =
+        route.distance /
+        1000;
+
+
+    const timeMinutes =
+        Math.round(
+            route.duration /
+            60
+        );
+
+
+    document.getElementById(
+        "distanceText"
+    ).innerText =
+        routeDistance.toFixed(2) +
+        " km";
+
+
+    document.getElementById(
+        "timeText"
+    ).innerText =
+        timeMinutes +
+        " min";
+
+
+    routeLine =
+        L.geoJSON(
+            route.geometry
+        ).addTo(map);
+
+
+    map.fitBounds(
+        routeLine.getBounds(),
+        {
+            padding: [20, 20]
+        }
+    );
+
+
+    calculateFares();
+
+
+    document.getElementById(
+        "mapSection"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+    showMessage(
+        "✅ Route found.",
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   FARES
+===================================================== */
+
+function calculateFares() {
+
+
+    const mini =
+        Math.max(
+            50,
+            Math.round(
+                routeDistance *
+                12
+            )
+        );
+
+
+    const sedan =
+        Math.max(
+            70,
+            Math.round(
+                routeDistance *
+                15
+            )
+        );
+
+
+    const auto =
+        Math.max(
+            40,
+            Math.round(
+                routeDistance *
+                10
+            )
+        );
+
+
+    const bike =
+        Math.max(
+            30,
+            Math.round(
+                routeDistance *
+                8
+            )
+        );
+
+
+    document.getElementById(
+        "miniPrice"
+    ).innerText =
+        "₹" +
+        mini;
+
+
+    document.getElementById(
+        "sedanPrice"
+    ).innerText =
+        "₹" +
+        sedan;
+
+
+    document.getElementById(
+        "autoPrice"
+    ).innerText =
+        "₹" +
+        auto;
+
+
+    document.getElementById(
+        "bikePrice"
+    ).innerText =
+        "₹" +
+        bike;
+
+
+    const pickup =
+        document.getElementById(
+            "pickup"
+        ).value;
+
+
+    const destination =
+        document.getElementById(
+            "destination"
+        ).value;
+
+
+    document.getElementById(
+        "routeText"
+    ).innerText =
+        pickup +
+        " → " +
+        destination;
+
+
+    document.getElementById(
+        "cabResults"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "cabResults"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   SELECT CAB
+===================================================== */
+
+async function selectCab(
+    cabName
+) {
+
+
+    if (
+        !UDAN_TOKEN
+    ) {
+
+        window.location.href =
+            "/login.html";
+
+        return;
+
+    }
+
+
+    const pickup =
+        document.getElementById(
+            "pickup"
+        ).value
+        .trim();
+
+
+    const destination =
+        document.getElementById(
+            "destination"
+        ).value
+        .trim();
+
+
+    if (
+        !pickup ||
+        !destination
+    ) {
+
+        showMessage(
+            "Pickup and destination required.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        routeDistance <= 0
+    ) {
+
+        showMessage(
+            "Please find route first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const rates = {
+
+        "Mini Car": 12,
+
+        "Sedan": 15,
+
+        "Auto": 10,
+
+        "Bike": 8
+
+    };
+
+
+    const minimumFare = {
+
+        "Mini Car": 50,
+
+        "Sedan": 70,
+
+        "Auto": 40,
+
+        "Bike": 30
+
+    };
+
+
+    const fare =
+        Math.max(
+            minimumFare[cabName],
+            Math.round(
+                routeDistance *
+                rates[cabName]
+            )
+        );
+
+
+    const vehicleType =
+
+        cabName === "Auto"
+            ? "Auto"
+            : cabName === "Bike"
+                ? "Bike"
+                : "4-Seater Car";
+
+
+    try {
+
+
+        showMessage(
+            "🚕 Driver search ho raha hai...",
+            "success"
+        );
+
+
+        const response =
+            await fetch(
+                UDAN_API +
+                "/api/rides",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            UDAN_TOKEN
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            pickup:
+                                pickup,
+
+                            destination:
+                                destination,
+
+                            cabType:
+                                cabName,
+
+                            vehicleType:
+                                vehicleType,
+
+                            fare:
+                                fare,
+
+                            pickupLatitude:
+                                currentLatitude,
+
+                            pickupLongitude:
+                                currentLongitude,
+
+                            destinationLatitude:
+                                destinationLatitude,
+
+                            destinationLongitude:
+                                destinationLongitude,
+
+                            serviceArea:
+                                currentUser?.city ||
+                                "Nalanda"
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Ride booking failed."
+            );
+
+        }
+
+
+        if (
+            !data.ride
         ) {
 
+            throw new Error(
+                "Server ne ride details nahi bheje."
+            );
 
-            document
-                .getElementById("mapSection")
-                .style.display = "block";
-
-
-            /*
-                Create map only once
-            */
-
-            if (!map) {
+        }
 
 
-                map = L.map("map");
+        currentRideId =
+            data.ride._id;
 
 
-                L.tileLayer(
+        localStorage.setItem(
+            "udanCurrentRide",
+            currentRideId
+        );
 
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 
-                    {
+        document.getElementById(
+            "selectedCab"
+        ).innerText =
+            "Cab: " +
+            cabName;
 
-                        attribution:
-                        '&copy; OpenStreetMap contributors'
+
+        document.getElementById(
+            "selectedRoute"
+        ).innerText =
+            "Route: " +
+            pickup +
+            " → " +
+            destination;
+
+
+        document.getElementById(
+            "selectedFare"
+        ).innerText =
+            "Total Fare: ₹" +
+            fare;
+
+
+        document.getElementById(
+            "rideStatus"
+        ).innerText =
+            "Status: " +
+            (
+                data.ride.status ||
+                "Searching for driver"
+            );
+
+
+        document.getElementById(
+            "confirmation"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "confirmation"
+        ).scrollIntoView({
+            behavior:
+                "smooth"
+        });
+
+
+        showMessage(
+            "🎉 Ride booked successfully!",
+            "success"
+        );
+
+
+        startRidePolling();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "BOOK RIDE ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to book ride.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   RIDE STATUS
+===================================================== */
+
+async function updateRideStatus() {
+
+
+    if (
+        !currentRideId
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                UDAN_API +
+                "/api/rides/" +
+                encodeURIComponent(
+                    currentRideId
+                ),
+
+                {
+
+                    method:
+                        "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            UDAN_TOKEN
 
                     }
 
-                ).addTo(map);
+                }
 
-            }
-
-
-
-            /*
-                Remove old markers
-            */
-
-            if (pickupMarker) {
-
-                map.removeLayer(
-                    pickupMarker
-                );
-
-            }
+            );
 
 
-            if (destinationMarker) {
-
-                map.removeLayer(
-                    destinationMarker
-                );
-
-            }
+        const data =
+            await response.json();
 
 
-            if (routeLine) {
+        if (!response.ok) {
 
-                map.removeLayer(
-                    routeLine
-                );
+            console.error(
+                data.message
+            );
 
-            }
+            return;
 
-
-
-            /*
-                Pickup marker
-            */
-
-            pickupMarker =
-                L.marker([
-                    pickupLat,
-                    pickupLng
-                ])
-                .addTo(map)
-                .bindPopup(
-                    "📍 " + pickupName
-                )
-                .openPopup();
+        }
 
 
+        if (
+            data.ride
+        ) {
 
-            /*
-                Destination marker
-            */
-
-            destinationMarker =
-                L.marker([
-                    destinationLat,
-                    destinationLng
-                ])
-                .addTo(map)
-                .bindPopup(
-                    "🏁 " + destinationName
-                );
+            const status =
+                data.ride.status ||
+                "Searching for driver";
 
 
-
-            /*
-                Route using OSRM
-            */
-
-            let routeURL =
-
-                "https://router.project-osrm.org/route/v1/driving/" +
-
-                pickupLng +
-                "," +
-                pickupLat +
-
-                ";" +
-
-                destinationLng +
-                "," +
-                destinationLat +
-
-                "?overview=full&geometries=geojson";
-
-
-            let response =
-                await fetch(routeURL);
-
-
-            let data =
-                await response.json();
+            document.getElementById(
+                "rideStatus"
+            ).innerText =
+                "Status: " +
+                status;
 
 
             if (
-                data.routes &&
-                data.routes.length > 0
+                status ===
+                    "Completed" ||
+                status ===
+                    "Cancelled"
             ) {
 
-
-                let route =
-                    data.routes[0];
-
-
-                /*
-                    Distance in meters
-                    convert to KM
-                */
-
-                routeDistance =
-                    route.distance / 1000;
-
-
-                /*
-                    Time in seconds
-                */
-
-                let timeMinutes =
-                    Math.round(
-                        route.duration / 60
-                    );
-
-
-                /*
-                    Show information
-                */
-
-                document
-                    .getElementById(
-                        "distanceText"
-                    )
-                    .innerText =
-
-                    routeDistance.toFixed(2)
-                    + " km";
-
-
-                document
-                    .getElementById(
-                        "timeText"
-                    )
-                    .innerText =
-
-                    timeMinutes +
-                    " min";
-
-
-                /*
-                    Draw route
-                */
-
-                routeLine =
-                    L.geoJSON(
-                        route.geometry
-                    )
-                    .addTo(map);
-
-
-                /*
-                    Zoom map to route
-                */
-
-                map.fitBounds(
-                    routeLine.getBounds()
-                );
-
-
-                /*
-                    Show cabs
-                */
-
-                calculateFares(
-                    routeDistance
-                );
-
+                stopRidePolling();
 
             }
-
-
-            document
-                .getElementById("mapSection")
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
 
         }
 
 
+    }
 
-        /* CALCULATE FARES */
+    catch (error) {
 
-        function calculateFares(distance) {
+        console.error(
+            "RIDE STATUS ERROR:",
+            error
+        );
 
+    }
 
-            let mini =
-                Math.round(
-                    distance * 12
-                );
-
-
-            let sedan =
-                Math.round(
-                    distance * 15
-                );
-
-
-            let auto =
-                Math.round(
-                    distance * 10
-                );
-
-
-            let bike =
-                Math.round(
-                    distance * 8
-                );
-
-
-
-            document
-                .getElementById("miniPrice")
-                .innerText =
-                "₹" + mini;
-
-
-            document
-                .getElementById("sedanPrice")
-                .innerText =
-                "₹" + sedan;
-
-
-            document
-                .getElementById("autoPrice")
-                .innerText =
-                "₹" + auto;
-
-
-            document
-                .getElementById("bikePrice")
-                .innerText =
-                "₹" + bike;
-
-
-
-            let pickup =
-                document
-                .getElementById("pickup")
-                .value;
-
-
-            let destination =
-                document
-                .getElementById("destination")
-                .value;
-
-
-
-            document
-                .getElementById("routeText")
-                .innerText =
-
-                pickup +
-                " → " +
-                destination;
-
-
-
-            document
-                .getElementById("cabResults")
-                .style.display = "block";
-
-
-
-            document
-                .getElementById("cabResults")
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
-
-        }
-
-
-
-        /* SELECT CAB */
-
-        function selectCab(cabName) {
-
-
-            let rate;
-
-
-            if (
-                cabName === "Mini Car"
-            ) {
-
-                rate = 12;
-
-            }
-
-            else if (
-                cabName === "Sedan"
-            ) {
-
-                rate = 15;
-
-            }
-
-            else if (
-                cabName === "Auto"
-            ) {
-
-                rate = 10;
-
-            }
-
-            else {
-
-                rate = 8;
-
-            }
-
-
-
-            let fare =
-
-                Math.round(
-                    routeDistance * rate
-                );
-
-
-
-            let pickup =
-                document
-                .getElementById("pickup")
-                .value;
-
-
-            let destination =
-                document
-                .getElementById("destination")
-                .value;
-
-
-
-            document
-                .getElementById(
-                    "selectedCab"
-                )
-                .innerText =
-
-                "Cab: " +
-                cabName;
-
-
-            document
-                .getElementById(
-                    "selectedRoute"
-                )
-                .innerText =
-
-                "Route: " +
-                pickup +
-                " → " +
-                destination;
-
-
-            document
-                .getElementById(
-                    "selectedFare"
-                )
-                .innerText =
-
-                "Total Fare: ₹" +
-                fare;
-
-
-
-            document
-                .getElementById(
-                    "confirmation"
-                )
-                .style.display = "block";
-
-
-
-            document
-                .getElementById(
-                    "confirmation"
-                )
-                .scrollIntoView({
-                    behavior: "smooth"
-                });
-
-        }
-
-
-    </script>
-
-
-<script>
-const UDAN_API="http://localhost:5000";
-const UDAN_TOKEN=localStorage.getItem("udanToken");
-const UDAN_USER=JSON.parse(localStorage.getItem("udanUser")||"null");
-if(!UDAN_TOKEN||!UDAN_USER||UDAN_USER.role!=="user"&&UDAN_USER.role!=="passenger"){alert("Please login as passenger first.");location.href="login.html";}
-async function udanBookRide(cabName){
- if(!UDAN_TOKEN){location.href="login.html";return;}
- const pickup=document.getElementById("pickup").value.trim(),destination=document.getElementById("destination").value.trim();
- const rates={"Mini Car":12,"Sedan":15,"Auto":10,"Bike":8};const fare=Math.round(routeDistance*(rates[cabName]||10));
- try{const r=await fetch(UDAN_API+"/api/rides",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+UDAN_TOKEN},body:JSON.stringify({pickup,destination,cabType:cabName,vehicleType:(cabName==="Auto"?"Auto":cabName==="Bike"?"Bike":"4-Seater Car"),fare,pickupLatitude:currentLatitude,pickupLongitude:currentLongitude})});const d=await r.json();if(!r.ok)throw new Error(d.message||"Booking failed");document.getElementById("selectedCab").innerText="Cab: "+cabName;document.getElementById("selectedRoute").innerText="Route: "+pickup+" → "+destination;document.getElementById("selectedFare").innerText="Total Fare: ₹"+fare+" | Ride ID: "+d.ride._id;document.getElementById("confirmation").style.display="block";document.getElementById("confirmation").scrollIntoView({behavior:"smooth"});localStorage.setItem("udanCurrentRide",d.ride._id);alert("🎉 Ride booked successfully!");}catch(e){alert("❌ "+e.message);if(String(e.message).toLowerCase().includes("token"))location.href="login.html";}
 }
-window.selectCab=udanBookRide;
-function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");localStorage.removeItem("udanCurrentRide");location.href="login.html";}
+
+
+/* =====================================================
+   POLLING
+===================================================== */
+
+function startRidePolling() {
+
+    stopRidePolling();
+
+
+    updateRideStatus();
+
+
+    rideTimer =
+        setInterval(
+            updateRideStatus,
+            5000
+        );
+
+}
+
+
+function stopRidePolling() {
+
+    if (
+        rideTimer
+    ) {
+
+        clearInterval(
+            rideTimer
+        );
+
+        rideTimer =
+            null;
+
+    }
+
+}
+
+
+/* =====================================================
+   CANCEL
+===================================================== */
+
+async function cancelCurrentRide() {
+
+
+    if (
+        !currentRideId
+    ) {
+
+        return;
+
+    }
+
+
+    const confirmCancel =
+        confirm(
+            "Kya aap ride cancel karna chahte hain?"
+        );
+
+
+    if (!confirmCancel) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                UDAN_API +
+                "/api/rides/" +
+                encodeURIComponent(
+                    currentRideId
+                ) +
+                "/cancel",
+
+                {
+
+                    method:
+                        "PATCH",
+
+                    headers: {
+
+                        "Authorization":
+                            "Bearer " +
+                            UDAN_TOKEN
+
+                    }
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Cancel failed."
+            );
+
+        }
+
+
+        document.getElementById(
+            "rideStatus"
+        ).innerText =
+            "Status: Cancelled";
+
+
+        showMessage(
+            "Ride cancelled.",
+            "success"
+        );
+
+
+        stopRidePolling();
+
+
+        localStorage.removeItem(
+            "udanCurrentRide"
+        );
+
+
+        currentRideId =
+            null;
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CANCEL ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to cancel ride.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logout() {
+
+
+    stopRidePolling();
+
+
+    localStorage.removeItem(
+        "udanToken"
+    );
+
+
+    localStorage.removeItem(
+        "udanUser"
+    );
+
+
+    localStorage.removeItem(
+        "udanCurrentRide"
+    );
+
+
+    window.location.href =
+        "/login.html";
+
+}
+
+
+/* =====================================================
+   PAGE START
+===================================================== */
+
+async function initializeDashboard() {
+
+
+    const loggedIn =
+        await checkLogin();
+
+
+    if (!loggedIn) {
+
+        return;
+
+    }
+
+
+    const savedRide =
+        localStorage.getItem(
+            "udanCurrentRide"
+        );
+
+
+    if (savedRide) {
+
+        currentRideId =
+            savedRide;
+
+
+        document.getElementById(
+            "confirmation"
+        ).style.display =
+            "block";
+
+
+        updateRideStatus();
+
+
+        startRidePolling();
+
+    }
+
+}
+
+
+initializeDashboard();
+
 </script>
+
+
 </body>
 
 </html>
