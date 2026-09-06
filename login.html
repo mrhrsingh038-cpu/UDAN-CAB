@@ -66,7 +66,9 @@
         }
 
 
-        /* LEFT */
+        /* =========================
+           LEFT SIDE
+        ========================= */
 
         .left {
 
@@ -134,7 +136,9 @@
         }
 
 
-        /* RIGHT */
+        /* =========================
+           RIGHT SIDE
+        ========================= */
 
         .right {
 
@@ -184,7 +188,9 @@
         }
 
 
-        /* ROLE */
+        /* =========================
+           ROLE BUTTON
+        ========================= */
 
         .role-container {
 
@@ -225,7 +231,9 @@
         }
 
 
-        /* INPUT */
+        /* =========================
+           INPUT
+        ========================= */
 
         .input-box {
 
@@ -271,7 +279,9 @@
         }
 
 
-        /* DRIVER */
+        /* =========================
+           DRIVER
+        ========================= */
 
         #driverFields {
 
@@ -280,7 +290,9 @@
         }
 
 
-        /* BUTTON */
+        /* =========================
+           MAIN BUTTON
+        ========================= */
 
         .main-btn {
 
@@ -323,7 +335,9 @@
         }
 
 
-        /* MESSAGE */
+        /* =========================
+           MESSAGE
+        ========================= */
 
         #message {
 
@@ -335,9 +349,9 @@
 
             border-radius: 8px;
 
-            font-weight: bold;
-
             text-align: center;
+
+            font-weight: bold;
 
         }
 
@@ -364,7 +378,9 @@
         }
 
 
-        /* SWITCH */
+        /* =========================
+           SWITCH
+        ========================= */
 
         .switch {
 
@@ -388,7 +404,9 @@
         }
 
 
-        /* MOBILE */
+        /* =========================
+           MOBILE
+        ========================= */
 
         @media(max-width:700px) {
 
@@ -443,37 +461,49 @@
 <div class="container">
 
 
-    <!-- LEFT -->
+    <!-- =========================
+         LEFT
+    ========================= -->
 
     <div class="left">
 
         <div class="logo">
+
             UDAN<span>CAB</span>
+
         </div>
 
 
         <h1>
+
             Your Ride.<br>
             Your Way.
+
         </h1>
 
 
         <p>
+
             Book rides, drive with us and
             experience a simple and reliable
             transportation platform.
+
         </p>
 
 
         <div class="cab-icon">
+
             🚕 🛺 🏍️
+
         </div>
 
     </div>
 
 
 
-    <!-- RIGHT -->
+    <!-- =========================
+         RIGHT
+    ========================= -->
 
     <div class="right">
 
@@ -488,7 +518,9 @@
 
 
         <h2 id="formTitle">
+
             Welcome Back!
+
         </h2>
 
 
@@ -541,7 +573,9 @@
             style="display:none;">
 
             <label>
+
                 Full Name
+
             </label>
 
             <input
@@ -558,7 +592,9 @@
         <div class="input-box">
 
             <label>
+
                 Email
+
             </label>
 
             <input
@@ -576,7 +612,9 @@
         <div class="input-box">
 
             <label>
+
                 Password
+
             </label>
 
             <input
@@ -589,7 +627,7 @@
 
 
 
-        <!-- DRIVER -->
+        <!-- DRIVER FIELDS -->
 
         <div id="driverFields">
 
@@ -597,7 +635,9 @@
             <div class="input-box">
 
                 <label>
+
                     Vehicle Number
+
                 </label>
 
                 <input
@@ -608,10 +648,13 @@
             </div>
 
 
+
             <div class="input-box">
 
                 <label>
+
                     Driving License
+
                 </label>
 
                 <input
@@ -622,29 +665,45 @@
             </div>
 
 
+
             <div class="input-box">
 
                 <label>
+
                     Vehicle Type
+
                 </label>
 
                 <select id="vehicleType">
 
+
                     <option value="">
+
                         Select Vehicle
+
                     </option>
+
 
                     <option value="4-Seater Car">
+
                         4-Seater Car
+
                     </option>
+
 
                     <option value="Auto">
+
                         Auto
+
                     </option>
 
+
                     <option value="Bike">
+
                         Bike
+
                     </option>
+
 
                 </select>
 
@@ -655,7 +714,7 @@
 
 
 
-        <!-- BUTTON -->
+        <!-- MAIN BUTTON -->
 
         <button
             type="button"
@@ -684,7 +743,9 @@
             Don't have an account?
 
             <span onclick="toggleForm()">
+
                 Create Account
+
             </span>
 
         </p>
@@ -699,13 +760,8 @@
 <script>
 
 /* =====================================================
-   IMPORTANT API URL
+   UDAN BACKEND
 ===================================================== */
-
-/*
-   Render backend.
-   Localhost use nahi kar rahe.
-*/
 
 const API =
     "https://udan-cab.onrender.com";
@@ -727,7 +783,9 @@ let isRegister = false;
 function showMessage(text, type) {
 
     const message =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
 
     message.innerText = text;
 
@@ -742,7 +800,9 @@ function showMessage(text, type) {
 function hideMessage() {
 
     const message =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
 
     message.innerText = "";
 
@@ -752,7 +812,7 @@ function hideMessage() {
 
 
 /* =====================================================
-   ROLE
+   SELECT ROLE
 ===================================================== */
 
 function selectRole(role) {
@@ -760,21 +820,34 @@ function selectRole(role) {
     selectedRole = role;
 
 
-    const userButton =
-        document.getElementById("userRole");
+    const userRole =
+        document.getElementById(
+            "userRole"
+        );
 
-    const driverButton =
-        document.getElementById("driverRole");
+
+    const driverRole =
+        document.getElementById(
+            "driverRole"
+        );
+
 
     const driverFields =
-        document.getElementById("driverFields");
+        document.getElementById(
+            "driverFields"
+        );
 
 
     if (role === "user") {
 
-        userButton.classList.add("active");
+        userRole.classList.add(
+            "active"
+        );
 
-        driverButton.classList.remove("active");
+        driverRole.classList.remove(
+            "active"
+        );
+
 
         if (isRegister) {
 
@@ -782,7 +855,6 @@ function selectRole(role) {
                 "none";
 
         }
-
         else {
 
             driverFields.style.display =
@@ -794,9 +866,13 @@ function selectRole(role) {
 
     else {
 
-        driverButton.classList.add("active");
+        driverRole.classList.add(
+            "active"
+        );
 
-        userButton.classList.remove("active");
+        userRole.classList.remove(
+            "active"
+        );
 
 
         if (isRegister) {
@@ -812,7 +888,7 @@ function selectRole(role) {
 
 
 /* =====================================================
-   TOGGLE
+   TOGGLE LOGIN / REGISTER
 ===================================================== */
 
 function toggleForm() {
@@ -822,22 +898,39 @@ function toggleForm() {
 
 
     const title =
-        document.getElementById("formTitle");
+        document.getElementById(
+            "formTitle"
+        );
+
 
     const subtitle =
-        document.getElementById("formSubtitle");
+        document.getElementById(
+            "formSubtitle"
+        );
+
 
     const button =
-        document.getElementById("mainButton");
+        document.getElementById(
+            "mainButton"
+        );
+
 
     const switchText =
-        document.getElementById("switchText");
+        document.getElementById(
+            "switchText"
+        );
+
 
     const nameField =
-        document.getElementById("nameField");
+        document.getElementById(
+            "nameField"
+        );
+
 
     const driverFields =
-        document.getElementById("driverFields");
+        document.getElementById(
+            "driverFields"
+        );
 
 
     hideMessage();
@@ -845,26 +938,32 @@ function toggleForm() {
 
     if (isRegister) {
 
+
         title.innerText =
             "Create Account";
+
 
         subtitle.innerText =
             "Register to start using UDAN CAB.";
 
+
         button.innerText =
             "Register";
+
 
         nameField.style.display =
             "block";
 
 
-        if (selectedRole === "driver") {
+        if (
+            selectedRole ===
+            "driver"
+        ) {
 
             driverFields.style.display =
                 "block";
 
         }
-
         else {
 
             driverFields.style.display =
@@ -879,20 +978,24 @@ function toggleForm() {
 
     }
 
-
     else {
+
 
         title.innerText =
             "Welcome Back!";
 
+
         subtitle.innerText =
             "Login to continue your journey.";
+
 
         button.innerText =
             "Login";
 
+
         nameField.style.display =
             "none";
+
 
         driverFields.style.display =
             "none";
@@ -974,27 +1077,22 @@ async function registerUser() {
 
     let vehicleNumber = "";
 
-    let license = "";
-
     let vehicleType = "";
+
+    let license = "";
 
 
     if (
-        selectedRole === "driver"
+        selectedRole ===
+        "driver"
     ) {
 
 
         vehicleNumber =
             document
-                .getElementById("vehicleNumber")
-                .value
-                .trim()
-                .toUpperCase();
-
-
-        license =
-            document
-                .getElementById("license")
+                .getElementById(
+                    "vehicleNumber"
+                )
                 .value
                 .trim()
                 .toUpperCase();
@@ -1002,15 +1100,27 @@ async function registerUser() {
 
         vehicleType =
             document
-                .getElementById("vehicleType")
+                .getElementById(
+                    "vehicleType"
+                )
                 .value
                 .trim();
 
 
+        license =
+            document
+                .getElementById(
+                    "license"
+                )
+                .value
+                .trim()
+                .toUpperCase();
+
+
         if (
             !vehicleNumber ||
-            !license ||
-            !vehicleType
+            !vehicleType ||
+            !license
         ) {
 
             showMessage(
@@ -1042,13 +1152,18 @@ async function registerUser() {
 
         const response =
             await fetch(
-                API + "/api/register",
+                API +
+                "/api/register",
                 {
-                    method: "POST",
+
+                    method:
+                        "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body:
@@ -1079,6 +1194,7 @@ async function registerUser() {
                                 license
 
                         })
+
                 }
             );
 
@@ -1103,14 +1219,46 @@ async function registerUser() {
         );
 
 
-        isRegister = true;
+        /* Registration ke baad Login screen */
 
-        toggleForm();
+        isRegister = false;
 
 
         document.getElementById(
-            "email"
-        ).value = email;
+            "formTitle"
+        ).innerText =
+            "Welcome Back!";
+
+
+        document.getElementById(
+            "formSubtitle"
+        ).innerText =
+            "Login to continue your journey.";
+
+
+        document.getElementById(
+            "mainButton"
+        ).innerText =
+            "Login";
+
+
+        document.getElementById(
+            "nameField"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "driverFields"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "switchText"
+        ).innerHTML =
+            "Don't have an account? " +
+            '<span onclick="toggleForm()">Create Account</span>';
 
 
         document.getElementById(
@@ -1123,6 +1271,7 @@ async function registerUser() {
     catch (error) {
 
         console.error(
+            "REGISTER ERROR:",
             error
         );
 
@@ -1217,16 +1366,19 @@ async function loginUser() {
 
 
         console.log(
-            "LOGIN API:",
+            "Connecting to:",
             API + "/api/login"
         );
 
 
         const response =
             await fetch(
-                API + "/api/login",
+                API +
+                "/api/login",
                 {
-                    method: "POST",
+
+                    method:
+                        "POST",
 
                     headers: {
 
@@ -1253,27 +1405,12 @@ async function loginUser() {
             );
 
 
-        let data;
-
-
-        try {
-
-            data =
-                await response.json();
-
-        }
-
-        catch {
-
-            throw new Error(
-                "Server ne valid response nahi diya."
-            );
-
-        }
+        const data =
+            await response.json();
 
 
         console.log(
-            "LOGIN RESPONSE:",
+            "Login response:",
             data
         );
 
@@ -1288,24 +1425,32 @@ async function loginUser() {
         }
 
 
+        /* =============================
+           TOKEN CHECK
+        ============================= */
+
         if (!data.token) {
 
             throw new Error(
-                "Login response me token nahi mila."
+                "Server se login token nahi mila."
             );
 
         }
 
 
-        /* =================================================
+        /* =============================
            SAVE TOKEN
-        ================================================= */
+        ============================= */
 
         localStorage.setItem(
             "udanToken",
             data.token
         );
 
+
+        /* =============================
+           SAVE USER
+        ============================= */
 
         localStorage.setItem(
             "udanUser",
@@ -1315,23 +1460,18 @@ async function loginUser() {
         );
 
 
-        localStorage.removeItem(
-            "udanCurrentRide"
-        );
-
-
         showMessage(
             "✅ Login successful! Dashboard open ho raha hai...",
             "success"
         );
 
 
-        /* =================================================
+        /* =============================
            REDIRECT
-        ================================================= */
+        ============================= */
 
         setTimeout(
-            function () {
+            function() {
 
 
                 if (
@@ -1345,7 +1485,6 @@ async function loginUser() {
 
 
                 }
-
 
                 else {
 
@@ -1446,7 +1585,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   START
+   PAGE START
 ===================================================== */
 
 selectRole("user");
