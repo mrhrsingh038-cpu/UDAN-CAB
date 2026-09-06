@@ -5,13 +5,10 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>UDAN CAB - Login</title>
-
 
     <style>
 
@@ -24,42 +21,62 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(
-                135deg,
-                #111,
-                #252525
-            );
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #111,
+                    #292929
+                );
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             padding: 20px;
         }
 
         .container {
-            width: 900px;
+            width: 950px;
             max-width: 100%;
-            min-height: 550px;
+            min-height: 580px;
+
             background: white;
+
             border-radius: 20px;
+
             overflow: hidden;
+
             display: flex;
+
             box-shadow:
-                0 20px 50px rgba(0,0,0,.4);
+                0 20px 50px
+                rgba(0,0,0,.4);
         }
+
+        /* LEFT */
 
         .left {
             width: 45%;
+
             background: #111;
+
             color: white;
+
             padding: 50px;
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: center;
         }
 
         .logo {
             font-size: 35px;
+
             font-weight: bold;
+
             margin-bottom: 30px;
         }
 
@@ -69,73 +86,118 @@
 
         .left h1 {
             font-size: 40px;
+
             margin-bottom: 20px;
         }
 
         .left p {
             color: #ccc;
+
             line-height: 1.6;
+
             font-size: 17px;
         }
 
         .cab-icon {
-            font-size: 80px;
+            font-size: 75px;
+
             margin-top: 40px;
         }
 
+        /* RIGHT */
+
         .right {
             width: 55%;
-            padding: 45px;
+
+            padding: 40px;
+
             position: relative;
+        }
+
+        .back {
+            position: absolute;
+
+            top: 20px;
+            right: 25px;
+
+            text-decoration: none;
+
+            color: #555;
+
+            font-size: 14px;
         }
 
         .right h2 {
             font-size: 30px;
-            margin-bottom: 10px;
+
+            margin-top: 20px;
+
+            margin-bottom: 8px;
         }
 
         .subtitle {
             color: #777;
-            margin-bottom: 30px;
+
+            margin-bottom: 25px;
         }
+
+        /* ROLE */
 
         .role-container {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
         }
 
         .role-btn {
             flex: 1;
+
             padding: 13px;
+
             border: 2px solid #ddd;
+
             background: white;
+
             border-radius: 8px;
+
             cursor: pointer;
+
             font-weight: bold;
         }
 
         .role-btn.active {
             background: #ffd000;
+
             border-color: #ffd000;
         }
 
+        /* INPUT */
+
         .input-box {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
 
         .input-box label {
             display: block;
-            margin-bottom: 7px;
+
+            margin-bottom: 6px;
+
             font-weight: bold;
         }
 
         .input-box input {
             width: 100%;
-            padding: 14px;
+
+            padding: 13px;
+
             border: 1px solid #ccc;
+
             border-radius: 7px;
+
             font-size: 15px;
+
             outline: none;
         }
 
@@ -143,55 +205,97 @@
             border-color: #111;
         }
 
+        /* DRIVER */
+
+        #driverFields {
+            display: none;
+        }
+
+        /* BUTTON */
+
         .main-btn {
             width: 100%;
-            padding: 15px;
-            background: #111;
-            color: white;
-            border: none;
-            border-radius: 7px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
+
+            padding: 14px;
+
             margin-top: 5px;
+
+            background: #111;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
         }
 
         .main-btn:hover {
             background: #333;
         }
 
+        .main-btn:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+        }
+
+        /* SWITCH */
+
         .switch {
             text-align: center;
-            margin-top: 20px;
+
+            margin-top: 18px;
+
             color: #666;
         }
 
         .switch span {
             color: #111;
+
             font-weight: bold;
+
             cursor: pointer;
         }
 
-        .back {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            text-decoration: none;
-            color: #555;
+        /* MESSAGE */
+
+        .message {
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
             font-size: 14px;
+
+            text-align: center;
         }
 
-        .back:hover {
-            color: #111;
+        .message.success {
+            display: block;
+
+            background: #e8f7e8;
+
+            color: #176b17;
         }
 
-        #vehicleFields {
-            display: none;
+        .message.error {
+            display: block;
+
+            background: #ffe8e8;
+
+            color: #a00000;
         }
 
-        #nameField {
-            display: none;
-        }
+        /* MOBILE */
 
         @media(max-width:700px) {
 
@@ -201,6 +305,7 @@
 
             .left {
                 width: 100%;
+
                 padding: 30px;
             }
 
@@ -214,6 +319,7 @@
 
             .right {
                 width: 100%;
+
                 padding: 30px;
             }
 
@@ -227,791 +333,929 @@
 <body>
 
 
-    <div class="container">
+<div class="container">
 
 
-        <!-- LEFT SIDE -->
+    <!-- LEFT -->
 
-        <div class="left">
+    <div class="left">
 
-            <div class="logo">
-                UDAN<span>CAB</span>
-            </div>
-
-            <h1>
-                Your Ride.<br>
-                Your Way.
-            </h1>
-
-            <p>
-                Book rides, drive with us and
-                experience a simple and reliable
-                transportation platform.
-            </p>
-
-            <div class="cab-icon">
-                🚕 🛺 🏍️
-            </div>
-
+        <div class="logo">
+            UDAN<span>CAB</span>
         </div>
 
+        <h1>
+            Your Ride.<br>
+            Your Way.
+        </h1>
 
-        <!-- RIGHT SIDE -->
+        <p>
+            Book rides, drive with us and
+            experience a simple and reliable
+            transportation platform.
+        </p>
 
-        <div class="right">
-
-
-            <a
-                href="/index.html"
-                class="back"
-            >
-                ← Back to Home
-            </a>
-
-
-            <h2 id="formTitle">
-                Welcome Back!
-            </h2>
-
-
-            <p
-                class="subtitle"
-                id="formSubtitle"
-            >
-                Login to continue your journey.
-            </p>
-
-
-            <!-- ROLE -->
-
-            <div class="role-container">
-
-
-                <button
-                    class="role-btn active"
-                    id="userRole"
-                    onclick="selectRole('user')"
-                >
-                    👤 Passenger
-                </button>
-
-
-                <button
-                    class="role-btn"
-                    id="driverRole"
-                    onclick="selectRole('driver')"
-                >
-                    🚕 Driver
-                </button>
-
-
-            </div>
-
-
-            <!-- NAME -->
-
-            <div
-                class="input-box"
-                id="nameField"
-            >
-
-                <label>
-                    Full Name
-                </label>
-
-                <input
-                    type="text"
-                    id="name"
-                    placeholder="Enter your full name"
-                >
-
-            </div>
-
-
-            <!-- EMAIL -->
-
-            <div class="input-box">
-
-                <label>
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter email"
-                >
-
-            </div>
-
-
-            <!-- PASSWORD -->
-
-            <div class="input-box">
-
-                <label>
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter password"
-                >
-
-            </div>
-
-
-            <!-- DRIVER -->
-
-            <div id="vehicleFields">
-
-
-                <div class="input-box">
-
-                    <label>
-                        Vehicle Number
-                    </label>
-
-                    <input
-                        type="text"
-                        id="vehicleNumber"
-                        placeholder="Example: BR01AB1234"
-                    >
-
-                </div>
-
-
-                <div class="input-box">
-
-                    <label>
-                        Driving License
-                    </label>
-
-                    <input
-                        type="text"
-                        id="license"
-                        placeholder="Enter license number"
-                    >
-
-                </div>
-
-
-            </div>
-
-
-            <!-- BUTTON -->
-
-            <button
-                class="main-btn"
-                onclick="submitForm()"
-            >
-                Login
-            </button>
-
-
-            <!-- SWITCH -->
-
-            <p
-                class="switch"
-                id="switchText"
-            >
-
-                Don't have an account?
-
-                <span onclick="toggleForm()">
-                    Create Account
-                </span>
-
-            </p>
-
-
+        <div class="cab-icon">
+            🚕 🛺 🏍️
         </div>
 
     </div>
 
 
+    <!-- RIGHT -->
+
+    <div class="right">
+
+
+        <a
+            href="/"
+            class="back">
+
+            ← Back to Home
+
+        </a>
+
+
+        <h2 id="formTitle">
+            Welcome Back!
+        </h2>
+
+
+        <p
+            class="subtitle"
+            id="formSubtitle">
+
+            Login to continue your journey.
+
+        </p>
+
+
+        <!-- ROLE -->
+
+        <div class="role-container">
+
+            <button
+                type="button"
+                class="role-btn active"
+                id="userRole"
+                onclick="selectRole('user')">
+
+                👤 Passenger
+
+            </button>
+
+
+            <button
+                type="button"
+                class="role-btn"
+                id="driverRole"
+                onclick="selectRole('driver')">
+
+                🚕 Driver
+
+            </button>
+
+        </div>
+
+
+        <!-- NAME -->
+
+        <div
+            class="input-box"
+            id="nameField"
+            style="display:none;">
+
+            <label>
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your full name">
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="input-box">
+
+            <label>
+                Email / Phone
+            </label>
+
+            <input
+                type="text"
+                id="email"
+                placeholder="Enter email">
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="input-box">
+
+            <label>
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password">
+
+        </div>
+
+
+        <!-- DRIVER -->
+
+        <div id="driverFields">
+
+
+            <div class="input-box">
+
+                <label>
+                    Vehicle Number
+                </label>
+
+                <input
+                    type="text"
+                    id="vehicleNumber"
+                    placeholder="Example: BR01AB1234">
+
+            </div>
+
+
+            <div class="input-box">
+
+                <label>
+                    Driving License
+                </label>
+
+                <input
+                    type="text"
+                    id="license"
+                    placeholder="Enter license number">
+
+            </div>
+
+
+            <div class="input-box">
+
+                <label>
+                    Vehicle Type
+                </label>
+
+                <select
+                    id="vehicleType"
+                    style="
+                        width:100%;
+                        padding:13px;
+                        border:1px solid #ccc;
+                        border-radius:7px;
+                        font-size:15px;
+                    ">
+
+                    <option value="">
+                        Select Vehicle
+                    </option>
+
+                    <option value="4-Seater Car">
+                        4-Seater Car
+                    </option>
+
+                    <option value="Auto">
+                        Auto
+                    </option>
+
+                    <option value="Bike">
+                        Bike
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- BUTTON -->
+
+        <button
+            type="button"
+            class="main-btn"
+            id="mainButton"
+            onclick="submitForm()">
+
+            Login
+
+        </button>
+
+
+        <div
+            id="message"
+            class="message">
+        </div>
+
+
+        <!-- SWITCH -->
+
+        <p
+            class="switch"
+            id="switchText">
+
+            Don't have an account?
+
+            <span onclick="toggleForm()">
+                Create Account
+            </span>
+
+        </p>
+
+
+    </div>
+
+
+</div>
+
+
 <script>
 
 
-    /* =====================================================
-       RENDER BACKEND
-    ===================================================== */
+/* =====================================================
+   API
+===================================================== */
 
-    const API =
-        "https://udan-cab.onrender.com";
+/*
+   localhost ya Render manually change karne ki
+   zarurat nahi.
 
+   Browser jis server se page load karega,
+   API bhi usi server par jayegi.
+*/
 
-    /* =====================================================
-       VARIABLES
-    ===================================================== */
-
-    let selectedRole =
-        "user";
-
-    let isRegister =
-        false;
+const API = window.location.origin;
 
 
-    /* =====================================================
-       SELECT ROLE
-    ===================================================== */
+/* =====================================================
+   VARIABLES
+===================================================== */
 
-    function selectRole(role) {
+let selectedRole = "user";
 
-        selectedRole =
-            role;
-
-
-        const userButton =
-            document.getElementById(
-                "userRole"
-            );
+let isRegister = false;
 
 
-        const driverButton =
-            document.getElementById(
-                "driverRole"
-            );
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(text, type = "error") {
+
+    const box =
+        document.getElementById("message");
+
+    box.innerText = text;
+
+    box.className =
+        "message " + type;
+
+}
 
 
-        const vehicleFields =
-            document.getElementById(
-                "vehicleFields"
-            );
+function hideMessage() {
+
+    const box =
+        document.getElementById("message");
+
+    box.innerText = "";
+
+    box.className = "message";
+
+}
 
 
-        if (
-            role === "user"
-        ) {
+/* =====================================================
+   SELECT ROLE
+===================================================== */
 
-            userButton.classList.add(
-                "active"
-            );
+function selectRole(role) {
 
+    selectedRole = role;
 
-            driverButton.classList.remove(
-                "active"
-            );
+    const userRole =
+        document.getElementById("userRole");
 
+    const driverRole =
+        document.getElementById("driverRole");
 
-            vehicleFields.style.display =
-                "none";
-
-
-        }
-
-        else {
-
-            driverButton.classList.add(
-                "active"
-            );
+    const driverFields =
+        document.getElementById("driverFields");
 
 
-            userButton.classList.remove(
-                "active"
-            );
+    if (role === "user") {
 
+        userRole.classList.add("active");
 
-            vehicleFields.style.display =
+        driverRole.classList.remove("active");
+
+        driverFields.style.display =
+            "none";
+
+    }
+
+    else {
+
+        driverRole.classList.add("active");
+
+        userRole.classList.remove("active");
+
+        if (isRegister) {
+
+            driverFields.style.display =
                 "block";
 
         }
 
     }
 
-
-    /* =====================================================
-       LOGIN / REGISTER TOGGLE
-    ===================================================== */
-
-    function toggleForm() {
-
-        isRegister =
-            !isRegister;
+}
 
 
-        const title =
-            document.getElementById(
-                "formTitle"
-            );
+/* =====================================================
+   TOGGLE LOGIN / REGISTER
+===================================================== */
+
+function toggleForm() {
+
+    isRegister =
+        !isRegister;
 
 
-        const subtitle =
-            document.getElementById(
-                "formSubtitle"
-            );
+    const title =
+        document.getElementById(
+            "formTitle"
+        );
+
+    const subtitle =
+        document.getElementById(
+            "formSubtitle"
+        );
+
+    const button =
+        document.getElementById(
+            "mainButton"
+        );
+
+    const switchText =
+        document.getElementById(
+            "switchText"
+        );
+
+    const nameField =
+        document.getElementById(
+            "nameField"
+        );
+
+    const driverFields =
+        document.getElementById(
+            "driverFields"
+        );
 
 
-        const button =
-            document.querySelector(
-                ".main-btn"
-            );
+    hideMessage();
 
 
-        const switchText =
-            document.getElementById(
-                "switchText"
-            );
+    if (isRegister) {
 
 
-        const nameField =
-            document.getElementById(
-                "nameField"
-            );
+        title.innerText =
+            "Create Account";
 
 
-        if (
-            isRegister
-        ) {
-
-            title.innerText =
-                "Create Account";
+        subtitle.innerText =
+            "Register to start using UDAN CAB.";
 
 
-            subtitle.innerText =
-                "Register to start using UDAN CAB.";
+        button.innerText =
+            "Register";
 
 
-            button.innerText =
-                "Register";
+        nameField.style.display =
+            "block";
 
 
-            nameField.style.display =
+        if (selectedRole === "driver") {
+
+            driverFields.style.display =
                 "block";
 
-
-            switchText.innerHTML =
-                'Already have an account? ' +
-                '<span onclick="toggleForm()">Login</span>';
-
-
         }
 
-        else {
 
-            title.innerText =
-                "Welcome Back!";
+        switchText.innerHTML =
+            'Already have an account? ' +
+            '<span onclick="toggleForm()">Login</span>';
 
+    }
 
-            subtitle.innerText =
-                "Login to continue your journey.";
-
-
-            button.innerText =
-                "Login";
+    else {
 
 
-            nameField.style.display =
-                "none";
+        title.innerText =
+            "Welcome Back!";
 
 
-            switchText.innerHTML =
-                "Don't have an account? " +
-                '<span onclick="toggleForm()">Create Account</span>';
+        subtitle.innerText =
+            "Login to continue your journey.";
 
-        }
+
+        button.innerText =
+            "Login";
+
+
+        nameField.style.display =
+            "none";
+
+
+        driverFields.style.display =
+            "none";
+
+
+        switchText.innerHTML =
+            "Don't have an account? " +
+            '<span onclick="toggleForm()">Create Account</span>';
+
+    }
+
+}
+
+
+/* =====================================================
+   CLEAR FORM
+===================================================== */
+
+function clearFields() {
+
+    document.getElementById("password").value = "";
+
+}
+
+
+/* =====================================================
+   REGISTER
+===================================================== */
+
+async function registerUser() {
+
+    const name =
+        document
+            .getElementById("name")
+            .value
+            .trim();
+
+
+    const email =
+        document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("password")
+            .value
+            .trim();
+
+
+    if (!name) {
+
+        showMessage(
+            "Please enter your name."
+        );
+
+        return;
 
     }
 
 
-    /* =====================================================
-       SUBMIT FORM
-    ===================================================== */
+    let vehicleNumber = "";
 
-    async function submitForm() {
+    let license = "";
+
+    let vehicleType = "";
 
 
-        const email =
+    if (selectedRole === "driver") {
+
+
+        vehicleNumber =
             document
-                .getElementById("email")
+                .getElementById(
+                    "vehicleNumber"
+                )
                 .value
                 .trim();
 
 
-        const password =
+        license =
             document
-                .getElementById("password")
+                .getElementById(
+                    "license"
+                )
+                .value
+                .trim();
+
+
+        vehicleType =
+            document
+                .getElementById(
+                    "vehicleType"
+                )
                 .value
                 .trim();
 
 
         if (
-            email === "" ||
-            password === ""
+            !vehicleNumber ||
+            !license ||
+            !vehicleType
         ) {
 
-            alert(
-                "Please fill all required fields."
+            showMessage(
+                "Please fill all driver details."
             );
 
             return;
 
         }
 
-
-        let name =
-            "";
+    }
 
 
-        let vehicleNumber =
-            "";
+    try {
 
 
-        let license =
-            "";
+        const button =
+            document.getElementById(
+                "mainButton"
+            );
 
 
-        /* =================================================
-           REGISTER NAME
-        ================================================= */
+        button.disabled = true;
 
-        if (
-            isRegister
-        ) {
-
-            name =
-                document
-                    .getElementById("name")
-                    .value
-                    .trim();
+        button.innerText =
+            "Registering...";
 
 
-            if (
-                name === ""
-            ) {
+        const response =
+            await fetch(
+                API + "/api/register",
+                {
+                    method: "POST",
 
-                alert(
-                    "Please enter your name."
-                );
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                return;
-
-            }
-
-        }
-
-
-        /* =================================================
-           DRIVER DETAILS
-        ================================================= */
-
-        if (
-            selectedRole ===
-            "driver"
-        ) {
-
-            vehicleNumber =
-                document
-                    .getElementById(
-                        "vehicleNumber"
-                    )
-                    .value
-                    .trim();
-
-
-            license =
-                document
-                    .getElementById(
-                        "license"
-                    )
-                    .value
-                    .trim();
-
-
-            if (
-                vehicleNumber === "" ||
-                license === ""
-            ) {
-
-                alert(
-                    "Please enter vehicle number and driving license."
-                );
-
-                return;
-
-            }
-
-        }
-
-
-        /* =================================================
-           USER DATA
-        ================================================= */
-
-        const userData = {
-
-            name:
-                name,
-
-            email:
-                email,
-
-            password:
-                password,
-
-            role:
-                selectedRole,
-
-            city:
-                "Nalanda",
-
-            vehicleNumber:
-                vehicleNumber,
-
-            vehicleType:
-                "",
-
-            license:
-                license
-
-        };
-
-
-        try {
-
-
-            /* =============================================
-               REGISTER
-            ============================================= */
-
-            if (
-                isRegister
-            ) {
-
-
-                const response =
-                    await fetch(
-                        API +
-                        "/api/register",
-                        {
-
-                            method:
-                                "POST",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-
-                            },
-
-                            body:
-                                JSON.stringify(
-                                    userData
-                                )
-
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                if (
-                    !response.ok
-                ) {
-
-                    alert(
-                        "❌ " +
-                        (
-                            data.message ||
-                            "Registration failed."
-                        )
-                    );
-
-                    return;
-
+                    body:
+                        JSON.stringify({
+                            name,
+                            email,
+                            password,
+                            role:
+                                selectedRole,
+                            city:
+                                "Nalanda",
+                            vehicleNumber,
+                            vehicleType,
+                            license
+                        })
                 }
+            );
 
 
-                alert(
-                    "🎉 Registration Successful!\n\n" +
-                    "Now login with your account."
-                );
+        const data =
+            await response.json();
 
 
-                toggleForm();
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Registration failed."
+            );
+
+        }
 
 
-                document
-                    .getElementById(
-                        "password"
-                    )
-                    .value =
-                    "";
+        showMessage(
+            "🎉 Registration Successful! Ab login karo.",
+            "success"
+        );
 
 
-                return;
-
-            }
+        toggleForm();
 
 
-            /* =============================================
-               LOGIN
-            ============================================= */
-
-            const response =
-                await fetch(
-                    API +
-                    "/api/login",
-                    {
-
-                        method:
-                            "POST",
-
-                        headers: {
-
-                            "Content-Type":
-                                "application/json"
-
-                        },
-
-                        body:
-                            JSON.stringify(
-                                userData
-                            )
-
-                    }
-                );
+        document.getElementById(
+            "email"
+        ).value = email;
 
 
-            const data =
-                await response.json();
+        document.getElementById(
+            "password"
+        ).value = "";
 
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "REGISTER ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Backend se connection nahi ho raha."
+        );
+
+    }
+
+    finally {
+
+        const button =
+            document.getElementById(
+                "mainButton"
+            );
+
+
+        button.disabled = false;
+
+        button.innerText =
+            isRegister
+                ? "Register"
+                : "Login";
+
+    }
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+async function loginUser() {
+
+
+    const email =
+        document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("password")
+            .value
+            .trim();
+
+
+    if (!email || !password) {
+
+        showMessage(
+            "Please fill email and password."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const button =
+            document.getElementById(
+                "mainButton"
+            );
+
+
+        button.disabled = true;
+
+        button.innerText =
+            "Logging in...";
+
+
+        const response =
+            await fetch(
+                API + "/api/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            email,
+                            password,
+                            role:
+                                selectedRole
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
 
             if (
-                !response.ok
+                data.blocked
             ) {
 
-                alert(
-                    "❌ " +
-                    (
-                        data.message ||
-                        "Login failed."
-                    )
+                throw new Error(
+                    "🚫 Your driver account has been blocked by UDAN Admin."
                 );
-
-                return;
 
             }
 
 
-            /* =============================================
-               SAVE TOKEN
-            ============================================= */
-
-            localStorage.setItem(
-                "udanToken",
-                data.token
+            throw new Error(
+                data.message ||
+                "Login failed."
             );
 
+        }
 
-            localStorage.setItem(
-                "udanUser",
-                JSON.stringify(
-                    data.user
-                )
+
+        /* =================================================
+           SAVE TOKEN
+        ================================================= */
+
+        if (!data.token) {
+
+            throw new Error(
+                "Login successful but authentication token nahi mila."
             );
 
+        }
 
-            console.log(
-                "Logged in user:",
+
+        localStorage.setItem(
+            "udanToken",
+            data.token
+        );
+
+
+        localStorage.setItem(
+            "udanUser",
+            JSON.stringify(
                 data.user
-            );
+            )
+        );
 
 
-            alert(
-                "✅ Login Successful!\n\n" +
-                "Welcome to UDAN CAB!"
-            );
+        showMessage(
+            "✅ Login Successful! Dashboard open ho raha hai.",
+            "success"
+        );
 
 
-            /* =============================================
-               REDIRECT
-            ============================================= */
+        /*
+           IMPORTANT:
 
-            const role =
-                data.user.role;
+           Actual passenger file:
+           dashboard(1).html
 
+           Actual driver file:
+           driver-dashboard(1).html
+        */
+
+        setTimeout(() => {
 
             if (
-                role ===
+                selectedRole ===
                 "driver"
             ) {
-
-                /*
-                   File actually exists in ROOT:
-                   driver-dashboard(1).html
-                */
 
                 window.location.href =
                     "/driver-dashboard(1).html";
 
-
-            }
-
-            else if (
-                role ===
-                "admin"
-            ) {
-
-                /*
-                   File actually exists in ROOT:
-                   admin(1).html
-                */
-
-                window.location.href =
-                    "/admin(1).html";
-
-
             }
 
             else {
-
-                /*
-                   File actually exists in ROOT:
-                   dashboard(1).html
-                */
 
                 window.location.href =
                     "/dashboard(1).html";
 
             }
 
+        }, 300);
 
-        }
 
-        catch (
+    }
+
+    catch (error) {
+
+        console.error(
+            "LOGIN ERROR:",
             error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Backend se connection nahi ho raha."
+        );
+
+    }
+
+    finally {
+
+        const button =
+            document.getElementById(
+                "mainButton"
+            );
+
+
+        button.disabled = false;
+
+        button.innerText =
+            isRegister
+                ? "Register"
+                : "Login";
+
+    }
+
+}
+
+
+/* =====================================================
+   SUBMIT
+===================================================== */
+
+async function submitForm() {
+
+    hideMessage();
+
+
+    if (isRegister) {
+
+        await registerUser();
+
+    }
+
+    else {
+
+        await loginUser();
+
+    }
+
+}
+
+
+/* =====================================================
+   ENTER KEY
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Enter"
         ) {
 
-
-            console.error(
-                "LOGIN ERROR:",
-                error
-            );
-
-
-            alert(
-                "❌ Render backend se connection nahi ho pa raha.\n\n" +
-                "Please try again."
-            );
+            submitForm();
 
         }
 
     }
+);
 
 
-    /* =====================================================
-       DEFAULT ROLE
-    ===================================================== */
+/* =====================================================
+   PAGE START
+===================================================== */
 
-    selectRole(
-        "user"
-    );
-
+selectRole("user");
 
 </script>
 
