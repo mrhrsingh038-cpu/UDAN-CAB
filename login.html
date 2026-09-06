@@ -10,6 +10,7 @@
 
     <title>UDAN CAB - Login</title>
 
+
     <style>
 
         * {
@@ -19,7 +20,9 @@
             font-family: Arial, sans-serif;
         }
 
+
         body {
+
             min-height: 100vh;
 
             background:
@@ -30,15 +33,22 @@
                 );
 
             display: flex;
-            align-items: center;
+
             justify-content: center;
 
+            align-items: center;
+
             padding: 20px;
+
         }
 
+
         .container {
+
             width: 950px;
+
             max-width: 100%;
+
             min-height: 580px;
 
             background: white;
@@ -52,11 +62,14 @@
             box-shadow:
                 0 20px 50px
                 rgba(0,0,0,.4);
+
         }
+
 
         /* LEFT */
 
         .left {
+
             width: 45%;
 
             background: #111;
@@ -70,54 +83,76 @@
             flex-direction: column;
 
             justify-content: center;
+
         }
 
+
         .logo {
+
             font-size: 35px;
 
             font-weight: bold;
 
             margin-bottom: 30px;
+
         }
+
 
         .logo span {
+
             color: #ffd000;
+
         }
 
+
         .left h1 {
+
             font-size: 40px;
 
             margin-bottom: 20px;
+
         }
 
+
         .left p {
+
             color: #ccc;
 
             line-height: 1.6;
 
             font-size: 17px;
+
         }
 
+
         .cab-icon {
+
             font-size: 75px;
 
             margin-top: 40px;
+
         }
+
 
         /* RIGHT */
 
         .right {
+
             width: 55%;
 
             padding: 40px;
 
             position: relative;
+
         }
 
+
         .back {
+
             position: absolute;
 
             top: 20px;
+
             right: 25px;
 
             text-decoration: none;
@@ -125,33 +160,45 @@
             color: #555;
 
             font-size: 14px;
+
         }
 
+
         .right h2 {
+
             font-size: 30px;
 
             margin-top: 20px;
 
             margin-bottom: 8px;
+
         }
 
+
         .subtitle {
+
             color: #777;
 
             margin-bottom: 25px;
+
         }
+
 
         /* ROLE */
 
         .role-container {
+
             display: flex;
 
             gap: 12px;
 
             margin-bottom: 20px;
+
         }
 
+
         .role-btn {
+
             flex: 1;
 
             padding: 13px;
@@ -165,29 +212,42 @@
             cursor: pointer;
 
             font-weight: bold;
+
         }
 
+
         .role-btn.active {
+
             background: #ffd000;
 
             border-color: #ffd000;
+
         }
+
 
         /* INPUT */
 
         .input-box {
+
             margin-bottom: 15px;
+
         }
 
+
         .input-box label {
+
             display: block;
 
             margin-bottom: 6px;
 
             font-weight: bold;
+
         }
 
-        .input-box input {
+
+        .input-box input,
+        .input-box select {
+
             width: 100%;
 
             padding: 13px;
@@ -199,21 +259,31 @@
             font-size: 15px;
 
             outline: none;
+
         }
 
-        .input-box input:focus {
+
+        .input-box input:focus,
+        .input-box select:focus {
+
             border-color: #111;
+
         }
+
 
         /* DRIVER */
 
         #driverFields {
+
             display: none;
+
         }
+
 
         /* BUTTON */
 
         .main-btn {
+
             width: 100%;
 
             padding: 14px;
@@ -233,94 +303,131 @@
             font-weight: bold;
 
             cursor: pointer;
+
         }
+
 
         .main-btn:hover {
+
             background: #333;
+
         }
+
 
         .main-btn:disabled {
-            opacity: 0.6;
+
+            opacity: .6;
 
             cursor: not-allowed;
+
         }
 
-        /* SWITCH */
-
-        .switch {
-            text-align: center;
-
-            margin-top: 18px;
-
-            color: #666;
-        }
-
-        .switch span {
-            color: #111;
-
-            font-weight: bold;
-
-            cursor: pointer;
-        }
 
         /* MESSAGE */
 
-        .message {
+        #message {
+
             display: none;
 
             margin-top: 15px;
 
             padding: 12px;
 
-            border-radius: 7px;
+            border-radius: 8px;
 
-            font-size: 14px;
+            font-weight: bold;
 
             text-align: center;
+
         }
 
-        .message.success {
+
+        #message.success {
+
             display: block;
 
-            background: #e8f7e8;
+            background: #e7f8e7;
 
-            color: #176b17;
+            color: green;
+
         }
 
-        .message.error {
+
+        #message.error {
+
             display: block;
 
-            background: #ffe8e8;
+            background: #ffe7e7;
 
-            color: #a00000;
+            color: red;
+
         }
+
+
+        /* SWITCH */
+
+        .switch {
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #666;
+
+        }
+
+
+        .switch span {
+
+            color: #111;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
 
         /* MOBILE */
 
         @media(max-width:700px) {
 
             .container {
+
                 flex-direction: column;
+
             }
+
 
             .left {
+
                 width: 100%;
 
                 padding: 30px;
+
             }
+
 
             .left h1 {
+
                 font-size: 30px;
+
             }
+
 
             .cab-icon {
+
                 display: none;
+
             }
 
+
             .right {
+
                 width: 100%;
 
                 padding: 30px;
+
             }
 
         }
@@ -344,10 +451,12 @@
             UDAN<span>CAB</span>
         </div>
 
+
         <h1>
             Your Ride.<br>
             Your Way.
         </h1>
+
 
         <p>
             Book rides, drive with us and
@@ -355,11 +464,13 @@
             transportation platform.
         </p>
 
+
         <div class="cab-icon">
             🚕 🛺 🏍️
         </div>
 
     </div>
+
 
 
     <!-- RIGHT -->
@@ -390,9 +501,11 @@
         </p>
 
 
+
         <!-- ROLE -->
 
         <div class="role-container">
+
 
             <button
                 type="button"
@@ -415,7 +528,9 @@
 
             </button>
 
+
         </div>
+
 
 
         <!-- NAME -->
@@ -437,20 +552,23 @@
         </div>
 
 
+
         <!-- EMAIL -->
 
         <div class="input-box">
 
             <label>
-                Email / Phone
+                Email
             </label>
 
             <input
-                type="text"
+                type="email"
                 id="email"
-                placeholder="Enter email">
+                placeholder="Enter your email"
+                autocomplete="email">
 
         </div>
+
 
 
         <!-- PASSWORD -->
@@ -464,9 +582,11 @@
             <input
                 type="password"
                 id="password"
-                placeholder="Enter password">
+                placeholder="Enter password"
+                autocomplete="current-password">
 
         </div>
+
 
 
         <!-- DRIVER -->
@@ -508,15 +628,7 @@
                     Vehicle Type
                 </label>
 
-                <select
-                    id="vehicleType"
-                    style="
-                        width:100%;
-                        padding:13px;
-                        border:1px solid #ccc;
-                        border-radius:7px;
-                        font-size:15px;
-                    ">
+                <select id="vehicleType">
 
                     <option value="">
                         Select Vehicle
@@ -542,6 +654,7 @@
         </div>
 
 
+
         <!-- BUTTON -->
 
         <button
@@ -555,10 +668,11 @@
         </button>
 
 
-        <div
-            id="message"
-            class="message">
-        </div>
+
+        <!-- MESSAGE -->
+
+        <div id="message"></div>
+
 
 
         <!-- SWITCH -->
@@ -578,26 +692,23 @@
 
     </div>
 
-
 </div>
+
 
 
 <script>
 
-
 /* =====================================================
-   API
+   IMPORTANT API URL
 ===================================================== */
 
 /*
-   localhost ya Render manually change karne ki
-   zarurat nahi.
-
-   Browser jis server se page load karega,
-   API bhi usi server par jayegi.
+   Render backend.
+   Localhost use nahi kar rahe.
 */
 
-const API = window.location.origin;
+const API =
+    "https://udan-cab.onrender.com";
 
 
 /* =====================================================
@@ -613,43 +724,46 @@ let isRegister = false;
    MESSAGE
 ===================================================== */
 
-function showMessage(text, type = "error") {
+function showMessage(text, type) {
 
-    const box =
+    const message =
         document.getElementById("message");
 
-    box.innerText = text;
+    message.innerText = text;
 
-    box.className =
-        "message " + type;
+    message.className =
+        type === "success"
+            ? "success"
+            : "error";
 
 }
 
 
 function hideMessage() {
 
-    const box =
+    const message =
         document.getElementById("message");
 
-    box.innerText = "";
+    message.innerText = "";
 
-    box.className = "message";
+    message.className = "";
 
 }
 
 
 /* =====================================================
-   SELECT ROLE
+   ROLE
 ===================================================== */
 
 function selectRole(role) {
 
     selectedRole = role;
 
-    const userRole =
+
+    const userButton =
         document.getElementById("userRole");
 
-    const driverRole =
+    const driverButton =
         document.getElementById("driverRole");
 
     const driverFields =
@@ -658,20 +772,32 @@ function selectRole(role) {
 
     if (role === "user") {
 
-        userRole.classList.add("active");
+        userButton.classList.add("active");
 
-        driverRole.classList.remove("active");
+        driverButton.classList.remove("active");
 
-        driverFields.style.display =
-            "none";
+        if (isRegister) {
+
+            driverFields.style.display =
+                "none";
+
+        }
+
+        else {
+
+            driverFields.style.display =
+                "none";
+
+        }
 
     }
 
     else {
 
-        driverRole.classList.add("active");
+        driverButton.classList.add("active");
 
-        userRole.classList.remove("active");
+        userButton.classList.remove("active");
+
 
         if (isRegister) {
 
@@ -686,7 +812,7 @@ function selectRole(role) {
 
 
 /* =====================================================
-   TOGGLE LOGIN / REGISTER
+   TOGGLE
 ===================================================== */
 
 function toggleForm() {
@@ -696,34 +822,22 @@ function toggleForm() {
 
 
     const title =
-        document.getElementById(
-            "formTitle"
-        );
+        document.getElementById("formTitle");
 
     const subtitle =
-        document.getElementById(
-            "formSubtitle"
-        );
+        document.getElementById("formSubtitle");
 
     const button =
-        document.getElementById(
-            "mainButton"
-        );
+        document.getElementById("mainButton");
 
     const switchText =
-        document.getElementById(
-            "switchText"
-        );
+        document.getElementById("switchText");
 
     const nameField =
-        document.getElementById(
-            "nameField"
-        );
+        document.getElementById("nameField");
 
     const driverFields =
-        document.getElementById(
-            "driverFields"
-        );
+        document.getElementById("driverFields");
 
 
     hideMessage();
@@ -731,18 +845,14 @@ function toggleForm() {
 
     if (isRegister) {
 
-
         title.innerText =
             "Create Account";
-
 
         subtitle.innerText =
             "Register to start using UDAN CAB.";
 
-
         button.innerText =
             "Register";
-
 
         nameField.style.display =
             "block";
@@ -755,6 +865,13 @@ function toggleForm() {
 
         }
 
+        else {
+
+            driverFields.style.display =
+                "none";
+
+        }
+
 
         switchText.innerHTML =
             'Already have an account? ' +
@@ -762,24 +879,20 @@ function toggleForm() {
 
     }
 
-    else {
 
+    else {
 
         title.innerText =
             "Welcome Back!";
 
-
         subtitle.innerText =
             "Login to continue your journey.";
-
 
         button.innerText =
             "Login";
 
-
         nameField.style.display =
             "none";
-
 
         driverFields.style.display =
             "none";
@@ -795,21 +908,11 @@ function toggleForm() {
 
 
 /* =====================================================
-   CLEAR FORM
-===================================================== */
-
-function clearFields() {
-
-    document.getElementById("password").value = "";
-
-}
-
-
-/* =====================================================
    REGISTER
 ===================================================== */
 
 async function registerUser() {
+
 
     const name =
         document
@@ -822,7 +925,8 @@ async function registerUser() {
         document
             .getElementById("email")
             .value
-            .trim();
+            .trim()
+            .toLowerCase();
 
 
     const password =
@@ -835,7 +939,32 @@ async function registerUser() {
     if (!name) {
 
         showMessage(
-            "Please enter your name."
+            "Please enter your name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!email) {
+
+        showMessage(
+            "Please enter your email.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!password) {
+
+        showMessage(
+            "Please enter your password.",
+            "error"
         );
 
         return;
@@ -850,32 +979,30 @@ async function registerUser() {
     let vehicleType = "";
 
 
-    if (selectedRole === "driver") {
+    if (
+        selectedRole === "driver"
+    ) {
 
 
         vehicleNumber =
             document
-                .getElementById(
-                    "vehicleNumber"
-                )
+                .getElementById("vehicleNumber")
                 .value
-                .trim();
+                .trim()
+                .toUpperCase();
 
 
         license =
             document
-                .getElementById(
-                    "license"
-                )
+                .getElementById("license")
                 .value
-                .trim();
+                .trim()
+                .toUpperCase();
 
 
         vehicleType =
             document
-                .getElementById(
-                    "vehicleType"
-                )
+                .getElementById("vehicleType")
                 .value
                 .trim();
 
@@ -887,7 +1014,8 @@ async function registerUser() {
         ) {
 
             showMessage(
-                "Please fill all driver details."
+                "Please fill all driver details.",
+                "error"
             );
 
             return;
@@ -925,16 +1053,31 @@ async function registerUser() {
 
                     body:
                         JSON.stringify({
-                            name,
-                            email,
-                            password,
+
+                            name:
+                                name,
+
+                            email:
+                                email,
+
+                            password:
+                                password,
+
                             role:
                                 selectedRole,
+
                             city:
                                 "Nalanda",
-                            vehicleNumber,
-                            vehicleType,
-                            license
+
+                            vehicleNumber:
+                                vehicleNumber,
+
+                            vehicleType:
+                                vehicleType,
+
+                            license:
+                                license
+
                         })
                 }
             );
@@ -955,10 +1098,12 @@ async function registerUser() {
 
 
         showMessage(
-            "🎉 Registration Successful! Ab login karo.",
+            "🎉 Registration successful! Ab Login karo.",
             "success"
         );
 
+
+        isRegister = true;
 
         toggleForm();
 
@@ -978,14 +1123,14 @@ async function registerUser() {
     catch (error) {
 
         console.error(
-            "REGISTER ERROR:",
             error
         );
 
 
         showMessage(
             error.message ||
-            "Backend se connection nahi ho raha."
+            "Registration failed.",
+            "error"
         );
 
     }
@@ -1021,7 +1166,8 @@ async function loginUser() {
         document
             .getElementById("email")
             .value
-            .trim();
+            .trim()
+            .toLowerCase();
 
 
     const password =
@@ -1031,10 +1177,23 @@ async function loginUser() {
             .trim();
 
 
-    if (!email || !password) {
+    if (!email) {
 
         showMessage(
-            "Please fill email and password."
+            "Please enter your email.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!password) {
+
+        showMessage(
+            "Please enter your password.",
+            "error"
         );
 
         return;
@@ -1057,6 +1216,12 @@ async function loginUser() {
             "Logging in...";
 
 
+        console.log(
+            "LOGIN API:",
+            API + "/api/login"
+        );
+
+
         const response =
             await fetch(
                 API + "/api/login",
@@ -1064,37 +1229,56 @@ async function loginUser() {
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json"
+
                     },
 
                     body:
                         JSON.stringify({
-                            email,
-                            password,
+
+                            email:
+                                email,
+
+                            password:
+                                password,
+
                             role:
                                 selectedRole
+
                         })
+
                 }
             );
 
 
-        const data =
-            await response.json();
+        let data;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        }
+
+        catch {
+
+            throw new Error(
+                "Server ne valid response nahi diya."
+            );
+
+        }
+
+
+        console.log(
+            "LOGIN RESPONSE:",
+            data
+        );
 
 
         if (!response.ok) {
-
-            if (
-                data.blocked
-            ) {
-
-                throw new Error(
-                    "🚫 Your driver account has been blocked by UDAN Admin."
-                );
-
-            }
-
 
             throw new Error(
                 data.message ||
@@ -1104,18 +1288,18 @@ async function loginUser() {
         }
 
 
-        /* =================================================
-           SAVE TOKEN
-        ================================================= */
-
         if (!data.token) {
 
             throw new Error(
-                "Login successful but authentication token nahi mila."
+                "Login response me token nahi mila."
             );
 
         }
 
+
+        /* =================================================
+           SAVE TOKEN
+        ================================================= */
 
         localStorage.setItem(
             "udanToken",
@@ -1131,42 +1315,51 @@ async function loginUser() {
         );
 
 
+        localStorage.removeItem(
+            "udanCurrentRide"
+        );
+
+
         showMessage(
-            "✅ Login Successful! Dashboard open ho raha hai.",
+            "✅ Login successful! Dashboard open ho raha hai...",
             "success"
         );
 
 
-        /*
-           IMPORTANT:
+        /* =================================================
+           REDIRECT
+        ================================================= */
 
-           Actual passenger file:
-           dashboard(1).html
+        setTimeout(
+            function () {
 
-           Actual driver file:
-           driver-dashboard(1).html
-        */
 
-        setTimeout(() => {
+                if (
+                    selectedRole ===
+                    "driver"
+                ) {
 
-            if (
-                selectedRole ===
-                "driver"
-            ) {
 
-                window.location.href =
-                    "/driver-dashboard(1).html";
+                    window.location.href =
+                        "/driver-dashboard(1).html";
 
-            }
 
-            else {
+                }
 
-                window.location.href =
-                    "/dashboard(1).html";
 
-            }
+                else {
 
-        }, 300);
+
+                    window.location.href =
+                        "/dashboard(1).html";
+
+
+                }
+
+
+            },
+            500
+        );
 
 
     }
@@ -1181,7 +1374,8 @@ async function loginUser() {
 
         showMessage(
             error.message ||
-            "Backend se connection nahi ho raha."
+            "Login failed.",
+            "error"
         );
 
     }
@@ -1252,10 +1446,11 @@ document.addEventListener(
 
 
 /* =====================================================
-   PAGE START
+   START
 ===================================================== */
 
 selectRole("user");
+
 
 </script>
 
