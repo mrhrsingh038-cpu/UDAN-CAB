@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>UDAN CAB - Driver</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f5f7;
+}
+
+nav{
+background:#111;
+color:white;
+height:65px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 6%;
+}
+
+.logo{
+font-size:25px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ffd000;
+}
+
+button{
+border:0;
+border-radius:8px;
+padding:11px 18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.logout{
+background:#ffd000;
+}
+
+.container{
+max-width:1000px;
+margin:30px auto;
+padding:0 15px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+.online{
+background:#111;
+color:white;
+width:100%;
+margin-top:15px;
+}
+
+.online.active{
+background:#08752e;
+}
+
+.ride{
+border:1px solid #ddd;
+padding:18px;
+border-radius:12px;
+margin-top:15px;
+}
+
+.ride p{
+margin:8px 0;
+}
+
+.accept{
+background:#ffd000;
+width:100%;
+margin-top:12px;
+}
+
+.start{
+background:#111;
+color:white;
+width:100%;
+margin-top:10px;
+}
+
+.complete{
+background:#08752e;
+color:white;
+width:100%;
+margin-top:10px;
+}
+
+.status{
+padding:15px;
+background:#f3f3f3;
+border-radius:8px;
+margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+UDAN<span>CAB</span>
+</div>
+
+<div>
+<span id="driverName">
+Driver
+</span>
+
+<button
+class="logout"
+onclick="logout()">
+Logout
+</button>
+</div>
+
+</nav>
+
+<div class="container">
+
+<div class="card">
+
+<h2>
+🚕 Driver Dashboard
+</h2>
+
+<p id="driverInfo">
+Loading...
+</p>
+
+<button
+id="onlineButton"
+class="online"
+onclick="toggleOnline()">
+
+Go Online
+
+</button>
+
+<div
+class="status"
+id="status">
+Offline
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>
+📋 Ride Requests
+</h2>
+
+<div id="rides">
+Loading rides...
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const API = "";
+
+const token =
+localStorage.getItem(
+"udanToken"
+);
+
+let user = null;
+
+try{
+
+user =
+JSON.parse(
+localStorage.getItem(
+"udanUser"
+)
+);
+
+}catch(e){
+
+user = null;
+
+}
+
+if(
+!token ||
+!user ||
+user.role !== "driver"
+){
+
+location.href =
+"/login.html";
+
+}
+
+function headers(){
+
+return {
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " + token
+};
+
+}
+
+document.getElementById(
+"driverName"
+).innerText =
+user?.name || "Driver";
+
+document.getElementById(
+"driverInfo"
+).innerText =
+`${user?.vehicleType || "-"} | ${user?.vehicleNumber || "-"}`;
+
+let online =
+Boolean(user?.online);
+
+function updateOnlineUI(){
+
+const button =
+document.getElementById(
+"onlineButton"
+);
+
+if(online){
+
+button.innerText =
+"🟢 Go Offline";
+
+button.classList.add(
+"active"
+);
+
+document.getElementById(
+"status"
+).innerText =
+"🟢 You are online";
+
+}else{
+
+button.innerText =
+"Go Online";
+
+button.classList.remove(
+"active"
+);
+
+document.getElementById(
+"status"
+).innerText =
+"🔴 You are offline";
+
+}
+
+}
+
+async function toggleOnline(){
+
+const newStatus =
+!online;
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/driver/status",
+{
+method:"POST",
+headers:headers(),
+body:JSON.stringify({
+online:newStatus
+})
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message
+);
+
+}
+
+online =
+data.online;
+
+user.online =
+online;
+
+localStorage.setItem(
+"udanUser",
+JSON.stringify(user)
+);
+
+updateOnlineUI();
+
+if(online){
+
+startGPS();
+
+loadRides();
+
+}
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+let gpsWatch = null;
+
+function startGPS(){
+
+if(gpsWatch !== null){
+return;
+}
+
+if(!navigator.geolocation){
+return;
+}
+
+gpsWatch =
+navigator.geolocation.watchPosition(
+
+async position => {
+
+try{
+
+await fetch(
+API +
+"/api/location/update",
+{
+method:"POST",
+headers:headers(),
+body:JSON.stringify({
+
+latitude:
+position.coords.latitude,
+
+longitude:
+position.coords.longitude,
+
+accuracy:
+position.coords.accuracy
+
+})
+}
+);
+
+}catch(error){
+
+console.error(error);
+
+}
+
+},
+
+error => {
+
+console.error(
+"GPS:",
+error
+);
+
+},
+
+{
+enableHighAccuracy:true,
+maximumAge:5000,
+timeout:10000
+}
+
+);
+
+}
+
+async function loadRides(){
+
+if(!online){
+
+document.getElementById(
+"rides"
+).innerHTML =
+"Go online to receive rides.";
+
+return;
+
+}
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/driver/rides",
+{
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message
+);
+
+}
+
+const rides =
+data.rides || [];
+
+if(!rides.length){
+
+document.getElementById(
+"rides"
+).innerHTML =
+"No ride requests right now.";
+
+return;
+
+}
+
+document.getElementById(
+"rides"
+).innerHTML =
+rides.map(
+renderRide
+).join("");
+
+}catch(error){
+
+document.getElementById(
+"rides"
+).innerHTML =
+"Unable to load rides.";
+
+console.error(error);
+
+}
+
+}
+
+function renderRide(ride){
+
+return `
+
+<div class="ride">
+
+<h3>
+${ride.cabType}
+</h3>
+
+<p>
+<b>Pickup:</b>
+${ride.pickup}
+</p>
+
+<p>
+<b>Destination:</b>
+${ride.destination}
+</p>
+
+<p>
+<b>Vehicle:</b>
+${ride.vehicleType || "-"}
+</p>
+
+<p>
+<b>Fare:</b>
+₹${ride.fare}
+</p>
+
+<p>
+<b>Status:</b>
+${ride.status}
+</p>
+
+<button
+class="accept"
+onclick="acceptRide('${ride.id}')">
+
+Accept Ride
+
+</button>
+
+</div>
+
+`;
+
+}
+
+async function acceptRide(id){
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/rides/" +
+id +
+"/accept",
+{
+method:"POST",
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message
+);
+
+}
+
+alert(
+"Ride accepted!"
+);
+
+loadActiveRide(
+data.ride
+);
+
+loadRides();
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+let activeRide = null;
+
+function loadActiveRide(ride){
+
+activeRide =
+ride;
+
+document.getElementById(
+"rides"
+).innerHTML = `
+
+<div class="ride">
+
+<h3>
+Active Ride
+</h3>
+
+<p>
+<b>Pickup:</b>
+${ride.pickup}
+</p>
+
+<p>
+<b>Destination:</b>
+${ride.destination}
+</p>
+
+<p>
+<b>Fare:</b>
+₹${ride.fare}
+</p>
+
+<p>
+<b>Status:</b>
+<span id="activeStatus">
+${ride.status}
+</span>
+</p>
+
+<button
+class="start"
+onclick="startRide('${ride.id}')">
+
+Start Ride
+
+</button>
+
+<button
+class="complete"
+onclick="completeRide('${ride.id}')">
+
+Complete Ride
+
+</button>
+
+</div>
+
+`;
+
+}
+
+async function startRide(id){
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/rides/" +
+id +
+"/start",
+{
+method:"PATCH",
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message
+);
+
+}
+
+loadActiveRide(
+data.ride
+);
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+async function completeRide(id){
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/rides/" +
+id +
+"/complete",
+{
+method:"PATCH",
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message
+);
+
+}
+
+activeRide = null;
+
+alert(
+"Ride completed!"
+);
+
+loadRides();
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+function logout(){
+
+localStorage.removeItem(
+"udanToken"
+);
+
+localStorage.removeItem(
+"udanUser"
+);
+
+location.href =
+"/login.html";
+
+}
+
+updateOnlineUI();
+
+if(online){
+
+startGPS();
+
+loadRides();
+
+}
+
+setInterval(
+loadRides,
+5000
+);
+
+</script>
+
+</body>
+</html>

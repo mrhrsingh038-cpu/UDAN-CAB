@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>UDAN Parcel Delivery</title>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f5f7;
+color:#111;
+}
+
+nav{
+height:65px;
+background:#111;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 6%;
+}
+
+.logo{
+font-size:25px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ffd000;
+}
+
+nav button{
+background:#ffd000;
+border:0;
+padding:10px 18px;
+border-radius:7px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.container{
+max-width:950px;
+margin:30px auto;
+padding:0 15px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+.input{
+margin-bottom:15px;
+}
+
+.input label{
+display:block;
+font-weight:bold;
+margin-bottom:6px;
+}
+
+.input input,
+.input select{
+width:100%;
+padding:13px;
+border:1px solid #ccc;
+border-radius:8px;
+}
+
+.location{
+width:100%;
+padding:13px;
+border:2px solid #111;
+background:white;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.vehicle-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin:20px 0;
+}
+
+.vehicle{
+padding:25px;
+border:2px solid #ddd;
+border-radius:12px;
+text-align:center;
+cursor:pointer;
+}
+
+.vehicle.active{
+border-color:#111;
+background:#fff8cf;
+}
+
+.vehicle-icon{
+font-size:45px;
+}
+
+.calculate,
+.book{
+width:100%;
+padding:15px;
+border:0;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.calculate{
+background:#111;
+color:white;
+}
+
+.book{
+background:#ffd000;
+margin-top:15px;
+}
+
+#map{
+height:400px;
+border-radius:12px;
+margin-top:20px;
+}
+
+.status{
+padding:15px;
+background:#f2f2f2;
+border-radius:8px;
+margin-top:15px;
+}
+
+.summary{
+margin-top:20px;
+line-height:2;
+}
+
+.summary div{
+display:flex;
+justify-content:space-between;
+border-bottom:1px solid #eee;
+}
+
+@media(max-width:650px){
+.vehicle-grid{
+grid-template-columns:1fr;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+UDAN<span>PARCEL</span>
+</div>
+
+<div>
+
+<span id="name">
+Passenger
+</span>
+
+<button
+onclick="logout()">
+Logout
+</button>
+
+</div>
+
+</nav>
+
+<div class="container">
+
+<div class="card">
+
+<h2>
+📦 Book Parcel Delivery
+</h2>
+
+<div class="input">
+
+<label>
+Pickup Location
+</label>
+
+<input
+id="pickup"
+placeholder="Pickup location">
+
+</div>
+
+<button
+class="location"
+onclick="getLocation()">
+
+📍 Use My Current Location
+
+</button>
+
+<div
+class="status"
+id="gps">
+GPS not selected
+</div>
+
+<div class="input">
+
+<label>
+Delivery Location
+</label>
+
+<input
+id="destination"
+placeholder="Enter destination">
+
+</div>
+
+<div class="input">
+
+<label>
+Parcel Type
+</label>
+
+<select id="parcelType">
+
+<option>
+Document
+</option>
+
+<option>
+Small Grocery
+</option>
+
+<option>
+Small Product
+</option>
+
+<option>
+Large Product
+</option>
+
+</select>
+
+</div>
+
+<div class="input">
+
+<label>
+Parcel Weight
+</label>
+
+<select id="parcelWeight">
+
+<option>
+Below 1 KG
+</option>
+
+<option>
+1-5 KG
+</option>
+
+<option>
+5-10 KG
+</option>
+
+<option>
+10+ KG
+</option>
+
+</select>
+
+</div>
+
+<h3>
+Choose Delivery Vehicle
+</h3>
+
+<div class="vehicle-grid">
+
+<div
+class="vehicle"
+id="bike"
+onclick="selectVehicle('Bike')">
+
+<div class="vehicle-icon">
+🏍️
+</div>
+
+<strong>
+Bike
+</strong>
+
+<p>
+₹20/km
+</p>
+
+</div>
+
+<div
+class="vehicle"
+id="tempo"
+onclick="selectVehicle('Loading Tempo')">
+
+<div class="vehicle-icon">
+🚚
+</div>
+
+<strong>
+Loading Tempo
+</strong>
+
+<p>
+₹200/km
+</p>
+
+</div>
+
+</div>
+
+<button
+class="calculate"
+onclick="calculateRoute()">
+
+🗺️ Calculate Route & Fare
+
+</button>
+
+<div
+id="map"
+style="display:none">
+</div>
+
+<div
+class="status"
+id="status">
+
+Ready
+
+</div>
+
+</div>
+
+<div
+class="card"
+id="summaryCard"
+style="display:none">
+
+<h2>
+📦 Parcel Summary
+</h2>
+
+<div class="summary">
+
+<div>
+<span>Pickup</span>
+<strong id="sPickup"></strong>
+</div>
+
+<div>
+<span>Destination</span>
+<strong id="sDestination"></strong>
+</div>
+
+<div>
+<span>Parcel</span>
+<strong id="sType"></strong>
+</div>
+
+<div>
+<span>Weight</span>
+<strong id="sWeight"></strong>
+</div>
+
+<div>
+<span>Vehicle</span>
+<strong id="sVehicle"></strong>
+</div>
+
+<div>
+<span>Distance</span>
+<strong id="sDistance"></strong>
+</div>
+
+<div>
+<span>Fare</span>
+<strong id="sFare"></strong>
+</div>
+
+</div>
+
+<button
+class="book"
+onclick="bookParcel()"
+id="bookButton">
+
+📦 Book Parcel
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>
+Current Parcel
+</h2>
+
+<div id="ride">
+No active parcel booking.
+</div>
+
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+<script>
+
+const API = "";
+
+const token =
+localStorage.getItem(
+"udanToken"
+);
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"udanUser"
+) || "null"
+);
+
+if(
+!token ||
+!user ||
+user.role !== "passenger"
+){
+
+location.href =
+"/login.html";
+
+}
+
+document.getElementById(
+"name"
+).innerText =
+user?.name || "Passenger";
+
+function headers(){
+
+return {
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " + token
+};
+
+}
+
+let pickupLat = null;
+let pickupLng = null;
+
+let destinationLat = null;
+let destinationLng = null;
+
+let selectedVehicle = null;
+let distance = 0;
+
+let map = null;
+let line = null;
+
+let rideId = null;
+
+function selectVehicle(vehicle){
+
+selectedVehicle =
+vehicle;
+
+document
+.querySelectorAll(
+".vehicle"
+)
+.forEach(
+v =>
+v.classList.remove(
+"active"
+)
+);
+
+if(vehicle === "Bike"){
+
+document
+.getElementById("bike")
+.classList.add(
+"active"
+);
+
+}else{
+
+document
+.getElementById("tempo")
+.classList.add(
+"active"
+);
+
+}
+
+}
+
+function getLocation(){
+
+if(!navigator.geolocation){
+
+return alert(
+"GPS not supported."
+);
+
+}
+
+document.getElementById(
+"gps"
+).innerText =
+"Getting GPS...";
+
+navigator.geolocation.getCurrentPosition(
+
+position => {
+
+pickupLat =
+position.coords.latitude;
+
+pickupLng =
+position.coords.longitude;
+
+document.getElementById(
+"pickup"
+).value =
+"Current Location";
+
+document.getElementById(
+"gps"
+).innerText =
+"🟢 GPS Ready";
+
+},
+
+error => {
+
+console.error(error);
+
+document.getElementById(
+"gps"
+).innerText =
+"❌ GPS permission denied";
+
+},
+
+{
+enableHighAccuracy:true,
+timeout:15000
+}
+
+);
+
+}
+
+async function calculateRoute(){
+
+const destination =
+document.getElementById(
+"destination"
+).value.trim();
+
+if(
+pickupLat === null
+){
+
+return alert(
+"Select pickup GPS first."
+);
+
+}
+
+if(!destination){
+
+return alert(
+"Enter destination."
+);
+
+}
+
+if(!selectedVehicle){
+
+return alert(
+"Choose delivery vehicle."
+);
+
+}
+
+try{
+
+const geo =
+await fetch(
+"https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
+encodeURIComponent(
+destination
+)
+);
+
+const places =
+await geo.json();
+
+if(!places.length){
+
+return alert(
+"Destination not found."
+);
+
+}
+
+destinationLat =
+Number(places[0].lat);
+
+destinationLng =
+Number(places[0].lon);
+
+const routeURL =
+`https://router.project-osrm.org/route/v1/driving/${pickupLng},${pickupLat};${destinationLng},${destinationLat}?overview=full&geometries=geojson`;
+
+const response =
+await fetch(
+routeURL
+);
+
+const data =
+await response.json();
+
+if(
+!data.routes?.length
+){
+
+return alert(
+"Route not found."
+);
+
+}
+
+const route =
+data.routes[0];
+
+distance =
+route.distance / 1000;
+
+showMap(
+route.geometry
+);
+
+showSummary();
+
+}catch(error){
+
+console.error(error);
+
+alert(
+"Unable to calculate route."
+);
+
+}
+
+}
+
+function showMap(geometry){
+
+document.getElementById(
+"map"
+).style.display =
+"block";
+
+if(!map){
+
+map =
+L.map("map");
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+attribution:
+"© OpenStreetMap contributors"
+}
+).addTo(map);
+
+}
+
+if(line){
+
+map.removeLayer(
+line
+);
+
+}
+
+line =
+L.geoJSON(
+geometry
+).addTo(map);
+
+map.fitBounds(
+line.getBounds()
+);
+
+}
+
+function calculateFare(){
+
+const rate =
+selectedVehicle === "Bike"
+? 20
+: 200;
+
+return Math.round(
+distance * rate
+);
+
+}
+
+function showSummary(){
+
+const fare =
+calculateFare();
+
+document.getElementById(
+"sPickup"
+).innerText =
+document.getElementById(
+"pickup"
+).value;
+
+document.getElementById(
+"sDestination"
+).innerText =
+document.getElementById(
+"destination"
+).value;
+
+document.getElementById(
+"sType"
+).innerText =
+document.getElementById(
+"parcelType"
+).value;
+
+document.getElementById(
+"sWeight"
+).innerText =
+document.getElementById(
+"parcelWeight"
+).value;
+
+document.getElementById(
+"sVehicle"
+).innerText =
+selectedVehicle;
+
+document.getElementById(
+"sDistance"
+).innerText =
+distance.toFixed(2) +
+" km";
+
+document.getElementById(
+"sFare"
+).innerText =
+"₹" + fare;
+
+document.getElementById(
+"summaryCard"
+).style.display =
+"block";
+
+}
+
+async function bookParcel(){
+
+if(
+pickupLat === null ||
+destinationLat === null
+){
+
+return alert(
+"Calculate route first."
+);
+
+}
+
+const fare =
+calculateFare();
+
+const button =
+document.getElementById(
+"bookButton"
+);
+
+button.disabled = true;
+
+button.innerText =
+"Booking...";
+
+try{
+
+const response =
+await fetch(
+API + "/api/rides",
+{
+method:"POST",
+headers:headers(),
+
+body:JSON.stringify({
+
+pickup:
+document.getElementById(
+"pickup"
+).value.trim(),
+
+destination:
+document.getElementById(
+"destination"
+).value.trim(),
+
+cabType:
+"Parcel Delivery",
+
+vehicleType:
+selectedVehicle,
+
+parcelType:
+document.getElementById(
+"parcelType"
+).value,
+
+parcelWeight:
+document.getElementById(
+"parcelWeight"
+).value,
+
+fare,
+
+pickupLatitude:
+pickupLat,
+
+pickupLongitude:
+pickupLng,
+
+destinationLatitude:
+destinationLat,
+
+destinationLongitude:
+destinationLng,
+
+serviceArea:
+user.city || "Nalanda"
+
+})
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message ||
+"Booking failed."
+);
+
+}
+
+rideId =
+data.ride.id;
+
+document.getElementById(
+"status"
+).innerText =
+"🟢 Parcel booked. Searching for driver...";
+
+renderRide(
+data.ride
+);
+
+pollRide();
+
+button.innerText =
+"Booked";
+
+}catch(error){
+
+alert(
+error.message
+);
+
+button.disabled = false;
+
+button.innerText =
+"📦 Book Parcel";
+
+}
+
+}
+
+function renderRide(ride){
+
+document.getElementById(
+"ride"
+).innerHTML = `
+
+<div class="status">
+
+<b>Status:</b>
+${ride.status}
+
+<br><br>
+
+<b>Driver:</b>
+${ride.driverName || "Searching..."}
+
+<br><br>
+
+<b>Vehicle:</b>
+${ride.driverVehicleType || ride.vehicleType || "-"}
+
+<br><br>
+
+<b>Fare:</b>
+₹${ride.fare}
+
+</div>
+
+`;
+
+}
+
+async function pollRide(){
+
+if(!rideId){
+return;
+}
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/rides/" +
+rideId,
+{
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(response.ok){
+
+renderRide(
+data.ride
+);
+
+if(
+![
+"Completed",
+"Cancelled"
+].includes(
+data.ride.status
+)
+){
+
+setTimeout(
+pollRide,
+3000
+);
+
+}
+
+}
+
+}catch(error){
+
+console.error(error);
+
+setTimeout(
+pollRide,
+5000
+);
+
+}
+
+}
+
+function logout(){
+
+localStorage.removeItem(
+"udanToken"
+);
+
+localStorage.removeItem(
+"udanUser"
+);
+
+location.href =
+"/login.html";
+
+}
+
+</script>
+
+</body>
+</html>

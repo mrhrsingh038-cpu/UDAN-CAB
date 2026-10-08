@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>UDAN CAB - Admin</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f5f7;
+color:#111;
+}
+
+nav{
+height:65px;
+background:#111;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 6%;
+}
+
+.logo{
+font-size:25px;
+font-weight:bold;
+}
+
+.logo span{
+color:#ffd000;
+}
+
+button{
+border:0;
+border-radius:7px;
+padding:9px 14px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.logout{
+background:#ffd000;
+}
+
+.container{
+max-width:1200px;
+margin:30px auto;
+padding:0 15px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:20px;
+}
+
+.stat{
+background:white;
+padding:22px;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,.07);
+}
+
+.stat h3{
+color:#666;
+font-size:14px;
+}
+
+.stat strong{
+font-size:30px;
+display:block;
+margin-top:8px;
+}
+
+.card{
+background:white;
+padding:22px;
+border-radius:12px;
+margin-bottom:20px;
+box-shadow:0 4px 15px rgba(0,0,0,.07);
+overflow:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+padding:11px;
+border-bottom:1px solid #ddd;
+text-align:left;
+white-space:nowrap;
+}
+
+th{
+background:#f5f5f5;
+}
+
+.block{
+background:#e53935;
+color:white;
+}
+
+.unblock{
+background:#08752e;
+color:white;
+}
+
+.remove{
+background:#111;
+color:white;
+}
+
+@media(max-width:800px){
+.grid{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+UDAN<span>CAB</span> ADMIN
+</div>
+
+<div>
+<span id="adminName">
+Admin
+</span>
+
+<button
+class="logout"
+onclick="logout()">
+Logout
+</button>
+</div>
+
+</nav>
+
+<div class="container">
+
+<div class="grid">
+
+<div class="stat">
+<h3>Passengers</h3>
+<strong id="users">0</strong>
+</div>
+
+<div class="stat">
+<h3>Drivers</h3>
+<strong id="drivers">0</strong>
+</div>
+
+<div class="stat">
+<h3>Total Rides</h3>
+<strong id="rides">0</strong>
+</div>
+
+<div class="stat">
+<h3>Active Rides</h3>
+<strong id="active">0</strong>
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>
+🚕 Drivers
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Vehicle</th>
+<th>Online</th>
+<th>Blocked</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="driverTable">
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>
+👤 Passengers
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>City</th>
+<th>Joined</th>
+</tr>
+
+</thead>
+
+<tbody id="passengerTable">
+</tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>
+🚕 Recent Rides
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Passenger</th>
+<th>Pickup</th>
+<th>Destination</th>
+<th>Fare</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="rideTable">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+const API = "";
+
+const token =
+localStorage.getItem(
+"udanToken"
+);
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"udanUser"
+) || "null"
+);
+
+if(
+!token ||
+!user ||
+user.role !== "admin"
+){
+
+location.href =
+"/login.html";
+
+}
+
+document.getElementById(
+"adminName"
+).innerText =
+user?.name || "Admin";
+
+function headers(){
+
+return {
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " + token
+};
+
+}
+
+async function getJSON(url){
+
+const response =
+await fetch(
+API + url,
+{
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message ||
+"Request failed"
+);
+
+}
+
+return data;
+
+}
+
+async function loadStats(){
+
+try{
+
+const data =
+await getJSON(
+"/api/admin/stats"
+);
+
+document.getElementById(
+"users"
+).innerText =
+data.stats.totalUsers;
+
+document.getElementById(
+"drivers"
+).innerText =
+data.stats.totalDrivers;
+
+document.getElementById(
+"rides"
+).innerText =
+data.stats.totalRides;
+
+document.getElementById(
+"active"
+).innerText =
+data.stats.activeRides;
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+async function loadDrivers(){
+
+try{
+
+const data =
+await getJSON(
+"/api/admin/drivers"
+);
+
+document.getElementById(
+"driverTable"
+).innerHTML =
+data.drivers.map(
+driver => `
+
+<tr>
+
+<td>
+${driver.name}
+</td>
+
+<td>
+${driver.email}
+</td>
+
+<td>
+${driver.vehicleType || "-"}
+<br>
+${driver.vehicleNumber || ""}
+</td>
+
+<td>
+${driver.online ? "🟢 Online" : "🔴 Offline"}
+</td>
+
+<td>
+${driver.blocked ? "🚫 Yes" : "No"}
+</td>
+
+<td>
+
+${
+driver.blocked
+
+?
+
+`<button
+class="unblock"
+onclick="unblockDriver('${driver._id}')">
+Unblock
+</button>`
+
+:
+
+`<button
+class="block"
+onclick="blockDriver('${driver._id}')">
+Block
+</button>`
+}
+
+<button
+class="remove"
+onclick="removeDriver('${driver._id}')">
+Remove
+</button>
+
+</td>
+
+</tr>
+
+`
+).join("");
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+async function loadPassengers(){
+
+try{
+
+const data =
+await getJSON(
+"/api/admin/passengers"
+);
+
+document.getElementById(
+"passengerTable"
+).innerHTML =
+data.passengers.map(
+p => `
+
+<tr>
+
+<td>
+${p.name}
+</td>
+
+<td>
+${p.email}
+</td>
+
+<td>
+${p.city || "-"}
+</td>
+
+<td>
+${new Date(
+p.createdAt
+).toLocaleDateString()}
+</td>
+
+</tr>
+
+`
+).join("");
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+async function loadRides(){
+
+try{
+
+const data =
+await getJSON(
+"/api/admin/rides"
+);
+
+document.getElementById(
+"rideTable"
+).innerHTML =
+data.rides
+.slice(0,50)
+.map(
+ride => `
+
+<tr>
+
+<td>
+${ride.userId?.name || "-"}
+</td>
+
+<td>
+${ride.pickup}
+</td>
+
+<td>
+${ride.destination}
+</td>
+
+<td>
+₹${ride.fare}
+</td>
+
+<td>
+${ride.status}
+</td>
+
+</tr>
+
+`
+).join("");
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+async function blockDriver(id){
+
+const reason =
+prompt(
+"Reason for blocking:"
+) || "Blocked by admin.";
+
+try{
+
+await fetch(
+API +
+"/api/admin/drivers/" +
+id +
+"/block",
+{
+method:"PATCH",
+headers:headers(),
+body:JSON.stringify({
+reason
+})
+}
+);
+
+loadAll();
+
+}catch(error){
+
+alert(
+"Unable to block driver."
+);
+
+}
+
+}
+
+async function unblockDriver(id){
+
+try{
+
+await fetch(
+API +
+"/api/admin/drivers/" +
+id +
+"/unblock",
+{
+method:"PATCH",
+headers:headers()
+}
+);
+
+loadAll();
+
+}catch(error){
+
+alert(
+"Unable to unblock driver."
+);
+
+}
+
+}
+
+async function removeDriver(id){
+
+if(
+!confirm(
+"Remove this driver permanently?"
+)
+){
+return;
+}
+
+try{
+
+const response =
+await fetch(
+API +
+"/api/admin/drivers/" +
+id,
+{
+method:"DELETE",
+headers:headers()
+}
+);
+
+const data =
+await response.json();
+
+if(!response.ok){
+
+throw new Error(
+data.message
+);
+
+}
+
+loadAll();
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+function loadAll(){
+
+loadStats();
+loadDrivers();
+loadPassengers();
+loadRides();
+
+}
+
+function logout(){
+
+localStorage.removeItem(
+"udanToken"
+);
+
+localStorage.removeItem(
+"udanUser"
+);
+
+location.href =
+"/login.html";
+
+}
+
+loadAll();
+
+setInterval(
+loadAll,
+5000
+);
+
+</script>
+
+</body>
+</html>
