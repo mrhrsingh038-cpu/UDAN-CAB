@@ -486,7 +486,25 @@ async function startRide(id){
 }
 async function completeRide(id){try{const d=await api("/api/rides/"+id+"/complete",{method:"PATCH",headers:AUTH});stopPassengerLocationPolling();alert("🎉 Ride Completed Successfully!");loadRides()}catch(e){alert("❌ "+e.message)}}
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
-setOnline();startGPS();loadRides();
+async function restoreActiveRide(){
+  const savedRide=localStorage.getItem("udanCurrentRide");
+  if(!savedRide)return false;
+  try{
+    const d=await api("/api/rides/"+savedRide);
+    if(d.ride && d.ride.driverId){
+      activeRide=d.ride._id;
+      renderActive(d.ride);
+      startPassengerLocationPolling();
+      return true;
+    }
+  }catch(e){console.log("No active ride to restore",e.message);}
+  localStorage.removeItem("udanCurrentRide");
+  return false;
+}
+
+setOnline();
+startGPS();
+restoreActiveRide().then(found=>{if(!found)loadRides();});
 setInterval(()=>{if(!activeRide)loadRides();},5000);
 </script>
 
