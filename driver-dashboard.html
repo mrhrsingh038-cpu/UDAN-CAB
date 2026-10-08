@@ -1,761 +1,2081 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>UDAN CAB - Driver</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<style>
+    <title>UDAN CAB - Driver Dashboard</title>
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial,sans-serif;
-}
 
-body{
-background:#f4f5f7;
-}
+    <!-- LEAFLET MAP -->
 
-nav{
-background:#111;
-color:white;
-height:65px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 6%;
-}
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
 
-.logo{
-font-size:25px;
-font-weight:bold;
-}
 
-.logo span{
-color:#ffd000;
-}
+    <style>
 
-button{
-border:0;
-border-radius:8px;
-padding:11px 18px;
-font-weight:bold;
-cursor:pointer;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-.logout{
-background:#ffd000;
-}
 
-.container{
-max-width:1000px;
-margin:30px auto;
-padding:0 15px;
-}
+        body {
+            min-height: 100vh;
+            background: #f5f5f5;
+            color: #111;
+        }
 
-.card{
-background:white;
-padding:25px;
-border-radius:15px;
-margin-bottom:20px;
-box-shadow:0 4px 18px rgba(0,0,0,.08);
-}
 
-.online{
-background:#111;
-color:white;
-width:100%;
-margin-top:15px;
-}
+        /* =========================
+           NAVBAR
+        ========================= */
 
-.online.active{
-background:#08752e;
-}
+        .navbar {
 
-.ride{
-border:1px solid #ddd;
-padding:18px;
-border-radius:12px;
-margin-top:15px;
-}
+            height: 70px;
 
-.ride p{
-margin:8px 0;
-}
+            background: #111;
 
-.accept{
-background:#ffd000;
-width:100%;
-margin-top:12px;
-}
+            color: white;
 
-.start{
-background:#111;
-color:white;
-width:100%;
-margin-top:10px;
-}
+            display: flex;
 
-.complete{
-background:#08752e;
-color:white;
-width:100%;
-margin-top:10px;
-}
+            align-items: center;
 
-.status{
-padding:15px;
-background:#f3f3f3;
-border-radius:8px;
-margin-top:15px;
-}
+            justify-content: space-between;
 
-</style>
+            padding: 0 6%;
+
+        }
+
+
+        .logo {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+        }
+
+
+        .logo span {
+
+            color: #ffd000;
+
+        }
+
+
+        .driver-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        .logout {
+
+            padding: 10px 18px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #ffd000;
+
+            color: #111;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+
+            max-width: 1100px;
+
+            margin: 35px auto;
+
+            padding: 20px;
+
+        }
+
+
+        .welcome {
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .welcome h1 {
+
+            font-size: 32px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .welcome p {
+
+            color: #666;
+
+        }
+
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .top-bar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .refresh-btn {
+
+            padding: 11px 18px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #111;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =========================
+           RIDES
+        ========================= */
+
+        .rides {
+
+            display: grid;
+
+            gap: 20px;
+
+        }
+
+
+        .ride-card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.08);
+
+        }
+
+
+        .ride-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .ride-id {
+
+            font-size: 19px;
+
+            font-weight: bold;
+
+        }
+
+
+        .status {
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            background: #fff4bd;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+        }
+
+
+        .location {
+
+            margin: 12px 0;
+
+            font-size: 16px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .fare {
+
+            margin: 20px 0;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .action-btn {
+
+            width: 100%;
+
+            padding: 14px;
+
+            margin-top: 10px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #111;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .action-btn:hover {
+
+            background: #333;
+
+        }
+
+
+        .start-btn {
+
+            background: #16803c;
+
+        }
+
+
+        .start-btn:hover {
+
+            background: #11652f;
+
+        }
+
+
+        .complete-btn {
+
+            background: #0066cc;
+
+        }
+
+
+        .complete-btn:hover {
+
+            background: #0052a3;
+
+        }
+
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+
+            background: white;
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+            border-radius: 15px;
+
+            color: #777;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.05);
+
+        }
+
+
+        /* =========================
+           LIVE TRACKING
+        ========================= */
+
+        #driverLiveBox {
+
+            display: none;
+
+            background: white;
+
+            padding: 25px;
+
+            margin-top: 30px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.1);
+
+        }
+
+
+        #driverLiveBox h2 {
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .driver-location-info {
+
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            margin-top: 15px;
+
+        }
+
+
+        .driver-location-card {
+
+            flex: 1;
+
+            min-width: 220px;
+
+            padding: 15px;
+
+            background: #f5f5f5;
+
+            border-radius: 10px;
+
+        }
+
+
+        .driver-location-card p {
+
+            margin-top: 8px;
+
+            color: #555;
+
+            word-break: break-word;
+
+        }
+
+
+        #driverLiveMap {
+
+            width: 100%;
+
+            height: 420px;
+
+            border-radius: 12px;
+
+            margin-top: 20px;
+
+        }
+
+
+        .live-status {
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            background: #e9f8ee;
+
+            color: #16803c;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media(max-width:700px) {
+
+            .navbar {
+
+                padding: 0 20px;
+
+            }
+
+
+            .driver-info span {
+
+                display: none;
+
+            }
+
+
+            .top-bar {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+
+            }
+
+
+            .refresh-btn {
+
+                width: 100%;
+
+            }
+
+
+            #driverLiveMap {
+
+                height: 350px;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-<nav>
 
-<div class="logo">
-UDAN<span>CAB</span>
-</div>
+    <!-- =========================
+         NAVBAR
+    ========================= -->
 
-<div>
-<span id="driverName">
-Driver
-</span>
+    <div class="navbar">
 
-<button
-class="logout"
-onclick="logout()">
-Logout
-</button>
-</div>
+        <div class="logo">
 
-</nav>
+            UDAN<span>CAB</span>
 
-<div class="container">
+        </div>
 
-<div class="card">
 
-<h2>
-🚕 Driver Dashboard
-</h2>
+        <div class="driver-info">
 
-<p id="driverInfo">
-Loading...
-</p>
+            <span>
+                🚕 Driver
+            </span>
 
-<button
-id="onlineButton"
-class="online"
-onclick="toggleOnline()">
 
-Go Online
+            <button
+                class="logout"
+                onclick="logout()">
 
-</button>
+                Logout
 
-<div
-class="status"
-id="status">
-Offline
-</div>
+            </button>
 
-</div>
+        </div>
 
-<div class="card">
+    </div>
 
-<h2>
-📋 Ride Requests
-</h2>
 
-<div id="rides">
-Loading rides...
-</div>
 
-</div>
+    <!-- =========================
+         MAIN
+    ========================= -->
 
-</div>
+    <div class="main">
 
-<script>
 
-const API = "";
+        <div class="welcome">
 
-const token =
-localStorage.getItem(
-"udanToken"
-);
+            <h1>
+                Driver Dashboard 🚕
+            </h1>
 
-let user = null;
+            <p>
+                Find and manage passenger rides.
+            </p>
 
-try{
+        </div>
 
-user =
-JSON.parse(
-localStorage.getItem(
-"udanUser"
-)
-);
 
-}catch(e){
 
-user = null;
+        <div class="top-bar">
 
-}
+            <h2>
+                Available Rides
+            </h2>
 
-if(
-!token ||
-!user ||
-user.role !== "driver"
-){
 
-location.href =
-"/login.html";
+            <button
+                class="refresh-btn"
+                onclick="loadRides()">
 
-}
+                🔄 Refresh
 
-function headers(){
+            </button>
 
-return {
-"Content-Type":
-"application/json",
+        </div>
 
-"Authorization":
-"Bearer " + token
-};
 
-}
 
-document.getElementById(
-"driverName"
-).innerText =
-user?.name || "Driver";
+        <!-- =========================
+             RIDES
+        ========================= -->
 
-document.getElementById(
-"driverInfo"
-).innerText =
-`${user?.vehicleType || "-"} | ${user?.vehicleNumber || "-"}`;
+        <div
+            class="rides"
+            id="rides">
 
-let online =
-Boolean(user?.online);
+        </div>
 
-function updateOnlineUI(){
 
-const button =
-document.getElementById(
-"onlineButton"
-);
 
-if(online){
+        <!-- =========================
+             LIVE LOCATION BOX
+        ========================= -->
 
-button.innerText =
-"🟢 Go Offline";
+        <div id="driverLiveBox">
 
-button.classList.add(
-"active"
-);
+            <h2>
+                🚕 Live Ride Tracking
+            </h2>
 
-document.getElementById(
-"status"
-).innerText =
-"🟢 You are online";
 
-}else{
+            <div class="driver-location-info">
 
-button.innerText =
-"Go Online";
 
-button.classList.remove(
-"active"
-);
+                <div class="driver-location-card">
 
-document.getElementById(
-"status"
-).innerText =
-"🔴 You are offline";
+                    <b>
+                        🚕 Your Location
+                    </b>
 
-}
+                    <p id="driverOwnLocation">
+                        Waiting for GPS...
+                    </p>
 
-}
+                </div>
 
-async function toggleOnline(){
 
-const newStatus =
-!online;
 
-try{
+                <div class="driver-location-card">
 
-const response =
-await fetch(
-API +
-"/api/driver/status",
-{
-method:"POST",
-headers:headers(),
-body:JSON.stringify({
-online:newStatus
-})
-}
-);
+                    <b>
+                        📍 Passenger Location
+                    </b>
 
-const data =
-await response.json();
+                    <p id="driverPassengerLocation">
+                        Waiting for passenger...
+                    </p>
 
-if(!response.ok){
+                </div>
 
-throw new Error(
-data.message
-);
 
-}
+            </div>
 
-online =
-data.online;
 
-user.online =
-online;
+            <div
+                class="live-status"
+                id="driverLiveStatus">
 
-localStorage.setItem(
-"udanUser",
-JSON.stringify(user)
-);
+                🟡 Starting live tracking...
 
-updateOnlineUI();
+            </div>
 
-if(online){
 
-startGPS();
+            <div
+                id="driverLiveMap">
 
-loadRides();
+            </div>
 
-}
+        </div>
 
-}catch(error){
 
-alert(
-error.message
-);
+    </div>
 
-}
 
-}
 
-let gpsWatch = null;
+    <!-- LEAFLET -->
 
-function startGPS(){
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
 
-if(gpsWatch !== null){
-return;
-}
 
-if(!navigator.geolocation){
-return;
-}
 
-gpsWatch =
-navigator.geolocation.watchPosition(
+    <script>
 
-async position => {
 
-try{
+        /* =========================
+           BASIC CONFIG
+        ========================= */
 
-await fetch(
-API +
-"/api/location/update",
-{
-method:"POST",
-headers:headers(),
-body:JSON.stringify({
+        const API = "";
 
-latitude:
-position.coords.latitude,
+        const TOKEN =
+            localStorage.getItem("udanToken");
 
-longitude:
-position.coords.longitude,
 
-accuracy:
-position.coords.accuracy
+        const USER =
+            JSON.parse(
+                localStorage.getItem("udanUser") || "null"
+            );
 
-})
-}
-);
 
-}catch(error){
+        if (
+            !TOKEN ||
+            !USER ||
+            USER.role !== "driver"
+        ) {
 
-console.error(error);
+            alert(
+                "Please login as driver first."
+            );
 
-}
+            location.href =
+                "login.html";
 
-},
+        }
 
-error => {
 
-console.error(
-"GPS:",
-error
-);
+        const AUTH = {
 
-},
+            "Content-Type":
+                "application/json",
 
-{
-enableHighAccuracy:true,
-maximumAge:5000,
-timeout:10000
-}
+            "Authorization":
+                "Bearer " + TOKEN
 
-);
+        };
 
-}
 
-async function loadRides(){
+        let activeRide = null;
 
-if(!online){
+        let gpsWatch = null;
 
-document.getElementById(
-"rides"
-).innerHTML =
-"Go online to receive rides.";
 
-return;
+        /* =========================
+           LIVE MAP VARIABLES
+        ========================= */
 
-}
+        let driverMap = null;
 
-try{
+        let driverOwnMarker = null;
 
-const response =
-await fetch(
-API +
-"/api/driver/rides",
-{
-headers:headers()
-}
-);
+        let passengerMarker = null;
 
-const data =
-await response.json();
+        let liveRideId =
+            localStorage.getItem(
+                "udanCurrentRide"
+            );
 
-if(!response.ok){
 
-throw new Error(
-data.message
-);
+        let passengerRefreshTimer = null;
 
-}
 
-const rides =
-data.rides || [];
 
-if(!rides.length){
+        /* =========================
+           API HELPER
+        ========================= */
 
-document.getElementById(
-"rides"
-).innerHTML =
-"No ride requests right now.";
+        async function api(
+            url,
+            options = {}
+        ) {
 
-return;
+            options.headers = {
 
-}
+                ...(options.headers || {}),
 
-document.getElementById(
-"rides"
-).innerHTML =
-rides.map(
-renderRide
-).join("");
+                "Authorization":
+                    "Bearer " + TOKEN
 
-}catch(error){
+            };
 
-document.getElementById(
-"rides"
-).innerHTML =
-"Unable to load rides.";
 
-console.error(error);
+            if (
+                options.body &&
+                !options.headers["Content-Type"]
+            ) {
 
-}
+                options.headers["Content-Type"] =
+                    "application/json";
 
-}
+            }
 
-function renderRide(ride){
 
-return `
+            const response =
+                await fetch(
+                    API + url,
+                    options
+                );
 
-<div class="ride">
 
-<h3>
-${ride.cabType}
-</h3>
+            const data =
+                await response
+                    .json()
+                    .catch(() => ({}));
 
-<p>
-<b>Pickup:</b>
-${ride.pickup}
-</p>
 
-<p>
-<b>Destination:</b>
-${ride.destination}
-</p>
+            if (!response.ok) {
 
-<p>
-<b>Vehicle:</b>
-${ride.vehicleType || "-"}
-</p>
+                throw new Error(
+                    data.message ||
+                    "Request failed"
+                );
 
-<p>
-<b>Fare:</b>
-₹${ride.fare}
-</p>
+            }
 
-<p>
-<b>Status:</b>
-${ride.status}
-</p>
 
-<button
-class="accept"
-onclick="acceptRide('${ride.id}')">
+            return data;
 
-Accept Ride
+        }
 
-</button>
 
-</div>
 
-`;
+        /* =========================
+           LOGOUT
+        ========================= */
 
-}
+        function logout() {
 
-async function acceptRide(id){
+            localStorage.removeItem(
+                "udanToken"
+            );
 
-try{
+            localStorage.removeItem(
+                "udanUser"
+            );
 
-const response =
-await fetch(
-API +
-"/api/rides/" +
-id +
-"/accept",
-{
-method:"POST",
-headers:headers()
-}
-);
+            localStorage.removeItem(
+                "udanCurrentRide"
+            );
 
-const data =
-await response.json();
 
-if(!response.ok){
+            location.href =
+                "login.html";
 
-throw new Error(
-data.message
-);
+        }
 
-}
 
-alert(
-"Ride accepted!"
-);
 
-loadActiveRide(
-data.ride
-);
+        /* =========================
+           DRIVER ONLINE
+        ========================= */
 
-loadRides();
+        async function setOnline() {
 
-}catch(error){
+            try {
 
-alert(
-error.message
-);
+                await api(
+                    "/api/driver/status",
+                    {
 
-}
+                        method: "POST",
 
-}
+                        headers: AUTH,
 
-let activeRide = null;
+                        body:
+                            JSON.stringify({
+                                online: true
+                            })
 
-function loadActiveRide(ride){
+                    }
+                );
 
-activeRide =
-ride;
+            }
 
-document.getElementById(
-"rides"
-).innerHTML = `
+            catch(error) {
 
-<div class="ride">
+                console.error(
+                    "Online status error:",
+                    error
+                );
 
-<h3>
-Active Ride
-</h3>
+            }
 
-<p>
-<b>Pickup:</b>
-${ride.pickup}
-</p>
+        }
 
-<p>
-<b>Destination:</b>
-${ride.destination}
-</p>
 
-<p>
-<b>Fare:</b>
-₹${ride.fare}
-</p>
 
-<p>
-<b>Status:</b>
-<span id="activeStatus">
-${ride.status}
-</span>
-</p>
+        /* =========================
+           DRIVER GPS
+        ========================= */
 
-<button
-class="start"
-onclick="startRide('${ride.id}')">
+        function startGPS() {
 
-Start Ride
+            if (
+                !navigator.geolocation
+            ) {
 
-</button>
+                alert(
+                    "Your browser does not support GPS."
+                );
 
-<button
-class="complete"
-onclick="completeRide('${ride.id}')">
+                return;
 
-Complete Ride
+            }
 
-</button>
 
-</div>
+            if (
+                gpsWatch !== null
+            ) {
 
-`;
+                navigator.geolocation.clearWatch(
+                    gpsWatch
+                );
 
-}
+            }
 
-async function startRide(id){
 
-try{
+            gpsWatch =
+                navigator.geolocation.watchPosition(
 
-const response =
-await fetch(
-API +
-"/api/rides/" +
-id +
-"/start",
-{
-method:"PATCH",
-headers:headers()
-}
-);
+                    async function(position) {
 
-const data =
-await response.json();
+                        const lat =
+                            position.coords.latitude;
 
-if(!response.ok){
+                        const lng =
+                            position.coords.longitude;
 
-throw new Error(
-data.message
-);
+                        const accuracy =
+                            position.coords.accuracy;
 
-}
 
-loadActiveRide(
-data.ride
-);
+                        /* DRIVER GENERAL LOCATION */
 
-}catch(error){
+                        try {
 
-alert(
-error.message
-);
+                            await api(
+                                "/api/location/update",
+                                {
 
-}
+                                    method: "POST",
 
-}
+                                    headers: AUTH,
 
-async function completeRide(id){
+                                    body:
+                                        JSON.stringify({
 
-try{
+                                            latitude: lat,
 
-const response =
-await fetch(
-API +
-"/api/rides/" +
-id +
-"/complete",
-{
-method:"PATCH",
-headers:headers()
-}
-);
+                                            longitude: lng,
 
-const data =
-await response.json();
+                                            accuracy: accuracy
 
-if(!response.ok){
+                                        })
 
-throw new Error(
-data.message
-);
+                                }
+                            );
 
-}
+                        }
 
-activeRide = null;
+                        catch(error) {
 
-alert(
-"Ride completed!"
-);
+                            console.error(
+                                "General GPS error:",
+                                error
+                            );
 
-loadRides();
+                        }
 
-}catch(error){
 
-alert(
-error.message
-);
+                        /* DRIVER LIVE RIDE LOCATION */
 
-}
+                        if (
+                            liveRideId
+                        ) {
 
-}
+                            try {
 
-function logout(){
+                                await api(
 
-localStorage.removeItem(
-"udanToken"
-);
+                                    "/api/rides/" +
+                                    liveRideId +
+                                    "/driver-location",
 
-localStorage.removeItem(
-"udanUser"
-);
+                                    {
 
-location.href =
-"/login.html";
+                                        method: "PATCH",
 
-}
+                                        headers: AUTH,
 
-updateOnlineUI();
+                                        body:
+                                            JSON.stringify({
 
-if(online){
+                                                latitude: lat,
 
-startGPS();
+                                                longitude: lng,
 
-loadRides();
+                                                accuracy: accuracy
 
-}
+                                            })
 
-setInterval(
-loadRides,
-5000
-);
+                                    }
 
-</script>
+                                );
+
+
+                                document
+                                    .getElementById(
+                                        "driverOwnLocation"
+                                    )
+                                    .innerText =
+                                    lat.toFixed(5) +
+                                    ", " +
+                                    lng.toFixed(5);
+
+
+                                updateDriverOwnMarker(
+                                    lat,
+                                    lng
+                                );
+
+
+                                document
+                                    .getElementById(
+                                        "driverLiveStatus"
+                                    )
+                                    .innerText =
+                                    "🟢 Driver live location is active";
+
+                            }
+
+                            catch(error) {
+
+                                console.error(
+                                    "Ride GPS error:",
+                                    error
+                                );
+
+                            }
+
+                        }
+
+                    },
+
+
+                    function(error) {
+
+                        console.log(
+                            "GPS:",
+                            error.message
+                        );
+
+                    },
+
+
+                    {
+
+                        enableHighAccuracy:
+                            true,
+
+                        maximumAge:
+                            3000,
+
+                        timeout:
+                            10000
+
+                    }
+
+                );
+
+        }
+
+
+
+        /* =========================
+           CREATE MAP
+        ========================= */
+
+        function createDriverMap(
+            lat,
+            lng
+        ) {
+
+            if (driverMap) {
+
+                return;
+
+            }
+
+
+            driverMap =
+                L.map(
+                    "driverLiveMap"
+                ).setView(
+                    [lat, lng],
+                    14
+                );
+
+
+            L.tileLayer(
+
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+                {
+
+                    maxZoom: 19,
+
+                    attribution:
+                        "&copy; OpenStreetMap"
+
+                }
+
+            ).addTo(
+                driverMap
+            );
+
+        }
+
+
+
+        /* =========================
+           DRIVER MARKER
+        ========================= */
+
+        function updateDriverOwnMarker(
+            lat,
+            lng
+        ) {
+
+            if (!driverMap) {
+
+                createDriverMap(
+                    lat,
+                    lng
+                );
+
+            }
+
+
+            if (!driverOwnMarker) {
+
+                driverOwnMarker =
+                    L.marker(
+                        [lat, lng]
+                    )
+                    .addTo(
+                        driverMap
+                    )
+                    .bindPopup(
+                        "🚕 You - LIVE"
+                    );
+
+            }
+
+            else {
+
+                driverOwnMarker
+                    .setLatLng(
+                        [lat, lng]
+                    );
+
+            }
+
+        }
+
+
+
+        /* =========================
+           PASSENGER MARKER
+        ========================= */
+
+        function updatePassengerMarker(
+            lat,
+            lng
+        ) {
+
+            if (!driverMap) {
+
+                createDriverMap(
+                    lat,
+                    lng
+                );
+
+            }
+
+
+            if (!passengerMarker) {
+
+                passengerMarker =
+                    L.marker(
+                        [lat, lng]
+                    )
+                    .addTo(
+                        driverMap
+                    )
+                    .bindPopup(
+                        "📍 Passenger - LIVE"
+                    );
+
+            }
+
+            else {
+
+                passengerMarker
+                    .setLatLng(
+                        [lat, lng]
+                    );
+
+            }
+
+
+            fitBothMarkers();
+
+        }
+
+
+
+        /* =========================
+           FIT BOTH LOCATIONS
+        ========================= */
+
+        function fitBothMarkers() {
+
+            if (
+                !driverMap ||
+                !driverOwnMarker ||
+                !passengerMarker
+            ) {
+
+                return;
+
+            }
+
+
+            const group =
+                L.featureGroup([
+
+                    driverOwnMarker,
+
+                    passengerMarker
+
+                ]);
+
+
+            driverMap.fitBounds(
+                group
+                    .getBounds()
+                    .pad(0.25)
+            );
+
+        }
+
+
+
+        /* =========================
+           LOAD PASSENGER LOCATION
+        ========================= */
+
+        async function loadPassengerLocation() {
+
+            if (
+                !liveRideId ||
+                !TOKEN
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+
+                        API +
+                        "/api/rides/" +
+                        liveRideId,
+
+                        {
+
+                            headers: AUTH
+
+                        }
+
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    return;
+
+                }
+
+
+                const ride =
+                    data.ride;
+
+
+                if (!ride) {
+
+                    return;
+
+                }
+
+
+                /* CHECK COMPLETED */
+
+                if (
+                    ride.status ===
+                        "Completed" ||
+
+                    ride.status ===
+                        "Cancelled"
+                ) {
+
+                    stopLiveTracking();
+
+                    return;
+
+                }
+
+
+                if (
+                    !ride.passengerLocation
+                ) {
+
+                    document
+                        .getElementById(
+                            "driverPassengerLocation"
+                        )
+                        .innerText =
+                        "Waiting for passenger GPS...";
+
+                    return;
+
+                }
+
+
+                const lat =
+                    Number(
+                        ride.passengerLocation.lat
+                    );
+
+
+                const lng =
+                    Number(
+                        ride.passengerLocation.lng
+                    );
+
+
+                if (
+                    !Number.isFinite(lat) ||
+                    !Number.isFinite(lng)
+                ) {
+
+                    return;
+
+                }
+
+
+                document
+                    .getElementById(
+                        "driverPassengerLocation"
+                    )
+                    .innerText =
+
+                    lat.toFixed(5) +
+                    ", " +
+                    lng.toFixed(5);
+
+
+                updatePassengerMarker(
+                    lat,
+                    lng
+                );
+
+
+                document
+                    .getElementById(
+                        "driverLiveStatus"
+                    )
+                    .innerText =
+                    "🟢 Passenger location received";
+
+            }
+
+            catch(error) {
+
+                console.error(
+                    "Passenger location error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+
+        /* =========================
+           START LIVE TRACKING
+        ========================= */
+
+        function startDriverLiveTracking() {
+
+            if (!liveRideId) {
+
+                return;
+
+            }
+
+
+            document
+                .getElementById(
+                    "driverLiveBox"
+                )
+                .style.display =
+                "block";
+
+
+            /* MAP REFRESH */
+
+            setTimeout(
+                function() {
+
+                    if (driverMap) {
+
+                        driverMap.invalidateSize();
+
+                    }
+
+                },
+                300
+            );
+
+
+            /* FIRST LOAD */
+
+            loadPassengerLocation();
+
+
+            /* PREVENT DUPLICATE TIMER */
+
+            if (
+                passengerRefreshTimer
+            ) {
+
+                clearInterval(
+                    passengerRefreshTimer
+                );
+
+            }
+
+
+            passengerRefreshTimer =
+                setInterval(
+
+                    loadPassengerLocation,
+
+                    3000
+
+                );
+
+        }
+
+
+
+        /* =========================
+           STOP LIVE TRACKING
+        ========================= */
+
+        function stopLiveTracking() {
+
+            if (
+                passengerRefreshTimer
+            ) {
+
+                clearInterval(
+                    passengerRefreshTimer
+                );
+
+                passengerRefreshTimer =
+                    null;
+
+            }
+
+
+            document
+                .getElementById(
+                    "driverLiveStatus"
+                )
+                .innerText =
+                "⚪ Live ride tracking stopped.";
+
+        }
+
+
+
+        /* =========================
+           LOAD RIDES
+        ========================= */
+
+        async function loadRides() {
+
+            const box =
+                document.getElementById(
+                    "rides"
+                );
+
+
+            box.innerHTML =
+                '<div class="empty">⏳ Loading rides...</div>';
+
+
+            try {
+
+                const data =
+                    await api(
+                        "/api/driver/rides"
+                    );
+
+
+                const rides =
+                    data.rides || [];
+
+
+                if (!rides.length) {
+
+                    box.innerHTML =
+                        '<div class="empty">' +
+                        '🚕 No rides available right now.' +
+                        '<br><br>' +
+                        'Click Refresh to check again.' +
+                        '</div>';
+
+                    return;
+
+                }
+
+
+                box.innerHTML = "";
+
+
+                rides.forEach(
+                    function(ride) {
+
+                        const id =
+                            ride._id;
+
+
+                        const card =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        card.className =
+                            "ride-card";
+
+
+                        card.innerHTML =
+
+                            '<div class="ride-header">' +
+
+                            '<div class="ride-id">' +
+                            '🚕 Ride #' +
+                            id.slice(-6) +
+                            '</div>' +
+
+                            '<div class="status">' +
+                            escapeHtml(
+                                ride.status
+                            ) +
+                            '</div>' +
+
+                            '</div>' +
+
+
+                            '<div class="location">' +
+                            '📍 <strong>Pickup:</strong> ' +
+                            escapeHtml(
+                                ride.pickup
+                            ) +
+                            '</div>' +
+
+
+                            '<div class="location">' +
+                            '🎯 <strong>Destination:</strong> ' +
+                            escapeHtml(
+                                ride.destination
+                            ) +
+                            '</div>' +
+
+
+                            '<div class="location">' +
+                            '🚗 <strong>Vehicle:</strong> ' +
+                            escapeHtml(
+                                ride.cabType ||
+                                ride.vehicleType ||
+                                "-"
+                            ) +
+                            '</div>' +
+
+
+                            '<div class="fare">' +
+                            '💰 ₹' +
+                            Number(
+                                ride.fare || 0
+                            ) +
+                            '</div>' +
+
+
+                            '<button ' +
+                            'class="action-btn" ' +
+                            'onclick="acceptRide(\'' +
+                            id +
+                            '\')">' +
+
+                            '✅ Accept Ride' +
+
+                            '</button>';
+
+
+                        box.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+            }
+
+            catch(error) {
+
+                box.innerHTML =
+
+                    '<div class="empty">' +
+
+                    '❌ ' +
+
+                    escapeHtml(
+                        error.message
+                    ) +
+
+                    '</div>';
+
+
+                if (
+                    error.message
+                        .toLowerCase()
+                        .includes("token")
+                ) {
+
+                    logout();
+
+                }
+
+            }
+
+        }
+
+
+
+        /* =========================
+           ACCEPT RIDE
+        ========================= */
+
+        async function acceptRide(
+            id
+        ) {
+
+            try {
+
+                const data =
+                    await api(
+
+                        "/api/rides/" +
+                        id +
+                        "/accept",
+
+                        {
+
+                            method:
+                                "POST",
+
+                            headers:
+                                AUTH
+
+                        }
+
+                    );
+
+
+                activeRide =
+                    data.ride._id;
+
+
+                liveRideId =
+                    data.ride._id;
+
+
+                localStorage.setItem(
+
+                    "udanCurrentRide",
+
+                    data.ride._id
+
+                );
+
+
+                renderActive(
+                    data.ride
+                );
+
+
+                startDriverLiveTracking();
+
+
+                startGPS();
+
+
+                alert(
+                    "🎉 Ride Accepted!\n\nLive tracking started."
+                );
+
+            }
+
+            catch(error) {
+
+                alert(
+                    "❌ " +
+                    error.message
+                );
+
+
+                loadRides();
+
+            }
+
+        }
+
+
+
+        /* =========================
+           ACTIVE RIDE
+        ========================= */
+
+        function renderActive(
+            ride
+        ) {
+
+            const box =
+                document.getElementById(
+                    "rides"
+                );
+
+
+            let action = "";
+
+
+            if (
+                ride.status ===
+                "Driver assigned"
+            ) {
+
+                action =
+
+                    '<button ' +
+
+                    'class="action-btn start-btn" ' +
+
+                    'onclick="startRide(\'' +
+                    ride._id +
+                    '\')">' +
+
+                    '🚕 Start Ride' +
+
+                    '</button>';
+
+            }
+
+
+            if (
+                ride.status ===
+                "Ride started"
+            ) {
+
+                action =
+
+                    '<button ' +
+
+                    'class="action-btn complete-btn" ' +
+
+                    'onclick="completeRide(\'' +
+                    ride._id +
+                    '\')">' +
+
+                    '🎉 Complete Ride' +
+
+                    '</button>';
+
+            }
+
+
+            box.innerHTML =
+
+                '<div class="ride-card">' +
+
+                '<div class="ride-header">' +
+
+                '<div class="ride-id">' +
+                '🚕 Ride #' +
+                ride._id.slice(-6) +
+                '</div>' +
+
+                '<div class="status">' +
+                escapeHtml(
+                    ride.status
+                ) +
+                '</div>' +
+
+                '</div>' +
+
+
+                '<div class="location">' +
+                '📍 <strong>Pickup:</strong> ' +
+                escapeHtml(
+                    ride.pickup
+                ) +
+                '</div>' +
+
+
+                '<div class="location">' +
+                '🎯 <strong>Destination:</strong> ' +
+                escapeHtml(
+                    ride.destination
+                ) +
+                '</div>' +
+
+
+                '<div class="location">' +
+                '🚗 <strong>Vehicle:</strong> ' +
+                escapeHtml(
+                    ride.cabType ||
+                    ride.vehicleType ||
+                    "-"
+                ) +
+                '</div>' +
+
+
+                '<div class="fare">' +
+                '💰 ₹' +
+                Number(
+                    ride.fare || 0
+                ) +
+                '</div>' +
+
+                action +
+
+                '</div>';
+
+        }
+
+
+
+        /* =========================
+           START RIDE
+        ========================= */
+
+        async function startRide(
+            id
+        ) {
+
+            try {
+
+                const data =
+                    await api(
+
+                        "/api/rides/" +
+                        id +
+                        "/start",
+
+                        {
+
+                            method:
+                                "PATCH",
+
+                            headers:
+                                AUTH
+
+                        }
+
+                    );
+
+
+                activeRide =
+                    id;
+
+
+                liveRideId =
+                    id;
+
+
+                localStorage.setItem(
+
+                    "udanCurrentRide",
+
+                    id
+
+                );
+
+
+                renderActive(
+                    data.ride
+                );
+
+
+                startDriverLiveTracking();
+
+
+                startGPS();
+
+
+                alert(
+                    "🚕 Ride Started!\n\nLive tracking is active."
+                );
+
+            }
+
+            catch(error) {
+
+                alert(
+                    "❌ " +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+
+        /* =========================
+           COMPLETE RIDE
+        ========================= */
+
+        async function completeRide(
+            id
+        ) {
+
+            try {
+
+                await api(
+
+                    "/api/rides/" +
+                    id +
+                    "/complete",
+
+                    {
+
+                        method:
+                            "PATCH",
+
+                        headers:
+                            AUTH
+
+                    }
+
+                );
+
+
+                activeRide =
+                    null;
+
+
+                liveRideId =
+                    null;
+
+
+                localStorage.removeItem(
+                    "udanCurrentRide"
+                );
+
+
+                stopLiveTracking();
+
+
+                document
+                    .getElementById(
+                        "driverLiveBox"
+                    )
+                    .style.display =
+                    "none";
+
+
+                alert(
+                    "🎉 Ride Completed Successfully!"
+                );
+
+
+                loadRides();
+
+            }
+
+            catch(error) {
+
+                alert(
+                    "❌ " +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+
+        /* =========================
+           ESCAPE HTML
+        ========================= */
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            ).replace(
+                /[&<>"']/g,
+                function(char) {
+
+                    return {
+
+                        "&":
+                            "&amp;",
+
+                        "<":
+                            "&lt;",
+
+                        ">":
+                            "&gt;",
+
+                        '"':
+                            "&quot;",
+
+                        "'":
+                            "&#39;"
+
+                    }[char];
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================
+           PAGE START
+        ========================= */
+
+        setOnline();
+
+        startGPS();
+
+        loadRides();
+
+
+        /* CHECK EXISTING ACTIVE RIDE */
+
+        if (
+            liveRideId
+        ) {
+
+            activeRide =
+                liveRideId;
+
+            startDriverLiveTracking();
+
+        }
+
+
+        /* REFRESH RIDES */
+
+        setInterval(
+            function() {
+
+                if (!activeRide) {
+
+                    loadRides();
+
+                }
+
+            },
+            5000
+        );
+
+
+    </script>
+
 
 </body>
+
 </html>
