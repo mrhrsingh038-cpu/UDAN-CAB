@@ -9,6 +9,7 @@
           content="width=device-width, initial-scale=1.0">
 
     <title>UDAN CAB - Driver Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
     <style>
 
@@ -332,6 +333,12 @@
 
         </div>
 
+
+        <div id="passengerMapWrap" style="display:none;margin-top:20px;background:white;padding:20px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,.08);">
+            <h3 style="margin-bottom:10px;">📍 Passenger Live Location</h3>
+            <p id="passengerLocationText" style="color:#666;margin-bottom:12px;">Waiting for passenger location...</p>
+            <div id="passengerMap" style="width:100%;height:360px;border-radius:12px;"></div>
+        </div>
     </div>
 
 
@@ -344,6 +351,10 @@ if(!TOKEN||!USER||USER.role!=="driver"){alert("Please login as driver first.");l
 const AUTH={"Content-Type":"application/json","Authorization":"Bearer "+TOKEN};
 let activeRide=null;
 let gpsWatch=null;
+let passengerMap=null;
+let passengerMarker=null;
+let driverMarker=null;
+let rideLocationTimer=null;
 
 async function api(url,options={}){
   options.headers={...(options.headers||{}),Authorization:"Bearer "+TOKEN};
@@ -354,7 +365,7 @@ async function api(url,options={}){
   return d;
 }
 
-function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");location.href="login.html";}
+function logout(){stopPassengerLocationPolling();localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");localStorage.removeItem("udanCurrentRide");location.href="login.html";}
 
 async function setOnline(){
  try{await api("/api/driver/status",{method:"POST",headers:AUTH,body:JSON.stringify({online:true})});}catch(e){console.error(e)}
@@ -368,6 +379,67 @@ function startGPS(){
    if(activeRide)await api("/api/rides/"+activeRide+"/driver-location",{method:"PATCH",headers:AUTH,body:JSON.stringify({latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy})});
    }catch(e){console.error("GPS",e)}
  },e=>console.log("GPS",e.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+}
+
+
+async function updatePassengerLocationMap(){
+ if(!activeRide) return;
+ try{
+  const d=await api("/api/rides/"+activeRide);
+  const ride=d.ride;
+  const p=ride && ride.passengerLocation;
+  const dl=ride && ride.driverLocation;
+
+  if(!p || !Number.isFinite(Number(p.lat)) || !Number.isFinite(Number(p.lng))){
+   document.getElementById("passengerMapWrap").style.display="block";
+   document.getElementById("passengerLocationText").innerText="⏳ Waiting for passenger GPS location...";
+   return;
+  }
+
+  document.getElementById("passengerMapWrap").style.display="block";
+  document.getElementById("passengerLocationText").innerText=
+    "Passenger: "+Number(p.lat).toFixed(6)+", "+Number(p.lng).toFixed(6);
+
+  if(!passengerMap){
+   passengerMap=L.map("passengerMap");
+   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    attribution:"&copy; OpenStreetMap contributors"
+   }).addTo(passengerMap);
+  }
+
+  if(passengerMarker) passengerMap.removeLayer(passengerMarker);
+  passengerMarker=L.marker([Number(p.lat),Number(p.lng)])
+    .addTo(passengerMap)
+    .bindPopup("📍 Passenger location")
+    .openPopup();
+
+  const points=[[Number(p.lat),Number(p.lng)]];
+
+  if(dl && Number.isFinite(Number(dl.lat)) && Number.isFinite(Number(dl.lng))){
+   if(driverMarker) passengerMap.removeLayer(driverMarker);
+   driverMarker=L.marker([Number(dl.lat),Number(dl.lng)])
+    .addTo(passengerMap)
+    .bindPopup("🚕 Your location");
+   points.push([Number(dl.lat),Number(dl.lng)]);
+  }
+
+  passengerMap.fitBounds(points,{padding:[40,40],maxZoom:16});
+ }catch(e){
+  console.log("Passenger location error:",e.message);
+ }
+}
+
+function startPassengerLocationPolling(){
+ if(rideLocationTimer) clearInterval(rideLocationTimer);
+ updatePassengerLocationMap();
+ rideLocationTimer=setInterval(updatePassengerLocationMap,3000);
+}
+
+function stopPassengerLocationPolling(){
+ if(rideLocationTimer) clearInterval(rideLocationTimer);
+ rideLocationTimer=null;
+ activeRide=null;
+ document.getElementById("passengerMapWrap").style.display="none";
 }
 
 async function loadRides(){
@@ -391,13 +463,13 @@ async function loadRides(){
 }
 
 async function acceptRide(id){
- try{const d=await api("/api/rides/"+id+"/accept",{method:"POST",headers:AUTH});activeRide=d.ride._id;renderActive(d.ride);startGPS();alert("🎉 Ride Accepted!");}
+ try{const d=await api("/api/rides/"+id+"/accept",{method:"POST",headers:AUTH});activeRide=d.ride._id;renderActive(d.ride);startGPS();startPassengerLocationPolling();alert("🎉 Ride Accepted!");}
  catch(e){alert("❌ "+e.message);loadRides();}
 }
 
 function renderActive(ride){
  const box=document.getElementById("rides");let action="";
- if(ride.status==="Driver accepted")action=`<button class="action-btn start-btn" onclick="startRide('${ride._id}')">🚕 Start Ride</button>`;
+ if(ride.status==="Driver assigned")action=`<button class="action-btn start-btn" onclick="startRide('${ride._id}')">🚕 Start Ride</button>`;
  if(ride.status==="Ride started")action=`<button class="action-btn complete-btn" onclick="completeRide('${ride._id}')">🎉 Complete Ride</button>`;
  box.innerHTML=`<div class="ride-card"><div class="ride-header"><div class="ride-id">🚕 Ride #${ride._id.slice(-6)}</div><div class="status">${escapeHtml(ride.status)}</div></div><div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div><div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div><div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||"-")}</div><div class="fare">💰 ₹${Number(ride.fare||0)}</div>${action}</div>`;
 }
@@ -412,13 +484,14 @@ async function startRide(id){
     alert("✅ Start Code Verified!\n\n🚕 Ride Started Successfully!");
   }catch(e){alert("❌ "+e.message);}
 }
-async function completeRide(id){try{const d=await api("/api/rides/"+id+"/complete",{method:"PATCH",headers:AUTH});activeRide=null;alert("🎉 Ride Completed Successfully!");loadRides()}catch(e){alert("❌ "+e.message)}}
+async function completeRide(id){try{const d=await api("/api/rides/"+id+"/complete",{method:"PATCH",headers:AUTH});stopPassengerLocationPolling();alert("🎉 Ride Completed Successfully!");loadRides()}catch(e){alert("❌ "+e.message)}}
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
 setOnline();startGPS();loadRides();
-setInterval(loadRides,5000);
+setInterval(()=>{if(!activeRide)loadRides();},5000);
 </script>
 
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 
 </html>
