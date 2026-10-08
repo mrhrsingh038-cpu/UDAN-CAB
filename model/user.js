@@ -1,21 +1,107 @@
-{
-  "name": "udan-cab",
-  "version": "2.0.0",
-  "description": "UDAN CAB booking platform",
-  "main": "backend/server.js",
-  "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node backend/server.js"
-  },
-  "engines": {
-    "node": ">=20"
-  },
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.0"
-  }
-}
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            default: "UDAN User",
+            trim: true
+        },
+
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            lowercase: true
+        },
+
+        password: {
+            type: String,
+            required: true
+        },
+
+        role: {
+            type: String,
+            enum: ["passenger", "driver", "admin"],
+            required: true
+        },
+
+        city: {
+            type: String,
+            default: "Nalanda",
+            trim: true
+        },
+
+        vehicleType: {
+            type: String,
+            default: "",
+            trim: true
+        },
+
+        vehicleNumber: {
+            type: String,
+            default: "",
+            trim: true
+        },
+
+        license: {
+            type: String,
+            default: "",
+            trim: true
+        },
+
+        rating: {
+            type: Number,
+            default: 4.8
+        },
+
+        online: {
+            type: Boolean,
+            default: false
+        },
+
+        blocked: {
+            type: Boolean,
+            default: false
+        },
+
+        blockedReason: {
+            type: String,
+            default: ""
+        },
+
+        blockedAt: {
+            type: Date,
+            default: null
+        },
+
+        location: {
+            lat: {
+                type: Number,
+                default: null
+            },
+
+            lng: {
+                type: Number,
+                default: null
+            },
+
+            accuracy: {
+                type: Number,
+                default: null
+            },
+
+            updatedAt: {
+                type: Date,
+                default: null
+            }
+        }
+    },
+
+    {
+        timestamps: true
+    }
+);
+
+module.exports = mongoose.model("User", userSchema);
