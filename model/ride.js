@@ -1,163 +1,352 @@
-
 const mongoose = require("mongoose");
 
-const locationSchema = new mongoose.Schema(
+
+/* =========================================================
+   LOCATION SCHEMA
+========================================================= */
+
+const locationSchema =
+  new mongoose.Schema(
     {
-        lat: {
-            type: Number,
-            default: null
-        },
-        lng: {
-            type: Number,
-            default: null
-        },
-        accuracy: {
-            type: Number,
-            default: null
-        },
-        updatedAt: {
-            type: Date,
-            default: null
-        }
+      lat: {
+        type: Number,
+        default: null
+      },
+
+      lng: {
+        type: Number,
+        default: null
+      },
+
+      accuracy: {
+        type: Number,
+        default: null
+      },
+
+      updatedAt: {
+        type: Date,
+        default: null
+      }
     },
     {
-        _id: false
+      _id: false
     }
-);
+  );
 
-const coordSchema = new mongoose.Schema(
+
+/* =========================================================
+   COORDINATE SCHEMA
+========================================================= */
+
+const coordSchema =
+  new mongoose.Schema(
     {
-        lat: {
-            type: Number,
-            default: null
-        },
-        lng: {
-            type: Number,
-            default: null
-        }
+      lat: {
+        type: Number,
+        default: null
+      },
+
+      lng: {
+        type: Number,
+        default: null
+      }
     },
     {
-        _id: false
+      _id: false
     }
-);
+  );
 
-const rideSchema = new mongoose.Schema(
+
+/* =========================================================
+   RIDE SCHEMA
+========================================================= */
+
+const rideSchema =
+  new mongoose.Schema(
     {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true
-        },
 
-        pickup: {
-            type: String,
-            required: true,
-            trim: true
-        },
+      /* =====================================================
+         PASSENGER
+      ===================================================== */
 
-        destination: {
-            type: String,
-            required: true,
-            trim: true
-        },
+      userId: {
+        type:
+          mongoose.Schema.Types.ObjectId,
 
-        cabType: {
-            type: String,
-            required: true
-        },
+        ref: "User",
 
-        fare: {
-            type: Number,
-            required: true,
-            min: 0
-        },
+        required: true
+      },
 
-        vehicleType: {
-            type: String,
-            default: null
-        },
 
-        parcelType: {
-            type: String,
-            default: null
-        },
+      /* =====================================================
+         RIDE DETAILS
+      ===================================================== */
 
-        parcelWeight: {
-            type: String,
-            default: null
-        },
+      pickup: {
+        type: String,
 
-        serviceArea: {
-            type: String,
-            default: "Nalanda"
-        },
+        required: true,
 
-        status: {
-            type: String,
-            default: "Searching for driver"
-        },
+        trim: true
+      },
 
-        assignedDriverId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: null
-        },
+      destination: {
+        type: String,
 
-        driverId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: null
-        },
+        required: true,
 
-        driverName: {
-            type: String,
-            default: null
-        },
+        trim: true
+      },
 
-        driverEmail: {
-            type: String,
-            default: null
-        },
+      cabType: {
+        type: String,
 
-        driverVehicle: {
-            type: String,
-            default: null
-        },
+        required: true
+      },
 
-        driverVehicleType: {
-            type: String,
-            default: null
-        },
+      fare: {
+        type: Number,
 
-        driverRating: {
-            type: Number,
-            default: null
-        },
+        required: true,
 
-        assignedDistanceKm: {
-            type: Number,
-            default: null
-        },
+        min: 0
+      },
 
-        passengerLocation: {
-            type: locationSchema,
-            default: () => ({})
-        },
+      vehicleType: {
+        type: String,
 
-        destinationLocation: {
-            type: coordSchema,
-            default: () => ({})
-        },
+        default: null
+      },
 
-        driverLocation: {
-            type: locationSchema,
-            default: () => ({})
-        }
+      parcelType: {
+        type: String,
+
+        default: null
+      },
+
+      parcelWeight: {
+        type: String,
+
+        default: null
+      },
+
+
+      /* =====================================================
+         SERVICE AREA
+      ===================================================== */
+
+      serviceArea: {
+        type: String,
+
+        default: "Nalanda"
+      },
+
+
+      /* =====================================================
+         RIDE STATUS
+      ===================================================== */
+
+      status: {
+        type: String,
+
+        default:
+          "Searching for driver"
+      },
+
+
+      /* =====================================================
+         DRIVER ASSIGNMENT
+      ===================================================== */
+
+      assignedDriverId: {
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+
+        default: null
+      },
+
+      driverId: {
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+
+        default: null
+      },
+
+      driverName: {
+        type: String,
+
+        default: null
+      },
+
+      driverEmail: {
+        type: String,
+
+        default: null
+      },
+
+      driverVehicle: {
+        type: String,
+
+        default: null
+      },
+
+      driverVehicleType: {
+        type: String,
+
+        default: null
+      },
+
+      driverRating: {
+        type: Number,
+
+        default: null
+      },
+
+      assignedDistanceKm: {
+        type: Number,
+
+        default: null
+      },
+
+
+      /* =====================================================
+         DRIVER LOCATION
+      ===================================================== */
+
+      driverLocation: {
+        type: locationSchema,
+
+        default: () => ({})
+      },
+
+
+      /* =====================================================
+         PASSENGER LOCATION
+      ===================================================== */
+
+      passengerLocation: {
+        type: locationSchema,
+
+        default: () => ({})
+      },
+
+
+      /* =====================================================
+         DESTINATION LOCATION
+      ===================================================== */
+
+      destinationLocation: {
+        type: coordSchema,
+
+        default: () => ({})
+      },
+
+
+      /* =====================================================
+         🔐 RIDE START CODE
+      =====================================================
+
+         Passenger ko 4 digit code milega.
+
+         Example:
+         4827
+
+         Driver ko directly nahi milega.
+
+      ===================================================== */
+
+      startCode: {
+        type: String,
+
+        default: null
+      },
+
+
+      /* =====================================================
+         🔐 START CODE VERIFIED
+      ===================================================== */
+
+      startCodeVerified: {
+        type: Boolean,
+
+        default: false
+      },
+
+
+      /* =====================================================
+         🔐 START CODE VERIFIED TIME
+      ===================================================== */
+
+      startCodeVerifiedAt: {
+        type: Date,
+
+        default: null
+      },
+
+
+      /* =====================================================
+         RIDE START TIME
+      ===================================================== */
+
+      startedAt: {
+        type: Date,
+
+        default: null
+      },
+
+
+      /* =====================================================
+         RIDE COMPLETE TIME
+      ===================================================== */
+
+      completedAt: {
+        type: Date,
+
+        default: null
+      },
+
+
+      /* =====================================================
+         RIDE CANCEL INFORMATION
+      ===================================================== */
+
+      cancelledAt: {
+        type: Date,
+
+        default: null
+      },
+
+      cancelledBy: {
+        type: String,
+
+        default: null
+      },
+
+      cancelReason: {
+        type: String,
+
+        default: null
+      }
+
     },
 
     {
-        timestamps: true
+      timestamps: true
     }
-);
+  );
 
-module.exports = mongoose.model("Ride", rideSchema);
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+module.exports =
+  mongoose.model(
+    "Ride",
+    rideSchema
+  );

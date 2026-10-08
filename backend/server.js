@@ -38,6 +38,7 @@ app.use(
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+
 /* =========================================================
    HELPERS
 ========================================================= */
@@ -55,32 +56,58 @@ function publicRole(role) {
 }
 
 function numberOrNull(value) {
-  if (value === null || value === undefined || value === "") {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
     return null;
   }
 
   const n = Number(value);
 
-  return Number.isFinite(n) ? n : null;
+  return Number.isFinite(n)
+    ? n
+    : null;
 }
 
-function distanceKm(lat1, lng1, lat2, lng2) {
+function distanceKm(
+  lat1,
+  lng1,
+  lat2,
+  lng2
+) {
   const R = 6371;
 
   const dLat =
-    ((Number(lat2) - Number(lat1)) * Math.PI) / 180;
+    ((Number(lat2) -
+      Number(lat1)) *
+      Math.PI) /
+    180;
 
   const dLng =
-    ((Number(lng2) - Number(lng1)) * Math.PI) / 180;
+    ((Number(lng2) -
+      Number(lng1)) *
+      Math.PI) /
+    180;
 
   const a =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos((Number(lat1) * Math.PI) / 180) *
-      Math.cos((Number(lat2) * Math.PI) / 180) *
+    Math.cos(
+      (Number(lat1) *
+        Math.PI) /
+        180
+    ) *
+      Math.cos(
+        (Number(lat2) *
+          Math.PI) /
+          180
+      ) *
       Math.sin(dLng / 2) ** 2;
 
   const c =
-    2 * Math.atan2(
+    2 *
+    Math.atan2(
       Math.sqrt(a),
       Math.sqrt(1 - a)
     );
@@ -91,119 +118,261 @@ function distanceKm(lat1, lng1, lat2, lng2) {
 function safeUser(user) {
   return {
     id: String(user._id),
+
     _id: String(user._id),
-    name: user.name || "UDAN User",
-    email: user.email,
-    role: publicRole(user.role),
-    city: user.city || "Nalanda",
-    vehicleNumber: user.vehicleNumber || "",
-    vehicleType: user.vehicleType || "",
-    license: user.license || "",
-    rating: user.rating ?? 4.8,
-    online: Boolean(user.online),
-    blocked: Boolean(user.blocked),
-    blockedReason: user.blockedReason || "",
-    location: user.location || null
+
+    name:
+      user.name ||
+      "UDAN User",
+
+    email:
+      user.email,
+
+    role:
+      publicRole(
+        user.role
+      ),
+
+    city:
+      user.city ||
+      "Nalanda",
+
+    vehicleNumber:
+      user.vehicleNumber ||
+      "",
+
+    vehicleType:
+      user.vehicleType ||
+      "",
+
+    license:
+      user.license ||
+      "",
+
+    rating:
+      user.rating ??
+      4.8,
+
+    online:
+      Boolean(
+        user.online
+      ),
+
+    blocked:
+      Boolean(
+        user.blocked
+      ),
+
+    blockedReason:
+      user.blockedReason ||
+      "",
+
+    location:
+      user.location ||
+      null
   };
 }
 
-function safeRide(ride) {
+
+/*
+ * =========================================================
+ * SAFE RIDE
+ * =========================================================
+ *
+ * IMPORTANT:
+ *
+ * Driver ko passenger ka startCode nahi dikhana hai.
+ *
+ * Passenger ke liye jab zarurat hogi tab:
+ *
+ * safeRide(ride, true)
+ *
+ * use karenge.
+ */
+
+function safeRide(
+  ride,
+  includeStartCode = false
+) {
   const obj =
-    typeof ride.toObject === "function"
+    typeof ride.toObject ===
+    "function"
       ? ride.toObject()
       : ride;
 
-  return {
-    ...obj,
-    id: String(obj._id)
+  const {
+    startCode,
+    ...safeData
+  } = obj;
+
+  const result = {
+    ...safeData,
+
+    id: String(
+      obj._id
+    )
   };
+
+  /*
+   * 🔐 ONLY PASSENGER
+   */
+  if (
+    includeStartCode
+  ) {
+    result.startCode =
+      startCode ||
+      null;
+  }
+
+  return result;
 }
+
 
 function createToken(user) {
   return jwt.sign(
     {
-      id: String(user._id),
-      role: user.role,
-      email: user.email
+      id: String(
+        user._id
+      ),
+
+      role:
+        user.role,
+
+      email:
+        user.email
     },
+
     JWT_SECRET,
+
     {
-      expiresIn: "7d"
+      expiresIn:
+        "7d"
     }
   );
 }
+
 
 /* =========================================================
    AUTH
 ========================================================= */
 
-async function authenticate(req, res, next) {
+async function authenticate(
+  req,
+  res,
+  next
+) {
   try {
-    const header = req.headers.authorization || "";
 
-    if (!header.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "Authentication token required."
-      });
+    const header =
+      req.headers
+        .authorization ||
+      "";
+
+    if (
+      !header.startsWith(
+        "Bearer "
+      )
+    ) {
+      return res
+        .status(401)
+        .json({
+          success: false,
+
+          message:
+            "Authentication token required."
+        });
     }
 
-    const token = header.substring(7);
+    const token =
+      header.substring(7);
 
-    const decoded = jwt.verify(
-      token,
-      JWT_SECRET
-    );
+    const decoded =
+      jwt.verify(
+        token,
+        JWT_SECRET
+      );
 
-    const user = await User.findById(
-      decoded.id
-    );
+    const user =
+      await User.findById(
+        decoded.id
+      );
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User account not found."
-      });
+      return res
+        .status(401)
+        .json({
+          success: false,
+
+          message:
+            "User account not found."
+        });
     }
 
     if (
-      user.role === "driver" &&
+      user.role ===
+        "driver" &&
       user.blocked
     ) {
-      return res.status(403).json({
-        success: false,
-        blocked: true,
-        message:
-          "Your driver account has been blocked by admin."
-      });
+      return res
+        .status(403)
+        .json({
+          success: false,
+
+          blocked: true,
+
+          message:
+            "Your driver account has been blocked by admin."
+        });
     }
 
-    req.user = user;
+    req.user =
+      user;
 
     next();
+
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token."
-    });
+
+    return res
+      .status(401)
+      .json({
+        success: false,
+
+        message:
+          "Invalid or expired token."
+      });
   }
 }
 
-function requireRole(...roles) {
-  return (req, res, next) => {
+
+function requireRole(
+  ...roles
+) {
+  return (
+    req,
+    res,
+    next
+  ) => {
+
     if (
       !req.user ||
-      !roles.includes(req.user.role)
+      !roles.includes(
+        req.user.role
+      )
     ) {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied."
-      });
+      return res
+        .status(403)
+        .json({
+          success: false,
+
+          message:
+            "Access denied."
+        });
     }
 
     next();
   };
 }
+
 
 /* =========================================================
    REGISTER
@@ -211,8 +380,13 @@ function requireRole(...roles) {
 
 app.post(
   "/api/register",
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
+
     try {
+
       const {
         name,
         email,
@@ -229,125 +403,178 @@ app.post(
         !password ||
         !role
       ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Email, password and role are required."
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+
+            message:
+              "Email, password and role are required."
+          });
       }
 
       const finalRole =
-        normalizeRole(role);
+        normalizeRole(
+          role
+        );
 
       if (
-        !["passenger", "driver"].includes(
+        ![
+          "passenger",
+          "driver"
+        ].includes(
           finalRole
         )
       ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Only passenger or driver registration is allowed."
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+
+            message:
+              "Only passenger or driver registration is allowed."
+          });
       }
 
       const cleanEmail =
-        String(email)
+        String(
+          email
+        )
           .trim()
           .toLowerCase();
 
-      if (String(password).length < 4) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Password must contain at least 4 characters."
-        });
+      if (
+        String(
+          password
+        ).length < 4
+      ) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+
+            message:
+              "Password must contain at least 4 characters."
+          });
       }
 
       const existing =
         await User.findOne({
-          email: cleanEmail
+          email:
+            cleanEmail
         });
 
       if (existing) {
-        return res.status(409).json({
-          success: false,
-          message:
-            "This email is already registered."
-        });
+        return res
+          .status(409)
+          .json({
+            success: false,
+
+            message:
+              "This email is already registered."
+          });
       }
 
       const hashedPassword =
         await bcrypt.hash(
-          String(password),
+          String(
+            password
+          ),
           12
         );
 
       const user =
         await User.create({
-          name:
-            String(name || "UDAN User")
-              .trim(),
 
-          email: cleanEmail,
+          name:
+            String(
+              name ||
+                "UDAN User"
+            ).trim(),
+
+          email:
+            cleanEmail,
 
           password:
             hashedPassword,
 
-          role: finalRole,
+          role:
+            finalRole,
 
           city:
             String(
-              city || "Nalanda"
+              city ||
+                "Nalanda"
             ).trim(),
 
           vehicleNumber:
             String(
-              vehicleNumber || ""
+              vehicleNumber ||
+                ""
             )
               .trim()
               .toUpperCase(),
 
           vehicleType:
             String(
-              vehicleType || ""
+              vehicleType ||
+                ""
             ).trim(),
 
           license:
             String(
-              license || ""
+              license ||
+                ""
             )
               .trim()
               .toUpperCase(),
 
-          rating: 4.8,
+          rating:
+            4.8,
 
-          online: false,
+          online:
+            false,
 
-          blocked: false
+          blocked:
+            false
         });
 
-      return res.status(201).json({
-        success: true,
-        message:
-          "Registration successful.",
-        user: safeUser(user)
-      });
+      return res
+        .status(201)
+        .json({
+          success: true,
+
+          message:
+            "Registration successful.",
+
+          user:
+            safeUser(
+              user
+            )
+        });
+
     } catch (error) {
+
       console.error(
         "REGISTER ERROR:",
         error
       );
 
-      return res.status(500).json({
-        success: false,
-        message:
-          "Registration failed.",
-        error: error.message
-      });
+      return res
+        .status(500)
+        .json({
+          success: false,
+
+          message:
+            "Registration failed.",
+
+          error:
+            error.message
+        });
     }
   }
 );
+
 
 /* =========================================================
    LOGIN
@@ -355,8 +582,13 @@ app.post(
 
 app.post(
   "/api/login",
-  async (req, res) => {
+  async (
+    req,
+    res
+  ) => {
+
     try {
+
       const {
         email,
         password,
@@ -368,86 +600,125 @@ app.post(
         !password ||
         !role
       ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Email, password and role are required."
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+
+            message:
+              "Email, password and role are required."
+          });
       }
 
       const finalRole =
-        normalizeRole(role);
+        normalizeRole(
+          role
+        );
 
       const cleanEmail =
-        String(email)
+        String(
+          email
+        )
           .trim()
           .toLowerCase();
 
       const user =
         await User.findOne({
-          email: cleanEmail,
-          role: finalRole
+          email:
+            cleanEmail,
+
+          role:
+            finalRole
         });
 
       if (!user) {
-        return res.status(401).json({
-          success: false,
-          message:
-            "Invalid email, password or role."
-        });
+        return res
+          .status(401)
+          .json({
+            success: false,
+
+            message:
+              "Invalid email, password or role."
+          });
       }
 
       if (
-        user.role === "driver" &&
+        user.role ===
+          "driver" &&
         user.blocked
       ) {
-        return res.status(403).json({
-          success: false,
-          blocked: true,
-          message:
-            "Your driver account has been blocked by admin."
-        });
+        return res
+          .status(403)
+          .json({
+            success: false,
+
+            blocked: true,
+
+            message:
+              "Your driver account has been blocked by admin."
+          });
       }
 
       const correct =
         await bcrypt.compare(
-          String(password),
+          String(
+            password
+          ),
           user.password
         );
 
       if (!correct) {
-        return res.status(401).json({
-          success: false,
-          message:
-            "Invalid email, password or role."
-        });
+        return res
+          .status(401)
+          .json({
+            success: false,
+
+            message:
+              "Invalid email, password or role."
+          });
       }
 
       const token =
-        createToken(user);
+        createToken(
+          user
+        );
 
       return res.json({
         success: true,
+
         message:
           "Login successful.",
+
         token,
-        user: safeUser(user)
+
+        user:
+          safeUser(
+            user
+          )
       });
+
     } catch (error) {
+
       console.error(
         "LOGIN ERROR:",
         error
       );
 
-      return res.status(500).json({
-        success: false,
-        message:
-          "Login failed.",
-        error: error.message
-      });
+      return res
+        .status(500)
+        .json({
+          success: false,
+
+          message:
+            "Login failed.",
+
+          error:
+            error.message
+        });
     }
   }
 );
+
 
 /* =========================================================
    CURRENT USER
@@ -456,13 +727,23 @@ app.post(
 app.get(
   "/api/me",
   authenticate,
-  (req, res) => {
+  (
+    req,
+    res
+  ) => {
+
     res.json({
       success: true,
-      user: safeUser(req.user)
+
+      user:
+        safeUser(
+          req.user
+        )
     });
+
   }
 );
+
 
 /* =========================================================
    DRIVER ONLINE/OFFLINE
@@ -471,41 +752,71 @@ app.get(
 app.post(
   "/api/driver/status",
   authenticate,
-  requireRole("driver"),
-  async (req, res) => {
-    try {
-      const online =
-        Boolean(req.body.online);
+  requireRole(
+    "driver"
+  ),
 
-      req.user.online = online;
+  async (
+    req,
+    res
+  ) => {
+
+    try {
+
+      const online =
+        Boolean(
+          req.body.online
+        );
+
+      req.user.online =
+        online;
 
       if (!online) {
+
         req.user.location = {
-          lat: null,
-          lng: null,
-          accuracy: null,
-          updatedAt: null
+          lat:
+            null,
+
+          lng:
+            null,
+
+          accuracy:
+            null,
+
+          updatedAt:
+            null
         };
       }
 
       await req.user.save();
 
       res.json({
+
         success: true,
+
         online,
-        message: online
-          ? "You are now online."
-          : "You are now offline."
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
+
         message:
-          "Unable to update driver status."
+          online
+            ? "You are now online."
+            : "You are now offline."
       });
+
+    } catch (error) {
+
+      res
+        .status(500)
+        .json({
+
+          success: false,
+
+          message:
+            "Unable to update driver status."
+        });
     }
   }
 );
+
 
 /* =========================================================
    GENERAL LOCATION
@@ -514,8 +825,14 @@ app.post(
 app.post(
   "/api/location/update",
   authenticate,
-  async (req, res) => {
+
+  async (
+    req,
+    res
+  ) => {
+
     try {
+
       const lat =
         numberOrNull(
           req.body.latitude ??
@@ -537,37 +854,54 @@ app.post(
         lat === null ||
         lng === null
       ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Invalid location."
-        });
+
+        return res
+          .status(400)
+          .json({
+
+            success: false,
+
+            message:
+              "Invalid location."
+          });
       }
 
       req.user.location = {
+
         lat,
+
         lng,
+
         accuracy,
-        updatedAt: new Date()
+
+        updatedAt:
+          new Date()
       };
 
       await req.user.save();
 
       res.json({
+
         success: true,
+
         location:
           req.user.location
       });
+
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to update location."
-      });
+
+      res
+        .status(500)
+        .json({
+
+          success: false,
+
+          message:
+            "Unable to update location."
+        });
     }
   }
 );
-
 /* =========================================================
    NEARBY DRIVERS
 ========================================================= */
@@ -592,7 +926,8 @@ app.get(
 
       const vehicleType =
         String(
-          req.query.vehicleType || ""
+          req.query.vehicleType ||
+            ""
         ).trim();
 
       if (
@@ -613,6 +948,8 @@ app.get(
             req.user.city ||
             "Nalanda"
         ).trim();
+
+      const MAX_RADIUS_KM = 10;
 
       let drivers =
         await User.find({
@@ -654,6 +991,7 @@ app.get(
           )
           .map(driver => ({
             ...driver,
+
             distanceKm:
               Number(
                 distanceKm(
@@ -664,6 +1002,11 @@ app.get(
                 ).toFixed(2)
               )
           }))
+          .filter(
+            driver =>
+              driver.distanceKm <=
+              MAX_RADIUS_KM
+          )
           .sort(
             (a, b) =>
               a.distanceKm -
@@ -674,7 +1017,14 @@ app.get(
         success: true,
         drivers
       });
+
     } catch (error) {
+
+      console.error(
+        "NEARBY DRIVER ERROR:",
+        error
+      );
+
       res.status(500).json({
         success: false,
         message:
@@ -685,6 +1035,7 @@ app.get(
   }
 );
 
+
 /* =========================================================
    CREATE RIDE
 ========================================================= */
@@ -694,7 +1045,9 @@ app.post(
   authenticate,
   requireRole("passenger"),
   async (req, res) => {
+
     try {
+
       const {
         pickup,
         destination,
@@ -743,13 +1096,58 @@ app.post(
           destinationLongitude
         );
 
+
+      /*
+       * =====================================================
+       * 🔐 RIDE START CODE
+       * =====================================================
+       *
+       * Har new ride ke liye ek fresh
+       * 4 digit code generate hoga.
+       *
+       * Example:
+       * 4827
+       *
+       * Passenger ko baad me ye code milega.
+       * Driver ko code directly nahi bheja jayega.
+       */
+
+      const startCode =
+        String(
+          Math.floor(
+            1000 +
+              Math.random() *
+                9000
+          )
+        );
+
+
+      /*
+       * IMPORTANT:
+       *
+       * Ride ko automatically kisi driver
+       * ko assign nahi karna hai.
+       *
+       * Driver dashboard khud nearby ride
+       * filter karega:
+       *
+       * 1. Same area
+       * 2. Same vehicle
+       * 3. Maximum 10 KM
+       * 4. Driver online
+       * 5. Driver GPS available
+       */
+
       const ride =
         await Ride.create({
+
           userId:
             req.user._id,
 
           pickup:
-            String(pickup).trim(),
+            String(
+              pickup
+            ).trim(),
 
           destination:
             String(
@@ -757,20 +1155,26 @@ app.post(
             ).trim(),
 
           cabType:
-            String(cabType).trim(),
+            String(
+              cabType
+            ).trim(),
 
           fare:
             Number(fare),
 
           vehicleType:
-            vehicleType || null,
+            vehicleType ||
+            null,
 
           parcelType:
-            parcelType || null,
+            parcelType ||
+            null,
 
           parcelWeight:
             parcelWeight
-              ? String(parcelWeight)
+              ? String(
+                  parcelWeight
+                )
               : null,
 
           serviceArea:
@@ -783,162 +1187,735 @@ app.post(
           status:
             "Searching for driver",
 
+
+          /*
+           * 🔐 START CODE DATA
+           */
+
+          startCode:
+            startCode,
+
+          startCodeVerified:
+            false,
+
+          startCodeVerifiedAt:
+            null,
+
+
           passengerLocation: {
-            lat: pickupLat,
-            lng: pickupLng,
-            accuracy: null,
+
+            lat:
+              pickupLat,
+
+            lng:
+              pickupLng,
+
+            accuracy:
+              null,
+
             updatedAt:
               new Date()
           },
 
           destinationLocation: {
-            lat: destinationLat,
-            lng: destinationLng
+
+            lat:
+              destinationLat,
+
+            lng:
+              destinationLng
           }
         });
 
-      /* Find nearest suitable driver */
 
-      if (
-        pickupLat !== null &&
-        pickupLng !== null
-      ) {
-        let drivers =
-          await User.find({
-            role: "driver",
-            online: true,
-            blocked: false,
-            city:
-              ride.serviceArea
-          }).lean();
+      return res.status(201).json({
 
-        if (ride.vehicleType) {
-          drivers =
-            drivers.filter(
-              driver =>
-                !driver.vehicleType ||
-                driver.vehicleType ===
-                  ride.vehicleType
-            );
-        }
-
-        const candidates =
-          drivers
-            .filter(
-              driver =>
-                driver.location &&
-                Number.isFinite(
-                  Number(
-                    driver.location.lat
-                  )
-                ) &&
-                Number.isFinite(
-                  Number(
-                    driver.location.lng
-                  )
-                )
-            )
-            .map(driver => ({
-              driver,
-              distance:
-                distanceKm(
-                  pickupLat,
-                  pickupLng,
-                  driver.location.lat,
-                  driver.location.lng
-                )
-            }))
-            .sort(
-              (a, b) =>
-                a.distance -
-                b.distance
-            );
-
-        if (candidates.length) {
-          ride.assignedDriverId =
-            candidates[0].driver._id;
-
-          ride.assignedDistanceKm =
-            Number(
-              candidates[0].distance.toFixed(
-                2
-              )
-            );
-
-          ride.status =
-            "Driver assigned";
-
-          await ride.save();
-        }
-      }
-
-      res.status(201).json({
         success: true,
+
         message:
-          "Ride booked successfully.",
-        ride: safeRide(ride)
+          "Ride booked successfully. Searching for nearby drivers.",
+
+        ride:
+          safeRide(ride)
+
       });
+
     } catch (error) {
+
       console.error(
         "CREATE RIDE ERROR:",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
+
         success: false,
+
         message:
           "Unable to book ride.",
-        error: error.message
+
+        error:
+          error.message
+
       });
     }
   }
 );
 
+
 /* =========================================================
    DRIVER AVAILABLE RIDES
+
+   ONLY:
+   - SAME AREA
+   - SAME VEHICLE TYPE
+   - WITHIN 10 KM
+   - DRIVER ONLINE
+   - DRIVER GPS AVAILABLE
 ========================================================= */
+
+async function getDriverAvailableRides(
+  req,
+  res
+) {
+
+  try {
+
+    const driver =
+      await User.findById(
+        req.user._id
+      ).lean();
+
+
+    if (!driver) {
+
+      return res.status(404).json({
+
+        success: false,
+
+        message:
+          "Driver not found.",
+
+        rides: []
+
+      });
+    }
+
+
+    if (
+      driver.role !==
+      "driver"
+    ) {
+
+      return res.status(403).json({
+
+        success: false,
+
+        message:
+          "Driver access required.",
+
+        rides: []
+
+      });
+    }
+
+
+    if (
+      driver.blocked
+    ) {
+
+      return res.status(403).json({
+
+        success: false,
+
+        message:
+          "Driver is blocked.",
+
+        rides: []
+
+      });
+    }
+
+
+    /*
+     * DRIVER MUST BE ONLINE
+     */
+
+    if (
+      !driver.online
+    ) {
+
+      return res.json({
+
+        success: true,
+
+        rides: []
+
+      });
+    }
+
+
+    /*
+     * DRIVER GPS MUST BE AVAILABLE
+     */
+
+    if (
+      !driver.location ||
+      !Number.isFinite(
+        Number(
+          driver.location.lat
+        )
+      ) ||
+      !Number.isFinite(
+        Number(
+          driver.location.lng
+        )
+      )
+    ) {
+
+      return res.json({
+
+        success: true,
+
+        rides: []
+
+      });
+    }
+
+
+    const driverLat =
+      Number(
+        driver.location.lat
+      );
+
+    const driverLng =
+      Number(
+        driver.location.lng
+      );
+
+
+    /*
+     * MAXIMUM DISTANCE
+     */
+
+    const MAX_RADIUS_KM = 10;
+
+
+    /*
+     * DRIVER AREA
+     */
+
+    const driverArea =
+      String(
+        driver.city ||
+          ""
+      )
+        .trim()
+        .toLowerCase();
+
+
+    /*
+     * First get only unaccepted rides.
+     *
+     * IMPORTANT:
+     * assignedDriverId is NOT required anymore.
+     */
+
+    const rides =
+      await Ride.find({
+
+        status:
+          "Searching for driver",
+
+        driverId:
+          null
+
+      })
+        .populate(
+          "userId",
+          "name email city"
+        )
+        .sort({
+          createdAt:
+            -1
+        })
+        .lean();
+
+
+    const nearbyRides = [];
+
+
+    for (
+      const ride of rides
+    ) {
+
+
+      /*
+       * =========================================
+       * 1. PICKUP GPS CHECK
+       * =========================================
+       */
+
+      if (
+        !ride.passengerLocation ||
+        !Number.isFinite(
+          Number(
+            ride
+              .passengerLocation
+              .lat
+          )
+        ) ||
+        !Number.isFinite(
+          Number(
+            ride
+              .passengerLocation
+              .lng
+          )
+        )
+      ) {
+
+        continue;
+      }
+
+
+      const pickupLat =
+        Number(
+          ride
+            .passengerLocation
+            .lat
+        );
+
+      const pickupLng =
+        Number(
+          ride
+            .passengerLocation
+            .lng
+        );
+
+
+      /*
+       * =========================================
+       * 2. AREA CHECK
+       * =========================================
+       */
+
+      const rideArea =
+        String(
+          ride.serviceArea ||
+            (
+              ride.userId &&
+              ride.userId.city
+            ) ||
+            ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        rideArea &&
+        driverArea &&
+        rideArea !==
+          driverArea
+      ) {
+
+        continue;
+      }
+
+
+      /*
+       * =========================================
+       * 3. VEHICLE TYPE CHECK
+       * =========================================
+       *
+       * Agar passenger ne vehicle type select
+       * kiya hai aur driver ka vehicle type
+       * alag hai to ride nahi dikhegi.
+       */
+
+      if (
+        ride.vehicleType &&
+        driver.vehicleType &&
+        String(
+          ride.vehicleType
+        )
+          .trim()
+          .toLowerCase() !==
+          String(
+            driver.vehicleType
+          )
+            .trim()
+            .toLowerCase()
+      ) {
+
+        continue;
+      }
+
+
+      /*
+       * =========================================
+       * 4. DISTANCE CALCULATION
+       * =========================================
+       */
+
+      const distance =
+        distanceKm(
+
+          driverLat,
+          driverLng,
+
+          pickupLat,
+          pickupLng
+
+        );
+
+
+      /*
+       * =========================================
+       * 5. ONLY 10 KM RADIUS
+       * =========================================
+       */
+
+      if (
+        distance >
+        MAX_RADIUS_KM
+      ) {
+
+        continue;
+      }
+
+
+      /*
+       * =========================================
+       * 6. ELIGIBLE RIDE
+       * =========================================
+       */
+
+      nearbyRides.push({
+
+        ...ride,
+
+        driverDistanceKm:
+          Number(
+            distance.toFixed(
+              2
+            )
+          )
+
+      });
+    }
+
+
+    /*
+     * NEAREST RIDE FIRST
+     */
+
+    nearbyRides.sort(
+      (
+        a,
+        b
+      ) =>
+        Number(
+          a.driverDistanceKm
+        ) -
+        Number(
+          b.driverDistanceKm
+        )
+    );
+
+
+    return res.json({
+
+      success: true,
+
+      rides:
+        nearbyRides
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "DRIVER RIDES ERROR:",
+      error
+    );
+
+    return res.status(
+      500
+    ).json({
+
+      success: false,
+
+      message:
+        "Unable to load nearby rides.",
+
+      rides: []
+
+    });
+  }
+}
+
 
 app.get(
   "/api/driver/rides",
   authenticate,
   requireRole("driver"),
+  getDriverAvailableRides
+);
+/* =========================================================
+   ALL RIDES
+========================================================= */
+
+app.get(
+  "/api/rides",
+  authenticate,
   async (req, res) => {
     try {
-      const rides =
-        await Ride.find({
-          status: {
-            $in: [
+
+      let filter = {};
+
+      /*
+       * PASSENGER:
+       * Sirf apni rides
+       */
+      if (
+        req.user.role ===
+        "passenger"
+      ) {
+
+        filter = {
+          userId:
+            req.user._id
+        };
+
+      }
+
+      /*
+       * DRIVER:
+       * Sirf eligible rides.
+       *
+       * IMPORTANT:
+       * Yahan bhi unrestricted rides
+       * return nahi hongi.
+       */
+      else if (
+        req.user.role ===
+        "driver"
+      ) {
+
+        const driver =
+          await User.findById(
+            req.user._id
+          ).lean();
+
+        if (
+          !driver ||
+          !driver.online ||
+          driver.blocked ||
+          !driver.location
+        ) {
+          return res.json({
+            success: true,
+            rides: []
+          });
+        }
+
+        const driverLat =
+          Number(
+            driver.location.lat
+          );
+
+        const driverLng =
+          Number(
+            driver.location.lng
+          );
+
+        if (
+          !Number.isFinite(
+            driverLat
+          ) ||
+          !Number.isFinite(
+            driverLng
+          )
+        ) {
+          return res.json({
+            success: true,
+            rides: []
+          });
+        }
+
+        const MAX_RADIUS_KM =
+          10;
+
+        const rides =
+          await Ride.find({
+            status:
               "Searching for driver",
-              "Driver assigned"
-            ]
-          },
-          driverId: null,
-          $or: [
-            {
-              assignedDriverId:
-                req.user._id
-            },
-            {
-              assignedDriverId: null
-            }
-          ]
-        })
+
+            driverId:
+              null
+          })
+            .populate(
+              "userId",
+              "name email city"
+            )
+            .sort({
+              createdAt:
+                -1
+            })
+            .lean();
+
+        const eligible =
+          [];
+
+        const driverArea =
+          String(
+            driver.city ||
+              ""
+          )
+            .trim()
+            .toLowerCase();
+
+        for (
+          const ride of rides
+        ) {
+
+          if (
+            !ride.passengerLocation
+          ) {
+            continue;
+          }
+
+          const pickupLat =
+            Number(
+              ride
+                .passengerLocation
+                .lat
+            );
+
+          const pickupLng =
+            Number(
+              ride
+                .passengerLocation
+                .lng
+            );
+
+          if (
+            !Number.isFinite(
+              pickupLat
+            ) ||
+            !Number.isFinite(
+              pickupLng
+            )
+          ) {
+            continue;
+          }
+
+          const rideArea =
+            String(
+              ride.serviceArea ||
+                (
+                  ride.userId &&
+                  ride.userId.city
+                ) ||
+                ""
+            )
+              .trim()
+              .toLowerCase();
+
+          if (
+            rideArea &&
+            driverArea &&
+            rideArea !==
+              driverArea
+          ) {
+            continue;
+          }
+
+          if (
+            ride.vehicleType &&
+            driver.vehicleType &&
+            String(
+              ride.vehicleType
+            )
+              .trim()
+              .toLowerCase() !==
+              String(
+                driver.vehicleType
+              )
+                .trim()
+                .toLowerCase()
+          ) {
+            continue;
+          }
+
+          const distance =
+            distanceKm(
+              driverLat,
+              driverLng,
+              pickupLat,
+              pickupLng
+            );
+
+          if (
+            distance >
+            MAX_RADIUS_KM
+          ) {
+            continue;
+          }
+
+          eligible.push({
+            ...ride,
+
+            driverDistanceKm:
+              Number(
+                distance.toFixed(
+                  2
+                )
+              )
+          });
+        }
+
+        return res.json({
+          success: true,
+          rides:
+            eligible
+        });
+      }
+
+      const rides =
+        await Ride.find(
+          filter
+        )
           .populate(
             "userId",
             "name email city"
           )
+          .populate(
+            "driverId",
+            "name email vehicleNumber vehicleType rating location online blocked"
+          )
           .sort({
-            createdAt: -1
+            createdAt:
+              -1
           });
 
-      res.json({
+      return res.json({
         success: true,
-        rides: rides.map(
-          safeRide
-        )
+        rides
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      console.error(
+        "GET RIDES ERROR:",
+        error
+      );
+
+      return res.status(
+        500
+      ).json({
         success: false,
         message:
           "Unable to load rides.",
@@ -947,6 +1924,7 @@ app.get(
     }
   }
 );
+
 
 /* =========================================================
    ACCEPT RIDE
@@ -957,7 +1935,474 @@ app.post(
   authenticate,
   requireRole("driver"),
   async (req, res) => {
+
     try {
+
+      /*
+       * GET FRESH DRIVER DATA
+       */
+      const driver =
+        await User.findById(
+          req.user._id
+        );
+
+      if (!driver) {
+
+        return res.status(
+          404
+        ).json({
+
+          success: false,
+
+          message:
+            "Driver not found."
+
+        });
+      }
+
+
+      /*
+       * BLOCKED DRIVER
+       */
+
+      if (
+        driver.blocked
+      ) {
+
+        return res.status(
+          403
+        ).json({
+
+          success: false,
+
+          blocked: true,
+
+          message:
+            "Driver is blocked."
+
+        });
+      }
+
+
+      /*
+       * DRIVER MUST BE ONLINE
+       */
+
+      if (
+        !driver.online
+      ) {
+
+        return res.status(
+          403
+        ).json({
+
+          success: false,
+
+          message:
+            "Please go online before accepting a ride."
+
+        });
+      }
+
+
+      /*
+       * DRIVER GPS
+       */
+
+      if (
+        !driver.location ||
+        !Number.isFinite(
+          Number(
+            driver.location.lat
+          )
+        ) ||
+        !Number.isFinite(
+          Number(
+            driver.location.lng
+          )
+        )
+      ) {
+
+        return res.status(
+          400
+        ).json({
+
+          success: false,
+
+          message:
+            "Driver location is not available. Please enable GPS."
+
+        });
+      }
+
+
+      /*
+       * GET RIDE
+       */
+
+      const ride =
+        await Ride.findById(
+          req.params.id
+        );
+
+      if (!ride) {
+
+        return res.status(
+          404
+        ).json({
+
+          success: false,
+
+          message:
+            "Ride not found."
+
+        });
+      }
+
+
+      /*
+       * ALREADY ACCEPTED
+       */
+
+      if (
+        ride.driverId
+      ) {
+
+        return res.status(
+          409
+        ).json({
+
+          success: false,
+
+          message:
+            "Ride already accepted."
+
+        });
+      }
+
+
+      /*
+       * RIDE STATUS
+       */
+
+      if (
+        ride.status !==
+        "Searching for driver"
+      ) {
+
+        return res.status(
+          409
+        ).json({
+
+          success: false,
+
+          message:
+            "Ride is no longer available."
+
+        });
+      }
+
+
+      /*
+       * PASSENGER PICKUP GPS
+       */
+
+      if (
+        !ride.passengerLocation ||
+        !Number.isFinite(
+          Number(
+            ride
+              .passengerLocation
+              .lat
+          )
+        ) ||
+        !Number.isFinite(
+          Number(
+            ride
+              .passengerLocation
+              .lng
+          )
+        )
+      ) {
+
+        return res.status(
+          400
+        ).json({
+
+          success: false,
+
+          message:
+            "Passenger pickup location is unavailable."
+
+        });
+      }
+
+
+      /*
+       * =========================================
+       * AREA CHECK
+       * =========================================
+       */
+
+      const rideArea =
+        String(
+          ride.serviceArea ||
+            ""
+        )
+          .trim()
+          .toLowerCase();
+
+      const driverArea =
+        String(
+          driver.city ||
+            ""
+        )
+          .trim()
+          .toLowerCase();
+
+
+      if (
+        rideArea &&
+        driverArea &&
+        rideArea !==
+          driverArea
+      ) {
+
+        return res.status(
+          403
+        ).json({
+
+          success: false,
+
+          message:
+            "This ride is outside your service area."
+
+        });
+      }
+
+
+      /*
+       * =========================================
+       * VEHICLE CHECK
+       * =========================================
+       */
+
+      if (
+        ride.vehicleType &&
+        driver.vehicleType &&
+        String(
+          ride.vehicleType
+        )
+          .trim()
+          .toLowerCase() !==
+          String(
+            driver.vehicleType
+          )
+            .trim()
+            .toLowerCase()
+      ) {
+
+        return res.status(
+          403
+        ).json({
+
+          success: false,
+
+          message:
+            "Vehicle type does not match this ride."
+
+        });
+      }
+
+
+      /*
+       * =========================================
+       * DISTANCE CHECK
+       * =========================================
+       */
+
+      const driverLat =
+        Number(
+          driver.location.lat
+        );
+
+      const driverLng =
+        Number(
+          driver.location.lng
+        );
+
+      const pickupLat =
+        Number(
+          ride
+            .passengerLocation
+            .lat
+        );
+
+      const pickupLng =
+        Number(
+          ride
+            .passengerLocation
+            .lng
+        );
+
+      const distance =
+        distanceKm(
+          driverLat,
+          driverLng,
+          pickupLat,
+          pickupLng
+        );
+
+      const MAX_RADIUS_KM =
+        10;
+
+
+      if (
+        distance >
+        MAX_RADIUS_KM
+      ) {
+
+        return res.status(
+          403
+        ).json({
+
+          success: false,
+
+          message:
+            `Passenger is ${distance.toFixed(
+              2
+            )} KM away. Ride is available only within 10 KM.`
+
+        });
+      }
+
+
+      /*
+       * =========================================
+       * ACCEPT RIDE
+       * =========================================
+       */
+
+      ride.driverId =
+        driver._id;
+
+      ride.driverName =
+        driver.name;
+
+      ride.driverEmail =
+        driver.email;
+
+      ride.driverVehicle =
+        driver.vehicleNumber ||
+        null;
+
+      ride.driverVehicleType =
+        driver.vehicleType ||
+        null;
+
+      ride.driverRating =
+        driver.rating ||
+        null;
+
+      ride.status =
+        "Driver accepted";
+
+
+      ride.driverLocation = {
+
+        lat:
+          driverLat,
+
+        lng:
+          driverLng,
+
+        accuracy:
+          driver.location.accuracy,
+
+        updatedAt:
+          new Date()
+
+      };
+
+
+      await ride.save();
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "Ride accepted successfully.",
+
+        ride:
+          safeRide(ride)
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "ACCEPT RIDE ERROR:",
+        error
+      );
+
+      return res.status(
+        500
+      ).json({
+
+        success: false,
+
+        message:
+          "Unable to accept ride.",
+
+        error:
+          error.message
+
+      });
+    }
+  }
+);
+/* =========================================================
+   DRIVER LOCATION UPDATE FOR ACTIVE RIDE
+========================================================= */
+
+app.patch(
+  "/api/rides/:id/driver-location",
+  authenticate,
+  requireRole("driver"),
+  async (req, res) => {
+
+    try {
+
+      const lat =
+        numberOrNull(
+          req.body.latitude ??
+            req.body.lat
+        );
+
+      const lng =
+        numberOrNull(
+          req.body.longitude ??
+            req.body.lng
+        );
+
+      const accuracy =
+        numberOrNull(
+          req.body.accuracy
+        );
+
+      if (
+        lat === null ||
+        lng === null
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Valid driver location is required."
+        });
+      }
+
       const ride =
         await Ride.findById(
           req.params.id
@@ -971,127 +2416,200 @@ app.post(
         });
       }
 
-      if (ride.driverId) {
-        return res.status(409).json({
-          success: false,
-          message:
-            "Ride already accepted."
-        });
-      }
-
       if (
-        ride.assignedDriverId &&
+        !ride.driverId ||
         String(
-          ride.assignedDriverId
+          ride.driverId
         ) !==
-          String(req.user._id)
+          String(
+            req.user._id
+          )
       ) {
         return res.status(403).json({
           success: false,
           message:
-            "This ride is assigned to another driver."
+            "You are not the driver of this ride."
         });
       }
 
-      if (
-        ![
-          "Searching for driver",
-          "Driver assigned"
-        ].includes(
-          ride.status
-        )
-      ) {
-        return res.status(409).json({
-          success: false,
-          message:
-            "Ride is no longer available."
-        });
-      }
-
-      ride.driverId =
-        req.user._id;
-
-      ride.driverName =
-        req.user.name;
-
-      ride.driverEmail =
-        req.user.email;
-
-      ride.driverVehicle =
-        req.user.vehicleNumber ||
-        null;
-
-      ride.driverVehicleType =
-        req.user.vehicleType ||
-        null;
-
-      ride.driverRating =
-        req.user.rating ||
-        null;
-
-      ride.status =
-        "Driver accepted";
-
-      if (
-        req.user.location &&
-        req.user.location.lat !==
-          null
-      ) {
-        ride.driverLocation = {
-          lat:
-            req.user.location.lat,
-          lng:
-            req.user.location.lng,
-          accuracy:
-            req.user.location.accuracy,
-          updatedAt:
-            new Date()
-        };
-      }
+      ride.driverLocation = {
+        lat,
+        lng,
+        accuracy,
+        updatedAt:
+          new Date()
+      };
 
       await ride.save();
 
-      res.json({
+      /*
+       * Driver ki latest location bhi
+       * User document me save karo.
+       */
+
+      req.user.location = {
+        lat,
+        lng,
+        accuracy,
+        updatedAt:
+          new Date()
+      };
+
+      req.user.online =
+        true;
+
+      await req.user.save();
+
+      return res.json({
         success: true,
         message:
-          "Ride accepted.",
-        ride: safeRide(ride)
+          "Driver location updated.",
+        location:
+          ride.driverLocation
       });
+
     } catch (error) {
+
       console.error(
-        "ACCEPT RIDE ERROR:",
+        "DRIVER LOCATION ERROR:",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message:
-          "Unable to accept ride."
+          "Unable to update driver location."
       });
     }
   }
 );
 
+
 /* =========================================================
-   SINGLE RIDE
+   PASSENGER LIVE LOCATION
+========================================================= */
+
+app.patch(
+  "/api/rides/:id/passenger-location",
+  authenticate,
+  requireRole("passenger"),
+  async (req, res) => {
+
+    try {
+
+      const lat =
+        numberOrNull(
+          req.body.latitude ??
+            req.body.lat
+        );
+
+      const lng =
+        numberOrNull(
+          req.body.longitude ??
+            req.body.lng
+        );
+
+      const accuracy =
+        numberOrNull(
+          req.body.accuracy
+        );
+
+      if (
+        lat === null ||
+        lng === null
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Valid passenger location is required."
+        });
+      }
+
+      const ride =
+        await Ride.findById(
+          req.params.id
+        );
+
+      if (!ride) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Ride not found."
+        });
+      }
+
+      if (
+        String(
+          ride.userId
+        ) !==
+          String(
+            req.user._id
+          )
+      ) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "You cannot update this ride."
+        });
+      }
+
+      ride.passengerLocation = {
+        lat,
+        lng,
+        accuracy,
+        updatedAt:
+          new Date()
+      };
+
+      await ride.save();
+
+      return res.json({
+        success: true,
+        message:
+          "Passenger location updated.",
+        location:
+          ride.passengerLocation
+      });
+
+    } catch (error) {
+
+      console.error(
+        "PASSENGER LOCATION ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Unable to update passenger location."
+      });
+    }
+  }
+);
+
+
+/* =========================================================
+   GET SINGLE RIDE
 ========================================================= */
 
 app.get(
   "/api/rides/:id",
   authenticate,
   async (req, res) => {
+
     try {
+
       const ride =
         await Ride.findById(
           req.params.id
         )
           .populate(
             "userId",
-            "name email city location"
+            "name email city"
           )
           .populate(
             "driverId",
-            "name email vehicleNumber vehicleType rating location online"
+            "name email vehicleNumber vehicleType rating location online blocked"
           );
 
       if (!ride) {
@@ -1102,26 +2620,22 @@ app.get(
         });
       }
 
-      const passenger =
-        String(
-          ride.userId?._id
-        ) ===
-        String(req.user._id);
 
-      const driver =
-        String(
-          ride.driverId?._id
-        ) ===
-        String(req.user._id);
-
-      const admin =
-        req.user.role ===
-        "admin";
+      /*
+       * Passenger only apni ride
+       * dekh sakta hai.
+       */
 
       if (
-        !passenger &&
-        !driver &&
-        !admin
+        req.user.role ===
+          "passenger" &&
+        String(
+          ride.userId?._id ||
+            ride.userId
+        ) !==
+          String(
+            req.user._id
+          )
       ) {
         return res.status(403).json({
           success: false,
@@ -1130,12 +2644,71 @@ app.get(
         });
       }
 
-      res.json({
+
+      /*
+       * Driver sirf apni accepted ride
+       * dekh sakta hai.
+       */
+
+      if (
+        req.user.role ===
+          "driver" &&
+        ride.driverId &&
+        String(
+          ride.driverId._id ||
+            ride.driverId
+        ) !==
+          String(
+            req.user._id
+          )
+      ) {
+        return res.status(403).json({
+          success: false,
+          message:
+            "Access denied."
+        });
+      }
+
+
+      /*
+       * 🔐 START CODE
+       *
+       * Passenger ko code milega.
+       * Driver ko code nahi milega.
+       */
+
+      const isPassenger =
+        req.user.role ===
+          "passenger" &&
+        String(
+          ride.userId?._id ||
+            ride.userId
+        ) ===
+          String(
+            req.user._id
+          );
+
+
+      return res.json({
+
         success: true,
-        ride: safeRide(ride)
+
+        ride:
+          safeRide(
+            ride,
+            isPassenger
+          )
+
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      console.error(
+        "GET RIDE ERROR:",
+        error
+      );
+
+      return res.status(500).json({
         success: false,
         message:
           "Unable to load ride."
@@ -1144,90 +2717,263 @@ app.get(
   }
 );
 
-/* =========================================================
-   PASSENGER MY RIDES
-========================================================= */
-
-app.get(
-  "/api/rides/my",
-  authenticate,
-  requireRole("passenger"),
-  async (req, res) => {
-    try {
-      const rides =
-        await Ride.find({
-          userId:
-            req.user._id
-        })
-          .populate(
-            "driverId",
-            "name email vehicleNumber vehicleType rating location"
-          )
-          .sort({
-            createdAt: -1
-          });
-
-      res.json({
-        success: true,
-        rides: rides.map(
-          safeRide
-        )
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to load rides.",
-        rides: []
-      });
-    }
-  }
-);
 
 /* =========================================================
-   START RIDE
+   🔐 START RIDE
+   PASSENGER START CODE REQUIRED
 ========================================================= */
 
 app.patch(
   "/api/rides/:id/start",
   authenticate,
   requireRole("driver"),
+
   async (req, res) => {
+
     try {
+
+      /*
+       * GET RIDE
+       */
+
       const ride =
-        await Ride.findOne({
-          _id:
-            req.params.id,
-          driverId:
-            req.user._id
-        });
+        await Ride.findById(
+          req.params.id
+        );
+
 
       if (!ride) {
+
         return res.status(404).json({
+
           success: false,
+
           message:
             "Ride not found."
+
         });
       }
+
+
+      /*
+       * DRIVER OWNERSHIP CHECK
+       */
+
+      if (
+        !ride.driverId ||
+        String(
+          ride.driverId
+        ) !==
+          String(
+            req.user._id
+          )
+      ) {
+
+        return res.status(403).json({
+
+          success: false,
+
+          message:
+            "You are not assigned to this ride."
+
+        });
+      }
+
+
+      /*
+       * RIDE MUST BE ACCEPTED
+       */
+
+      if (
+        ride.status !==
+        "Driver accepted"
+      ) {
+
+        return res.status(409).json({
+
+          success: false,
+
+          message:
+            "Ride cannot be started now."
+
+        });
+      }
+
+
+      /*
+       * =====================================================
+       * 🔐 PASSENGER START CODE
+       * =====================================================
+       *
+       * Driver dashboard se:
+       *
+       * req.body.startCode
+       *
+       * aayega.
+       */
+
+      const enteredCode =
+        String(
+          req.body.startCode ||
+            ""
+        ).trim();
+
+
+      /*
+       * CODE REQUIRED
+       */
+
+      if (!enteredCode) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Passenger start code is required."
+
+        });
+      }
+
+
+      /*
+       * CODE ALREADY USED
+       */
+
+      if (
+        ride.startCodeVerified ===
+        true
+      ) {
+
+        return res.status(409).json({
+
+          success: false,
+
+          message:
+            "Ride start code has already been used."
+
+        });
+      }
+
+
+      /*
+       * STORED CODE CHECK
+       */
+
+      if (!ride.startCode) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Start code is not available for this ride."
+
+        });
+      }
+
+
+      /*
+       * =====================================================
+       * 🔐 VERIFY CODE
+       * =====================================================
+       */
+
+      if (
+        enteredCode !==
+        String(
+          ride.startCode
+        )
+      ) {
+
+        /*
+         * ❌ WRONG CODE
+         *
+         * Ride start nahi hogi.
+         */
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "❌ Wrong passenger start code."
+
+        });
+      }
+
+
+      /*
+       * =====================================================
+       * ✅ CODE CORRECT
+       * =====================================================
+       */
+
+      ride.startCodeVerified =
+        true;
+
+      ride.startCodeVerifiedAt =
+        new Date();
+
+
+      /*
+       * RIDE START
+       */
 
       ride.status =
         "Ride started";
 
+      ride.startedAt =
+        new Date();
+
+
+      /*
+       * 🔐 IMPORTANT
+       *
+       * Code successful verification ke
+       * baad database se remove kar do.
+       *
+       * Isse same code dobara use nahi ho sakta.
+       */
+
+      ride.startCode =
+        null;
+
+
       await ride.save();
 
-      res.json({
+
+      return res.json({
+
         success: true,
-        ride: safeRide(ride)
+
+        message:
+          "✅ Start code verified. Ride started successfully.",
+
+        ride:
+          safeRide(ride)
+
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      console.error(
+        "START RIDE ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+
         success: false,
+
         message:
           "Unable to start ride."
+
       });
     }
   }
 );
+
 
 /* =========================================================
    COMPLETE RIDE
@@ -1237,42 +2983,114 @@ app.patch(
   "/api/rides/:id/complete",
   authenticate,
   requireRole("driver"),
+
   async (req, res) => {
+
     try {
+
       const ride =
-        await Ride.findOne({
-          _id:
-            req.params.id,
-          driverId:
-            req.user._id
-        });
+        await Ride.findById(
+          req.params.id
+        );
 
       if (!ride) {
+
         return res.status(404).json({
+
           success: false,
+
           message:
             "Ride not found."
+
         });
       }
+
+
+      if (
+        !ride.driverId ||
+        String(
+          ride.driverId
+        ) !==
+          String(
+            req.user._id
+          )
+      ) {
+
+        return res.status(403).json({
+
+          success: false,
+
+          message:
+            "You are not assigned to this ride."
+
+        });
+      }
+
+
+      /*
+       * Driver accepted OR Ride started
+       */
+
+      if (
+        ![
+          "Driver accepted",
+          "Ride started"
+        ].includes(
+          ride.status
+        )
+      ) {
+
+        return res.status(409).json({
+
+          success: false,
+
+          message:
+            "Ride cannot be completed now."
+
+        });
+      }
+
 
       ride.status =
         "Completed";
 
+      ride.completedAt =
+        new Date();
+
       await ride.save();
 
-      res.json({
+
+      return res.json({
+
         success: true,
-        ride: safeRide(ride)
+
+        message:
+          "Ride completed successfully.",
+
+        ride:
+          safeRide(ride)
+
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      console.error(
+        "COMPLETE RIDE ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+
         success: false,
+
         message:
           "Unable to complete ride."
+
       });
     }
   }
 );
+
 
 /* =========================================================
    CANCEL RIDE
@@ -1281,860 +3099,590 @@ app.patch(
 app.patch(
   "/api/rides/:id/cancel",
   authenticate,
+
   async (req, res) => {
+
     try {
+
       const ride =
         await Ride.findById(
           req.params.id
         );
 
+
       if (!ride) {
+
         return res.status(404).json({
+
           success: false,
+
           message:
             "Ride not found."
+
         });
       }
 
-      const allowed =
+
+      const isPassenger =
         String(
           ride.userId
         ) ===
-          String(req.user._id) ||
+        String(
+          req.user._id
+        );
+
+
+      const isDriver =
+        ride.driverId &&
         String(
           ride.driverId
         ) ===
-          String(req.user._id) ||
-        req.user.role ===
-          "admin";
+        String(
+          req.user._id
+        );
 
-      if (!allowed) {
-        return res.status(403).json({
-          success: false,
-          message:
-            "Access denied."
-        });
-      }
 
       if (
-        ride.status ===
-        "Completed"
+        !isPassenger &&
+        !isDriver
       ) {
-        return res.status(400).json({
+
+        return res.status(403).json({
+
           success: false,
+
           message:
-            "Completed ride cannot be cancelled."
+            "You cannot cancel this ride."
+
         });
       }
+
+
+      if (
+        [
+          "Completed",
+          "Cancelled"
+        ].includes(
+          ride.status
+        )
+      ) {
+
+        return res.status(409).json({
+
+          success: false,
+
+          message:
+            "Ride is already finished."
+
+        });
+      }
+
 
       ride.status =
         "Cancelled";
 
+      ride.cancelledAt =
+        new Date();
+
+      ride.cancelledBy =
+        req.user.role;
+
+      ride.cancelReason =
+        req.body.reason ||
+        "Cancelled by user";
+
+
       await ride.save();
 
-      res.json({
+
+      return res.json({
+
         success: true,
-        ride: safeRide(ride)
+
+        message:
+          "Ride cancelled successfully.",
+
+        ride:
+          safeRide(ride)
+
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      console.error(
+        "CANCEL RIDE ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+
         success: false,
+
         message:
           "Unable to cancel ride."
+
+      });
+    }
+  }
+);
+/* =========================================================
+   DRIVER PROFILE
+========================================================= */
+
+app.get(
+  "/api/driver/profile",
+  authenticate,
+  requireRole("driver"),
+  async (req, res) => {
+
+    try {
+
+      const driver =
+        await User.findById(
+          req.user._id
+        ).select(
+          "-password"
+        );
+
+      return res.json({
+
+        success: true,
+
+        driver:
+          safeUser(
+            driver
+          )
+
+      });
+
+    } catch (error) {
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Unable to load driver profile."
+
       });
     }
   }
 );
 
+
 /* =========================================================
-   PASSENGER LOCATION
+   PASSENGER PROFILE
 ========================================================= */
 
-app.patch(
-  "/api/rides/:id/passenger-location",
+app.get(
+  "/api/passenger/profile",
   authenticate,
   requireRole("passenger"),
   async (req, res) => {
+
     try {
-      const lat =
-        numberOrNull(
-          req.body.latitude ??
-            req.body.lat
+
+      const passenger =
+        await User.findById(
+          req.user._id
+        ).select(
+          "-password"
         );
 
-      const lng =
-        numberOrNull(
-          req.body.longitude ??
-            req.body.lng
-        );
+      return res.json({
 
-      if (
-        lat === null ||
-        lng === null
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Invalid location."
-        });
-      }
-
-      const ride =
-        await Ride.findOne({
-          _id:
-            req.params.id,
-          userId:
-            req.user._id
-        });
-
-      if (!ride) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Ride not found."
-        });
-      }
-
-      ride.passengerLocation = {
-        lat,
-        lng,
-        accuracy:
-          numberOrNull(
-            req.body.accuracy
-          ),
-        updatedAt:
-          new Date()
-      };
-
-      await ride.save();
-
-      res.json({
         success: true,
-        location:
-          ride.passengerLocation
+
+        passenger:
+          safeUser(
+            passenger
+          )
+
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      return res.status(500).json({
+
         success: false,
+
         message:
-          "Unable to update passenger location."
+          "Unable to load passenger profile."
+
       });
     }
   }
 );
 
+
 /* =========================================================
-   DRIVER LOCATION
+   UPDATE PROFILE
 ========================================================= */
 
 app.patch(
-  "/api/rides/:id/driver-location",
+  "/api/profile",
   authenticate,
-  requireRole("driver"),
-  async (req, res) => {
-    try {
-      const lat =
-        numberOrNull(
-          req.body.latitude ??
-            req.body.lat
-        );
 
-      const lng =
-        numberOrNull(
-          req.body.longitude ??
-            req.body.lng
-        );
+  async (req, res) => {
+
+    try {
+
+      const {
+        name,
+        city,
+        vehicleNumber,
+        vehicleType,
+        license
+      } = req.body;
+
 
       if (
-        lat === null ||
-        lng === null
+        name !== undefined
       ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Invalid location."
-        });
+
+        req.user.name =
+          String(
+            name
+          ).trim();
+
       }
 
-      const ride =
-        await Ride.findOne({
-          _id:
-            req.params.id,
-          driverId:
-            req.user._id
-        });
 
-      if (!ride) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Ride not found."
-        });
+      if (
+        city !== undefined
+      ) {
+
+        req.user.city =
+          String(
+            city
+          ).trim();
+
       }
 
-      ride.driverLocation = {
-        lat,
-        lng,
-        accuracy:
-          numberOrNull(
-            req.body.accuracy
-          ),
-        updatedAt:
-          new Date()
-      };
 
-      await ride.save();
+      if (
+        req.user.role ===
+        "driver"
+      ) {
 
-      req.user.location =
-        ride.driverLocation;
+        if (
+          vehicleNumber !==
+          undefined
+        ) {
 
-      req.user.online = true;
+          req.user.vehicleNumber =
+            String(
+              vehicleNumber
+            )
+              .trim()
+              .toUpperCase();
+
+        }
+
+
+        if (
+          vehicleType !==
+          undefined
+        ) {
+
+          req.user.vehicleType =
+            String(
+              vehicleType
+            ).trim();
+
+        }
+
+
+        if (
+          license !==
+          undefined
+        ) {
+
+          req.user.license =
+            String(
+              license
+            )
+              .trim()
+              .toUpperCase();
+
+        }
+      }
+
 
       await req.user.save();
 
-      res.json({
+
+      return res.json({
+
         success: true,
-        location:
-          ride.driverLocation
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
+
         message:
-          "Unable to update driver location."
-      });
-    }
-  }
-);
+          "Profile updated successfully.",
 
-/* =========================================================
-   LIVE LOCATION
-========================================================= */
-
-app.get(
-  "/api/rides/:id/live-location",
-  authenticate,
-  async (req, res) => {
-    try {
-      const ride =
-        await Ride.findById(
-          req.params.id
-        );
-
-      if (!ride) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Ride not found."
-        });
-      }
-
-      const allowed =
-        String(
-          ride.userId
-        ) ===
-          String(req.user._id) ||
-        String(
-          ride.driverId
-        ) ===
-          String(req.user._id) ||
-        req.user.role ===
-          "admin";
-
-      if (!allowed) {
-        return res.status(403).json({
-          success: false,
-          message:
-            "Access denied."
-        });
-      }
-
-      res.json({
-        success: true,
-        rideId: ride._id,
-        status: ride.status,
-        passengerLocation:
-          ride.passengerLocation,
-        driverLocation:
-          ride.driverLocation
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to load live location."
-      });
-    }
-  }
-);
-
-/* =========================================================
-   DRIVER MY RIDES
-========================================================= */
-
-app.get(
-  "/api/driver/my-rides",
-  authenticate,
-  requireRole("driver"),
-  async (req, res) => {
-    try {
-      const rides =
-        await Ride.find({
-          driverId:
-            req.user._id
-        })
-          .populate(
-            "userId",
-            "name email city"
+        user:
+          safeUser(
+            req.user
           )
-          .sort({
-            createdAt: -1
-          });
 
-      res.json({
-        success: true,
-        rides: rides.map(
-          safeRide
-        )
       });
+
     } catch (error) {
-      res.status(500).json({
+
+      console.error(
+        "PROFILE UPDATE ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+
         success: false,
+
         message:
-          "Unable to load driver rides.",
-        rides: []
+          "Unable to update profile."
+
       });
     }
   }
 );
 
-/* =========================================================
-   ADMIN - PASSENGERS
-========================================================= */
-
-app.get(
-  "/api/admin/passengers",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    const passengers =
-      await User.find({
-        role: "passenger"
-      })
-        .select("-password")
-        .sort({
-          createdAt: -1
-        })
-        .lean();
-
-    res.json({
-      success: true,
-      passengers
-    });
-  }
-);
 
 /* =========================================================
-   ADMIN - DRIVERS
-========================================================= */
-
-app.get(
-  "/api/admin/drivers",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    const drivers =
-      await User.find({
-        role: "driver"
-      })
-        .select("-password")
-        .sort({
-          createdAt: -1
-        })
-        .lean();
-
-    res.json({
-      success: true,
-      drivers
-    });
-  }
-);
-
-/* =========================================================
-   ADMIN - RIDES
-========================================================= */
-
-app.get(
-  "/api/admin/rides",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    const rides =
-      await Ride.find({})
-        .populate(
-          "userId",
-          "name email city"
-        )
-        .populate(
-          "driverId",
-          "name email vehicleNumber vehicleType rating online"
-        )
-        .sort({
-          createdAt: -1
-        });
-
-    res.json({
-      success: true,
-      rides: rides.map(
-        safeRide
-      )
-    });
-  }
-);
-
-/* =========================================================
-   ADMIN - STATS
-========================================================= */
-
-app.get(
-  "/api/admin/stats",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    try {
-      const [
-        totalUsers,
-        totalDrivers,
-        blockedDrivers,
-        totalRides,
-        completedRides,
-        activeRides
-      ] =
-        await Promise.all([
-          User.countDocuments({
-            role: "passenger"
-          }),
-
-          User.countDocuments({
-            role: "driver"
-          }),
-
-          User.countDocuments({
-            role: "driver",
-            blocked: true
-          }),
-
-          Ride.countDocuments({}),
-
-          Ride.countDocuments({
-            status: "Completed"
-          }),
-
-          Ride.countDocuments({
-            status: {
-              $nin: [
-                "Completed",
-                "Cancelled"
-              ]
-            }
-          })
-        ]);
-
-      res.json({
-        success: true,
-        stats: {
-          totalUsers,
-          totalDrivers,
-          blockedDrivers,
-          totalRides,
-          completedRides,
-          activeRides
-        }
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to load statistics."
-      });
-    }
-  }
-);
-
-/* =========================================================
-   ADMIN - BLOCK
-========================================================= */
-
-app.patch(
-  "/api/admin/drivers/:id/block",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    try {
-      const driver =
-        await User.findOneAndUpdate(
-          {
-            _id:
-              req.params.id,
-            role: "driver"
-          },
-          {
-            $set: {
-              blocked: true,
-              blockedReason:
-                req.body.reason ||
-                "Blocked by admin.",
-              blockedAt:
-                new Date(),
-              online: false
-            }
-          },
-          {
-            new: true
-          }
-        ).select("-password");
-
-      if (!driver) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Driver not found."
-        });
-      }
-
-      res.json({
-        success: true,
-        message:
-          "Driver blocked.",
-        driver
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to block driver."
-      });
-    }
-  }
-);
-
-/* =========================================================
-   ADMIN - UNBLOCK
-========================================================= */
-
-app.patch(
-  "/api/admin/drivers/:id/unblock",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    try {
-      const driver =
-        await User.findOneAndUpdate(
-          {
-            _id:
-              req.params.id,
-            role: "driver"
-          },
-          {
-            $set: {
-              blocked: false,
-              blockedReason: "",
-              blockedAt: null
-            }
-          },
-          {
-            new: true
-          }
-        ).select("-password");
-
-      if (!driver) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Driver not found."
-        });
-      }
-
-      res.json({
-        success: true,
-        message:
-          "Driver unblocked.",
-        driver
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to unblock driver."
-      });
-    }
-  }
-);
-
-/* =========================================================
-   ADMIN - REMOVE DRIVER
-========================================================= */
-
-app.delete(
-  "/api/admin/drivers/:id",
-  authenticate,
-  requireRole("admin"),
-  async (req, res) => {
-    try {
-      const driver =
-        await User.findOne({
-          _id:
-            req.params.id,
-          role: "driver"
-        });
-
-      if (!driver) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Driver not found."
-        });
-      }
-
-      const activeRide =
-        await Ride.findOne({
-          driverId:
-            driver._id,
-          status: {
-            $nin: [
-              "Completed",
-              "Cancelled"
-            ]
-          }
-        });
-
-      if (activeRide) {
-        return res.status(409).json({
-          success: false,
-          message:
-            "Driver has an active ride."
-        });
-      }
-
-      await User.deleteOne({
-        _id:
-          driver._id
-      });
-
-      res.json({
-        success: true,
-        message:
-          "Driver removed."
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message:
-          "Unable to remove driver."
-      });
-    }
-  }
-);
-
-/* =========================================================
-   SERVICE AREAS
-========================================================= */
-
-app.get(
-  "/api/service-areas",
-  (req, res) => {
-    res.json({
-      success: true,
-      areas: [
-        {
-          name: "Nalanda",
-          active: true
-        }
-      ]
-    });
-  }
-);
-
-/* =========================================================
-   HEALTH
+   HEALTH CHECK
 ========================================================= */
 
 app.get(
   "/api/health",
+
   (req, res) => {
+
     res.json({
+
       success: true,
-      message:
-        "UDAN CAB server is running.",
-      database:
-        mongoose.connection.readyState === 1
-          ? "connected"
-          : "disconnected",
+
+      status:
+        "OK",
+
+      service:
+        "UDAN CAB",
+
       time:
         new Date().toISOString()
+
     });
+
   }
 );
 
+
 /* =========================================================
-   FRONTEND
+   FRONTEND STATIC FILES
 ========================================================= */
 
 app.use(
   express.static(
-    FRONTEND_DIR,
-    {
-      extensions: ["html"]
-    }
+    FRONTEND_DIR
   )
 );
 
+
+/* =========================================================
+   FRONTEND ROUTES
+========================================================= */
+
 app.get(
   "/",
+
   (req, res) => {
+
     res.sendFile(
       path.join(
         FRONTEND_DIR,
         "index.html"
       )
     );
+
   }
 );
 
+
 app.get(
-  "/login.html",
+  "/login",
+
   (req, res) => {
+
     res.sendFile(
       path.join(
         FRONTEND_DIR,
         "login.html"
       )
     );
+
   }
 );
 
+
 app.get(
-  "/dashboard.html",
+  "/dashboard",
+
   (req, res) => {
+
     res.sendFile(
       path.join(
         FRONTEND_DIR,
         "dashboard.html"
       )
     );
+
   }
 );
 
+
 app.get(
-  "/driver-dashboard.html",
+  "/driver-dashboard",
+
   (req, res) => {
+
     res.sendFile(
       path.join(
         FRONTEND_DIR,
         "driver-dashboard.html"
       )
     );
+
   }
 );
 
+
 app.get(
-  "/admin.html",
+  "/admin",
+
   (req, res) => {
+
     res.sendFile(
       path.join(
         FRONTEND_DIR,
         "admin.html"
       )
     );
+
   }
 );
 
+
 app.get(
-  "/parcel.html",
+  "/parcel",
+
   (req, res) => {
+
     res.sendFile(
       path.join(
         FRONTEND_DIR,
         "parcel.html"
       )
     );
+
   }
 );
 
+
 /* =========================================================
-   API 404
+   404 API
 ========================================================= */
 
 app.use(
   "/api",
+
   (req, res) => {
+
     res.status(404).json({
+
       success: false,
+
       message:
-        "API route not found.",
-      path:
-        req.originalUrl
+        "API endpoint not found."
+
     });
+
   }
 );
 
+
 /* =========================================================
-   GLOBAL ERROR
+   ERROR HANDLER
 ========================================================= */
 
 app.use(
-  (error, req, res, next) => {
+  (
+    error,
+    req,
+    res,
+    next
+  ) => {
+
     console.error(
-      "GLOBAL ERROR:",
+      "SERVER ERROR:",
       error
     );
 
-    if (res.headersSent) {
-      return next(error);
-    }
+    res.status(
+      error.status || 500
+    ).json({
 
-    res.status(500).json({
       success: false,
+
       message:
+        error.message ||
         "Internal server error."
+
     });
+
   }
 );
+
 
 /* =========================================================
    DATABASE + SERVER
 ========================================================= */
 
 async function startServer() {
+
   try {
+
     await mongoose.connect(
       MONGODB_URI
     );
+
 
     console.log(
       "✅ MongoDB connected."
     );
 
+
     app.listen(
       PORT,
       "0.0.0.0",
+
       () => {
+
         console.log(
-          `🚕 UDAN CAB running on port ${PORT}`
+          `🚕 UDAN CAB server running on port ${PORT}`
         );
+
       }
     );
+
+
   } catch (error) {
-    console.error(
-      "❌ MongoDB connection failed:"
-    );
 
     console.error(
-      error.message
+      "❌ MongoDB connection failed:",
+      error
     );
 
     process.exit(1);
+
   }
 }
+
 
 startServer();

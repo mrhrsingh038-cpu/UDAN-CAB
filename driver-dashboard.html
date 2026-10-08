@@ -10,15 +10,6 @@
 
     <title>UDAN CAB - Driver Dashboard</title>
 
-
-    <!-- LEAFLET MAP -->
-
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
-
-
     <style>
 
         * {
@@ -28,172 +19,102 @@
             font-family: Arial, sans-serif;
         }
 
-
         body {
             min-height: 100vh;
             background: #f5f5f5;
             color: #111;
         }
 
-
-        /* =========================
-           NAVBAR
-        ========================= */
+        /* NAVBAR */
 
         .navbar {
-
             height: 70px;
-
             background: #111;
-
             color: white;
 
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
 
             padding: 0 6%;
-
         }
-
 
         .logo {
-
             font-size: 28px;
-
             font-weight: bold;
-
         }
-
 
         .logo span {
-
             color: #ffd000;
-
         }
-
 
         .driver-info {
-
             display: flex;
-
             align-items: center;
-
             gap: 15px;
-
         }
-
 
         .logout {
-
             padding: 10px 18px;
-
             border: none;
-
             border-radius: 7px;
-
             background: #ffd000;
-
             color: #111;
-
             font-weight: bold;
-
             cursor: pointer;
-
         }
 
-
-        /* =========================
-           MAIN
-        ========================= */
+        /* MAIN */
 
         .main {
-
             max-width: 1100px;
-
             margin: 35px auto;
-
             padding: 20px;
-
         }
-
 
         .welcome {
-
             margin-bottom: 25px;
-
         }
-
 
         .welcome h1 {
-
             font-size: 32px;
-
             margin-bottom: 8px;
-
         }
-
 
         .welcome p {
-
             color: #666;
-
         }
 
-
-        /* =========================
-           TOP BAR
-        ========================= */
+        /* TOP BAR */
 
         .top-bar {
-
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
-
             margin-bottom: 20px;
-
         }
 
-
         .refresh-btn {
-
             padding: 11px 18px;
 
             border: none;
-
             border-radius: 8px;
 
             background: #111;
-
             color: white;
 
             font-weight: bold;
-
             cursor: pointer;
-
         }
 
-
-        /* =========================
-           RIDES
-        ========================= */
+        /* RIDES */
 
         .rides {
-
             display: grid;
-
             gap: 20px;
-
         }
 
-
         .ride-card {
-
             background: white;
 
             padding: 25px;
@@ -202,34 +123,22 @@
 
             box-shadow:
                 0 10px 30px rgba(0,0,0,.08);
-
         }
 
-
         .ride-header {
-
             display: flex;
-
             justify-content: space-between;
-
             align-items: center;
 
             margin-bottom: 20px;
-
         }
-
 
         .ride-id {
-
             font-size: 19px;
-
             font-weight: bold;
-
         }
 
-
         .status {
-
             padding: 7px 13px;
 
             border-radius: 20px;
@@ -237,40 +146,27 @@
             background: #fff4bd;
 
             font-size: 13px;
-
             font-weight: bold;
-
         }
 
-
         .location {
-
             margin: 12px 0;
 
             font-size: 16px;
 
             line-height: 1.5;
-
         }
 
-
         .fare {
-
             margin: 20px 0;
 
             font-size: 24px;
-
             font-weight: bold;
-
         }
 
-
-        /* =========================
-           BUTTONS
-        ========================= */
+        /* BUTTONS */
 
         .action-btn {
-
             width: 100%;
 
             padding: 14px;
@@ -278,63 +174,45 @@
             margin-top: 10px;
 
             border: none;
-
             border-radius: 8px;
 
             background: #111;
-
             color: white;
 
             font-size: 16px;
-
             font-weight: bold;
 
             cursor: pointer;
-
         }
-
 
         .action-btn:hover {
-
             background: #333;
-
         }
-
 
         .start-btn {
-
             background: #16803c;
-
         }
-
 
         .start-btn:hover {
-
             background: #11652f;
-
         }
-
 
         .complete-btn {
-
             background: #0066cc;
-
         }
-
 
         .complete-btn:hover {
-
             background: #0052a3;
-
         }
 
+        .disabled-btn {
+            background: #888;
+            cursor: not-allowed;
+        }
 
-        /* =========================
-           EMPTY
-        ========================= */
+        /* EMPTY */
 
         .empty {
-
             background: white;
 
             padding: 45px 20px;
@@ -347,150 +225,28 @@
 
             box-shadow:
                 0 8px 25px rgba(0,0,0,.05);
-
         }
 
-
-        /* =========================
-           LIVE TRACKING
-        ========================= */
-
-        #driverLiveBox {
-
-            display: none;
-
-            background: white;
-
-            padding: 25px;
-
-            margin-top: 30px;
-
-            border-radius: 15px;
-
-            box-shadow:
-                0 8px 25px rgba(0,0,0,.1);
-
-        }
-
-
-        #driverLiveBox h2 {
-
-            margin-bottom: 15px;
-
-        }
-
-
-        .driver-location-info {
-
-            display: flex;
-
-            gap: 15px;
-
-            flex-wrap: wrap;
-
-            margin-top: 15px;
-
-        }
-
-
-        .driver-location-card {
-
-            flex: 1;
-
-            min-width: 220px;
-
-            padding: 15px;
-
-            background: #f5f5f5;
-
-            border-radius: 10px;
-
-        }
-
-
-        .driver-location-card p {
-
-            margin-top: 8px;
-
-            color: #555;
-
-            word-break: break-word;
-
-        }
-
-
-        #driverLiveMap {
-
-            width: 100%;
-
-            height: 420px;
-
-            border-radius: 12px;
-
-            margin-top: 20px;
-
-        }
-
-
-        .live-status {
-
-            margin-top: 15px;
-
-            padding: 12px;
-
-            background: #e9f8ee;
-
-            color: #16803c;
-
-            border-radius: 8px;
-
-            font-weight: bold;
-
-        }
-
-
-        /* =========================
-           MOBILE
-        ========================= */
+        /* MOBILE */
 
         @media(max-width:700px) {
 
             .navbar {
-
                 padding: 0 20px;
-
             }
-
 
             .driver-info span {
-
                 display: none;
-
             }
-
 
             .top-bar {
-
                 flex-direction: column;
-
                 align-items: flex-start;
-
                 gap: 15px;
-
             }
-
 
             .refresh-btn {
-
                 width: 100%;
-
-            }
-
-
-            #driverLiveMap {
-
-                height: 350px;
-
             }
 
         }
@@ -503,25 +259,19 @@
 <body>
 
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
+    <!-- NAVBAR -->
 
     <div class="navbar">
 
         <div class="logo">
-
             UDAN<span>CAB</span>
-
         </div>
-
 
         <div class="driver-info">
 
             <span>
                 🚕 Driver
             </span>
-
 
             <button
                 class="logout"
@@ -537,9 +287,7 @@
 
 
 
-    <!-- =========================
-         MAIN
-    ========================= -->
+    <!-- MAIN -->
 
     <div class="main">
 
@@ -564,7 +312,6 @@
                 Available Rides
             </h2>
 
-
             <button
                 class="refresh-btn"
                 onclick="loadRides()">
@@ -577,9 +324,7 @@
 
 
 
-        <!-- =========================
-             RIDES
-        ========================= -->
+        <!-- RIDES -->
 
         <div
             class="rides"
@@ -587,1493 +332,91 @@
 
         </div>
 
-
-
-        <!-- =========================
-             LIVE LOCATION BOX
-        ========================= -->
-
-        <div id="driverLiveBox">
-
-            <h2>
-                🚕 Live Ride Tracking
-            </h2>
-
-
-            <div class="driver-location-info">
-
-
-                <div class="driver-location-card">
-
-                    <b>
-                        🚕 Your Location
-                    </b>
-
-                    <p id="driverOwnLocation">
-                        Waiting for GPS...
-                    </p>
-
-                </div>
-
-
-
-                <div class="driver-location-card">
-
-                    <b>
-                        📍 Passenger Location
-                    </b>
-
-                    <p id="driverPassengerLocation">
-                        Waiting for passenger...
-                    </p>
-
-                </div>
-
-
-            </div>
-
-
-            <div
-                class="live-status"
-                id="driverLiveStatus">
-
-                🟡 Starting live tracking...
-
-            </div>
-
-
-            <div
-                id="driverLiveMap">
-
-            </div>
-
-        </div>
-
-
     </div>
 
 
 
-    <!-- LEAFLET -->
-
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
-
-
-
     <script>
-
-
-        /* =========================
-           BASIC CONFIG
-        ========================= */
-
-        const API = "";
-
-        const TOKEN =
-            localStorage.getItem("udanToken");
-
-
-        const USER =
-            JSON.parse(
-                localStorage.getItem("udanUser") || "null"
-            );
-
-
-        if (
-            !TOKEN ||
-            !USER ||
-            USER.role !== "driver"
-        ) {
-
-            alert(
-                "Please login as driver first."
-            );
-
-            location.href =
-                "login.html";
-
-        }
-
-
-        const AUTH = {
-
-            "Content-Type":
-                "application/json",
-
-            "Authorization":
-                "Bearer " + TOKEN
-
-        };
-
-
-        let activeRide = null;
-
-        let gpsWatch = null;
-
-
-        /* =========================
-           LIVE MAP VARIABLES
-        ========================= */
-
-        let driverMap = null;
-
-        let driverOwnMarker = null;
-
-        let passengerMarker = null;
-
-        let liveRideId =
-            localStorage.getItem(
-                "udanCurrentRide"
-            );
-
-
-        let passengerRefreshTimer = null;
-
-
-
-        /* =========================
-           API HELPER
-        ========================= */
-
-        async function api(
-            url,
-            options = {}
-        ) {
-
-            options.headers = {
-
-                ...(options.headers || {}),
-
-                "Authorization":
-                    "Bearer " + TOKEN
-
-            };
-
-
-            if (
-                options.body &&
-                !options.headers["Content-Type"]
-            ) {
-
-                options.headers["Content-Type"] =
-                    "application/json";
-
-            }
-
-
-            const response =
-                await fetch(
-                    API + url,
-                    options
-                );
-
-
-            const data =
-                await response
-                    .json()
-                    .catch(() => ({}));
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    data.message ||
-                    "Request failed"
-                );
-
-            }
-
-
-            return data;
-
-        }
-
-
-
-        /* =========================
-           LOGOUT
-        ========================= */
-
-        function logout() {
-
-            localStorage.removeItem(
-                "udanToken"
-            );
-
-            localStorage.removeItem(
-                "udanUser"
-            );
-
-            localStorage.removeItem(
-                "udanCurrentRide"
-            );
-
-
-            location.href =
-                "login.html";
-
-        }
-
-
-
-        /* =========================
-           DRIVER ONLINE
-        ========================= */
-
-        async function setOnline() {
-
-            try {
-
-                await api(
-                    "/api/driver/status",
-                    {
-
-                        method: "POST",
-
-                        headers: AUTH,
-
-                        body:
-                            JSON.stringify({
-                                online: true
-                            })
-
-                    }
-                );
-
-            }
-
-            catch(error) {
-
-                console.error(
-                    "Online status error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-
-        /* =========================
-           DRIVER GPS
-        ========================= */
-
-        function startGPS() {
-
-            if (
-                !navigator.geolocation
-            ) {
-
-                alert(
-                    "Your browser does not support GPS."
-                );
-
-                return;
-
-            }
-
-
-            if (
-                gpsWatch !== null
-            ) {
-
-                navigator.geolocation.clearWatch(
-                    gpsWatch
-                );
-
-            }
-
-
-            gpsWatch =
-                navigator.geolocation.watchPosition(
-
-                    async function(position) {
-
-                        const lat =
-                            position.coords.latitude;
-
-                        const lng =
-                            position.coords.longitude;
-
-                        const accuracy =
-                            position.coords.accuracy;
-
-
-                        /* DRIVER GENERAL LOCATION */
-
-                        try {
-
-                            await api(
-                                "/api/location/update",
-                                {
-
-                                    method: "POST",
-
-                                    headers: AUTH,
-
-                                    body:
-                                        JSON.stringify({
-
-                                            latitude: lat,
-
-                                            longitude: lng,
-
-                                            accuracy: accuracy
-
-                                        })
-
-                                }
-                            );
-
-                        }
-
-                        catch(error) {
-
-                            console.error(
-                                "General GPS error:",
-                                error
-                            );
-
-                        }
-
-
-                        /* DRIVER LIVE RIDE LOCATION */
-
-                        if (
-                            liveRideId
-                        ) {
-
-                            try {
-
-                                await api(
-
-                                    "/api/rides/" +
-                                    liveRideId +
-                                    "/driver-location",
-
-                                    {
-
-                                        method: "PATCH",
-
-                                        headers: AUTH,
-
-                                        body:
-                                            JSON.stringify({
-
-                                                latitude: lat,
-
-                                                longitude: lng,
-
-                                                accuracy: accuracy
-
-                                            })
-
-                                    }
-
-                                );
-
-
-                                document
-                                    .getElementById(
-                                        "driverOwnLocation"
-                                    )
-                                    .innerText =
-                                    lat.toFixed(5) +
-                                    ", " +
-                                    lng.toFixed(5);
-
-
-                                updateDriverOwnMarker(
-                                    lat,
-                                    lng
-                                );
-
-
-                                document
-                                    .getElementById(
-                                        "driverLiveStatus"
-                                    )
-                                    .innerText =
-                                    "🟢 Driver live location is active";
-
-                            }
-
-                            catch(error) {
-
-                                console.error(
-                                    "Ride GPS error:",
-                                    error
-                                );
-
-                            }
-
-                        }
-
-                    },
-
-
-                    function(error) {
-
-                        console.log(
-                            "GPS:",
-                            error.message
-                        );
-
-                    },
-
-
-                    {
-
-                        enableHighAccuracy:
-                            true,
-
-                        maximumAge:
-                            3000,
-
-                        timeout:
-                            10000
-
-                    }
-
-                );
-
-        }
-
-
-
-        /* =========================
-           CREATE MAP
-        ========================= */
-
-        function createDriverMap(
-            lat,
-            lng
-        ) {
-
-            if (driverMap) {
-
-                return;
-
-            }
-
-
-            driverMap =
-                L.map(
-                    "driverLiveMap"
-                ).setView(
-                    [lat, lng],
-                    14
-                );
-
-
-            L.tileLayer(
-
-                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-                {
-
-                    maxZoom: 19,
-
-                    attribution:
-                        "&copy; OpenStreetMap"
-
-                }
-
-            ).addTo(
-                driverMap
-            );
-
-        }
-
-
-
-        /* =========================
-           DRIVER MARKER
-        ========================= */
-
-        function updateDriverOwnMarker(
-            lat,
-            lng
-        ) {
-
-            if (!driverMap) {
-
-                createDriverMap(
-                    lat,
-                    lng
-                );
-
-            }
-
-
-            if (!driverOwnMarker) {
-
-                driverOwnMarker =
-                    L.marker(
-                        [lat, lng]
-                    )
-                    .addTo(
-                        driverMap
-                    )
-                    .bindPopup(
-                        "🚕 You - LIVE"
-                    );
-
-            }
-
-            else {
-
-                driverOwnMarker
-                    .setLatLng(
-                        [lat, lng]
-                    );
-
-            }
-
-        }
-
-
-
-        /* =========================
-           PASSENGER MARKER
-        ========================= */
-
-        function updatePassengerMarker(
-            lat,
-            lng
-        ) {
-
-            if (!driverMap) {
-
-                createDriverMap(
-                    lat,
-                    lng
-                );
-
-            }
-
-
-            if (!passengerMarker) {
-
-                passengerMarker =
-                    L.marker(
-                        [lat, lng]
-                    )
-                    .addTo(
-                        driverMap
-                    )
-                    .bindPopup(
-                        "📍 Passenger - LIVE"
-                    );
-
-            }
-
-            else {
-
-                passengerMarker
-                    .setLatLng(
-                        [lat, lng]
-                    );
-
-            }
-
-
-            fitBothMarkers();
-
-        }
-
-
-
-        /* =========================
-           FIT BOTH LOCATIONS
-        ========================= */
-
-        function fitBothMarkers() {
-
-            if (
-                !driverMap ||
-                !driverOwnMarker ||
-                !passengerMarker
-            ) {
-
-                return;
-
-            }
-
-
-            const group =
-                L.featureGroup([
-
-                    driverOwnMarker,
-
-                    passengerMarker
-
-                ]);
-
-
-            driverMap.fitBounds(
-                group
-                    .getBounds()
-                    .pad(0.25)
-            );
-
-        }
-
-
-
-        /* =========================
-           LOAD PASSENGER LOCATION
-        ========================= */
-
-        async function loadPassengerLocation() {
-
-            if (
-                !liveRideId ||
-                !TOKEN
-            ) {
-
-                return;
-
-            }
-
-
-            try {
-
-                const response =
-                    await fetch(
-
-                        API +
-                        "/api/rides/" +
-                        liveRideId,
-
-                        {
-
-                            headers: AUTH
-
-                        }
-
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                if (!response.ok) {
-
-                    return;
-
-                }
-
-
-                const ride =
-                    data.ride;
-
-
-                if (!ride) {
-
-                    return;
-
-                }
-
-
-                /* CHECK COMPLETED */
-
-                if (
-                    ride.status ===
-                        "Completed" ||
-
-                    ride.status ===
-                        "Cancelled"
-                ) {
-
-                    stopLiveTracking();
-
-                    return;
-
-                }
-
-
-                if (
-                    !ride.passengerLocation
-                ) {
-
-                    document
-                        .getElementById(
-                            "driverPassengerLocation"
-                        )
-                        .innerText =
-                        "Waiting for passenger GPS...";
-
-                    return;
-
-                }
-
-
-                const lat =
-                    Number(
-                        ride.passengerLocation.lat
-                    );
-
-
-                const lng =
-                    Number(
-                        ride.passengerLocation.lng
-                    );
-
-
-                if (
-                    !Number.isFinite(lat) ||
-                    !Number.isFinite(lng)
-                ) {
-
-                    return;
-
-                }
-
-
-                document
-                    .getElementById(
-                        "driverPassengerLocation"
-                    )
-                    .innerText =
-
-                    lat.toFixed(5) +
-                    ", " +
-                    lng.toFixed(5);
-
-
-                updatePassengerMarker(
-                    lat,
-                    lng
-                );
-
-
-                document
-                    .getElementById(
-                        "driverLiveStatus"
-                    )
-                    .innerText =
-                    "🟢 Passenger location received";
-
-            }
-
-            catch(error) {
-
-                console.error(
-                    "Passenger location error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-
-        /* =========================
-           START LIVE TRACKING
-        ========================= */
-
-        function startDriverLiveTracking() {
-
-            if (!liveRideId) {
-
-                return;
-
-            }
-
-
-            document
-                .getElementById(
-                    "driverLiveBox"
-                )
-                .style.display =
-                "block";
-
-
-            /* MAP REFRESH */
-
-            setTimeout(
-                function() {
-
-                    if (driverMap) {
-
-                        driverMap.invalidateSize();
-
-                    }
-
-                },
-                300
-            );
-
-
-            /* FIRST LOAD */
-
-            loadPassengerLocation();
-
-
-            /* PREVENT DUPLICATE TIMER */
-
-            if (
-                passengerRefreshTimer
-            ) {
-
-                clearInterval(
-                    passengerRefreshTimer
-                );
-
-            }
-
-
-            passengerRefreshTimer =
-                setInterval(
-
-                    loadPassengerLocation,
-
-                    3000
-
-                );
-
-        }
-
-
-
-        /* =========================
-           STOP LIVE TRACKING
-        ========================= */
-
-        function stopLiveTracking() {
-
-            if (
-                passengerRefreshTimer
-            ) {
-
-                clearInterval(
-                    passengerRefreshTimer
-                );
-
-                passengerRefreshTimer =
-                    null;
-
-            }
-
-
-            document
-                .getElementById(
-                    "driverLiveStatus"
-                )
-                .innerText =
-                "⚪ Live ride tracking stopped.";
-
-        }
-
-
-
-        /* =========================
-           LOAD RIDES
-        ========================= */
-
-        async function loadRides() {
-
-            const box =
-                document.getElementById(
-                    "rides"
-                );
-
-
-            box.innerHTML =
-                '<div class="empty">⏳ Loading rides...</div>';
-
-
-            try {
-
-                const data =
-                    await api(
-                        "/api/driver/rides"
-                    );
-
-
-                const rides =
-                    data.rides || [];
-
-
-                if (!rides.length) {
-
-                    box.innerHTML =
-                        '<div class="empty">' +
-                        '🚕 No rides available right now.' +
-                        '<br><br>' +
-                        'Click Refresh to check again.' +
-                        '</div>';
-
-                    return;
-
-                }
-
-
-                box.innerHTML = "";
-
-
-                rides.forEach(
-                    function(ride) {
-
-                        const id =
-                            ride._id;
-
-
-                        const card =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        card.className =
-                            "ride-card";
-
-
-                        card.innerHTML =
-
-                            '<div class="ride-header">' +
-
-                            '<div class="ride-id">' +
-                            '🚕 Ride #' +
-                            id.slice(-6) +
-                            '</div>' +
-
-                            '<div class="status">' +
-                            escapeHtml(
-                                ride.status
-                            ) +
-                            '</div>' +
-
-                            '</div>' +
-
-
-                            '<div class="location">' +
-                            '📍 <strong>Pickup:</strong> ' +
-                            escapeHtml(
-                                ride.pickup
-                            ) +
-                            '</div>' +
-
-
-                            '<div class="location">' +
-                            '🎯 <strong>Destination:</strong> ' +
-                            escapeHtml(
-                                ride.destination
-                            ) +
-                            '</div>' +
-
-
-                            '<div class="location">' +
-                            '🚗 <strong>Vehicle:</strong> ' +
-                            escapeHtml(
-                                ride.cabType ||
-                                ride.vehicleType ||
-                                "-"
-                            ) +
-                            '</div>' +
-
-
-                            '<div class="fare">' +
-                            '💰 ₹' +
-                            Number(
-                                ride.fare || 0
-                            ) +
-                            '</div>' +
-
-
-                            '<button ' +
-                            'class="action-btn" ' +
-                            'onclick="acceptRide(\'' +
-                            id +
-                            '\')">' +
-
-                            '✅ Accept Ride' +
-
-                            '</button>';
-
-
-                        box.appendChild(
-                            card
-                        );
-
-                    }
-                );
-
-            }
-
-            catch(error) {
-
-                box.innerHTML =
-
-                    '<div class="empty">' +
-
-                    '❌ ' +
-
-                    escapeHtml(
-                        error.message
-                    ) +
-
-                    '</div>';
-
-
-                if (
-                    error.message
-                        .toLowerCase()
-                        .includes("token")
-                ) {
-
-                    logout();
-
-                }
-
-            }
-
-        }
-
-
-
-        /* =========================
-           ACCEPT RIDE
-        ========================= */
-
-        async function acceptRide(
-            id
-        ) {
-
-            try {
-
-                const data =
-                    await api(
-
-                        "/api/rides/" +
-                        id +
-                        "/accept",
-
-                        {
-
-                            method:
-                                "POST",
-
-                            headers:
-                                AUTH
-
-                        }
-
-                    );
-
-
-                activeRide =
-                    data.ride._id;
-
-
-                liveRideId =
-                    data.ride._id;
-
-
-                localStorage.setItem(
-
-                    "udanCurrentRide",
-
-                    data.ride._id
-
-                );
-
-
-                renderActive(
-                    data.ride
-                );
-
-
-                startDriverLiveTracking();
-
-
-                startGPS();
-
-
-                alert(
-                    "🎉 Ride Accepted!\n\nLive tracking started."
-                );
-
-            }
-
-            catch(error) {
-
-                alert(
-                    "❌ " +
-                    error.message
-                );
-
-
-                loadRides();
-
-            }
-
-        }
-
-
-
-        /* =========================
-           ACTIVE RIDE
-        ========================= */
-
-        function renderActive(
-            ride
-        ) {
-
-            const box =
-                document.getElementById(
-                    "rides"
-                );
-
-
-            let action = "";
-
-
-            if (
-                ride.status ===
-                "Driver assigned"
-            ) {
-
-                action =
-
-                    '<button ' +
-
-                    'class="action-btn start-btn" ' +
-
-                    'onclick="startRide(\'' +
-                    ride._id +
-                    '\')">' +
-
-                    '🚕 Start Ride' +
-
-                    '</button>';
-
-            }
-
-
-            if (
-                ride.status ===
-                "Ride started"
-            ) {
-
-                action =
-
-                    '<button ' +
-
-                    'class="action-btn complete-btn" ' +
-
-                    'onclick="completeRide(\'' +
-                    ride._id +
-                    '\')">' +
-
-                    '🎉 Complete Ride' +
-
-                    '</button>';
-
-            }
-
-
-            box.innerHTML =
-
-                '<div class="ride-card">' +
-
-                '<div class="ride-header">' +
-
-                '<div class="ride-id">' +
-                '🚕 Ride #' +
-                ride._id.slice(-6) +
-                '</div>' +
-
-                '<div class="status">' +
-                escapeHtml(
-                    ride.status
-                ) +
-                '</div>' +
-
-                '</div>' +
-
-
-                '<div class="location">' +
-                '📍 <strong>Pickup:</strong> ' +
-                escapeHtml(
-                    ride.pickup
-                ) +
-                '</div>' +
-
-
-                '<div class="location">' +
-                '🎯 <strong>Destination:</strong> ' +
-                escapeHtml(
-                    ride.destination
-                ) +
-                '</div>' +
-
-
-                '<div class="location">' +
-                '🚗 <strong>Vehicle:</strong> ' +
-                escapeHtml(
-                    ride.cabType ||
-                    ride.vehicleType ||
-                    "-"
-                ) +
-                '</div>' +
-
-
-                '<div class="fare">' +
-                '💰 ₹' +
-                Number(
-                    ride.fare || 0
-                ) +
-                '</div>' +
-
-                action +
-
-                '</div>';
-
-        }
-
-
-
-        /* =========================
-           START RIDE
-        ========================= */
-
-        async function startRide(
-            id
-        ) {
-
-            try {
-
-                const data =
-                    await api(
-
-                        "/api/rides/" +
-                        id +
-                        "/start",
-
-                        {
-
-                            method:
-                                "PATCH",
-
-                            headers:
-                                AUTH
-
-                        }
-
-                    );
-
-
-                activeRide =
-                    id;
-
-
-                liveRideId =
-                    id;
-
-
-                localStorage.setItem(
-
-                    "udanCurrentRide",
-
-                    id
-
-                );
-
-
-                renderActive(
-                    data.ride
-                );
-
-
-                startDriverLiveTracking();
-
-
-                startGPS();
-
-
-                alert(
-                    "🚕 Ride Started!\n\nLive tracking is active."
-                );
-
-            }
-
-            catch(error) {
-
-                alert(
-                    "❌ " +
-                    error.message
-                );
-
-            }
-
-        }
-
-
-
-        /* =========================
-           COMPLETE RIDE
-        ========================= */
-
-        async function completeRide(
-            id
-        ) {
-
-            try {
-
-                await api(
-
-                    "/api/rides/" +
-                    id +
-                    "/complete",
-
-                    {
-
-                        method:
-                            "PATCH",
-
-                        headers:
-                            AUTH
-
-                    }
-
-                );
-
-
-                activeRide =
-                    null;
-
-
-                liveRideId =
-                    null;
-
-
-                localStorage.removeItem(
-                    "udanCurrentRide"
-                );
-
-
-                stopLiveTracking();
-
-
-                document
-                    .getElementById(
-                        "driverLiveBox"
-                    )
-                    .style.display =
-                    "none";
-
-
-                alert(
-                    "🎉 Ride Completed Successfully!"
-                );
-
-
-                loadRides();
-
-            }
-
-            catch(error) {
-
-                alert(
-                    "❌ " +
-                    error.message
-                );
-
-            }
-
-        }
-
-
-
-        /* =========================
-           ESCAPE HTML
-        ========================= */
-
-        function escapeHtml(
-            value
-        ) {
-
-            return String(
-                value ?? ""
-            ).replace(
-                /[&<>"']/g,
-                function(char) {
-
-                    return {
-
-                        "&":
-                            "&amp;",
-
-                        "<":
-                            "&lt;",
-
-                        ">":
-                            "&gt;",
-
-                        '"':
-                            "&quot;",
-
-                        "'":
-                            "&#39;"
-
-                    }[char];
-
-                }
-            );
-
-        }
-
-
-
-        /* =========================
-           PAGE START
-        ========================= */
-
-        setOnline();
-
-        startGPS();
-
-        loadRides();
-
-
-        /* CHECK EXISTING ACTIVE RIDE */
-
-        if (
-            liveRideId
-        ) {
-
-            activeRide =
-                liveRideId;
-
-            startDriverLiveTracking();
-
-        }
-
-
-        /* REFRESH RIDES */
-
-        setInterval(
-            function() {
-
-                if (!activeRide) {
-
-                    loadRides();
-
-                }
-
-            },
-            5000
-        );
-
-
-    </script>
+const API="";
+const TOKEN=localStorage.getItem("udanToken");
+const USER=JSON.parse(localStorage.getItem("udanUser")||"null");
+if(!TOKEN||!USER||USER.role!=="driver"){alert("Please login as driver first.");location.href="login.html";}
+const AUTH={"Content-Type":"application/json","Authorization":"Bearer "+TOKEN};
+let activeRide=null;
+let gpsWatch=null;
+
+async function api(url,options={}){
+  options.headers={...(options.headers||{}),Authorization:"Bearer "+TOKEN};
+  if(options.body&&!options.headers["Content-Type"])options.headers["Content-Type"]="application/json";
+  const r=await fetch(API+url,options);
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.message||"Request failed");
+  return d;
+}
+
+function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");location.href="login.html";}
+
+async function setOnline(){
+ try{await api("/api/driver/status",{method:"POST",headers:AUTH,body:JSON.stringify({online:true})});}catch(e){console.error(e)}
+}
+
+function startGPS(){
+ if(!navigator.geolocation)return;
+ if(gpsWatch!==null)navigator.geolocation.clearWatch(gpsWatch);
+ gpsWatch=navigator.geolocation.watchPosition(async p=>{
+   try{await api("/api/location/update",{method:"POST",headers:AUTH,body:JSON.stringify({latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy})});
+   if(activeRide)await api("/api/rides/"+activeRide+"/driver-location",{method:"PATCH",headers:AUTH,body:JSON.stringify({latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy})});
+   }catch(e){console.error("GPS",e)}
+ },e=>console.log("GPS",e.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+}
+
+async function loadRides(){
+ const box=document.getElementById("rides");box.innerHTML='<div class="empty">⏳ Loading rides...</div>';
+ try{
+   const d=await api("/api/driver/rides");
+   const rides=d.rides||[];
+   if(!rides.length){box.innerHTML='<div class="empty">🚕 No rides available right now.<br><br>Click Refresh to check again.</div>';return;}
+   box.innerHTML="";
+   rides.forEach(ride=>{
+     const id=ride._id; const card=document.createElement("div");card.className="ride-card";
+     card.innerHTML=`<div class="ride-header"><div class="ride-id">🚕 Ride #${id.slice(-6)}</div><div class="status">${ride.status}</div></div>
+     <div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div>
+     <div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div>
+     <div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||ride.vehicleType||"-")}</div>
+     <div class="fare">💰 ₹${Number(ride.fare||0)}</div>
+     <button class="action-btn" onclick="acceptRide('${id}')">✅ Accept Ride</button>`;
+     box.appendChild(card);
+   });
+ }catch(e){box.innerHTML='<div class="empty">❌ '+escapeHtml(e.message)+'</div>';if(e.message.toLowerCase().includes("token"))logout();}
+}
+
+async function acceptRide(id){
+ try{const d=await api("/api/rides/"+id+"/accept",{method:"POST",headers:AUTH});activeRide=d.ride._id;renderActive(d.ride);startGPS();alert("🎉 Ride Accepted!");}
+ catch(e){alert("❌ "+e.message);loadRides();}
+}
+
+function renderActive(ride){
+ const box=document.getElementById("rides");let action="";
+ if(ride.status==="Driver accepted")action=`<button class="action-btn start-btn" onclick="startRide('${ride._id}')">🚕 Start Ride</button>`;
+ if(ride.status==="Ride started")action=`<button class="action-btn complete-btn" onclick="completeRide('${ride._id}')">🎉 Complete Ride</button>`;
+ box.innerHTML=`<div class="ride-card"><div class="ride-header"><div class="ride-id">🚕 Ride #${ride._id.slice(-6)}</div><div class="status">${escapeHtml(ride.status)}</div></div><div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div><div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div><div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||"-")}</div><div class="fare">💰 ₹${Number(ride.fare||0)}</div>${action}</div>`;
+}
+async function startRide(id){
+  const code=prompt("🔐 Passenger se 4-digit Ride Start Code poochhiye:");
+  if(code===null)return;
+  const cleanCode=String(code).trim();
+  if(!/^\d{4}$/.test(cleanCode)){alert("❌ Start code exactly 4 digits ka hona chahiye.");return;}
+  try{
+    const d=await api("/api/rides/"+id+"/start",{method:"PATCH",headers:AUTH,body:JSON.stringify({startCode:cleanCode})});
+    activeRide=id; renderActive(d.ride); startGPS();
+    alert("✅ Start Code Verified!\n\n🚕 Ride Started Successfully!");
+  }catch(e){alert("❌ "+e.message);}
+}
+async function completeRide(id){try{const d=await api("/api/rides/"+id+"/complete",{method:"PATCH",headers:AUTH});activeRide=null;alert("🎉 Ride Completed Successfully!");loadRides()}catch(e){alert("❌ "+e.message)}}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+setOnline();startGPS();loadRides();
+setInterval(loadRides,5000);
+</script>
 
 
 </body>
