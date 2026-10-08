@@ -1,210 +1,362 @@
-<!-- =========================================
-     UDAN CAB - PASSENGER LIVE RIDE TRACKING
-========================================= -->
+<!-- =========================================================
+     PASSENGER LIVE TRACKING + NEARBY DRIVERS
+========================================================= -->
 
 <style>
+    #passengerLiveBox {
+        display: none;
+        margin: 30px auto;
+        max-width: 1400px;
+        font-family: Arial, sans-serif;
+    }
 
-#passengerLiveBox {
+    .passenger-live-title {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 20px;
+    }
 
-    display: none;
+    .live-cards {
+        display: grid;
+        grid-template-columns:
+            repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 18px;
+    }
 
-    background: white;
+    .live-card {
+        background: #f5f5f5;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow:
+            0 4px 12px rgba(0,0,0,0.08);
+    }
 
-    padding: 25px;
+    .live-card h3 {
+        margin: 0 0 10px;
+        font-size: 20px;
+    }
 
-    margin: 30px 0;
+    .live-value {
+        font-size: 18px;
+        color: #333;
+    }
 
-    border-radius: 15px;
+    .live-success {
+        background: #e8f8ee;
+        color: #087f3e;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
 
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.10);
+    .live-waiting {
+        background: #fff8df;
+        color: #8a6500;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
 
-}
+    #passengerLiveMap {
+        width: 100%;
+        height: 500px;
+        border-radius: 18px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        border: 2px solid #ddd;
+    }
 
-#passengerLiveMap {
+    .nearby-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin: 25px 0 15px;
+    }
 
-    width: 100%;
+    .driver-counts {
+        display: grid;
+        grid-template-columns:
+            repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
 
-    height: 420px;
+    .driver-count {
+        background: white;
+        border-radius: 15px;
+        padding: 18px;
+        text-align: center;
+        box-shadow:
+            0 4px 12px rgba(0,0,0,0.08);
+    }
 
-    border-radius: 12px;
+    .driver-count .emoji {
+        font-size: 30px;
+    }
 
-    margin-top: 20px;
+    .driver-count .number {
+        font-size: 30px;
+        font-weight: 800;
+        margin-top: 5px;
+    }
 
-}
+    .driver-list {
+        display: grid;
+        grid-template-columns:
+            repeat(2, 1fr);
+        gap: 15px;
+    }
 
-.live-info-grid {
+    .nearby-driver {
+        background: white;
+        border-radius: 15px;
+        padding: 18px;
+        box-shadow:
+            0 4px 12px rgba(0,0,0,0.08);
+        border-left: 5px solid #2196f3;
+    }
 
-    display: flex;
+    .nearby-driver h4 {
+        margin: 0 0 8px;
+        font-size: 19px;
+    }
 
-    gap: 15px;
+    .nearby-driver p {
+        margin: 5px 0;
+        color: #444;
+    }
 
-    flex-wrap: wrap;
+    .driver-distance {
+        color: #087f3e;
+        font-weight: bold;
+    }
 
-    margin-top: 15px;
+    @media(max-width: 800px) {
 
-}
+        .live-cards,
+        .driver-counts,
+        .driver-list {
+            grid-template-columns: 1fr;
+        }
 
-.live-info-card {
+        .passenger-live-title {
+            font-size: 26px;
+        }
 
-    flex: 1;
-
-    min-width: 220px;
-
-    padding: 15px;
-
-    background: #f5f5f5;
-
-    border-radius: 10px;
-
-}
-
-.live-info-card p {
-
-    margin-top: 8px;
-
-    color: #555;
-
-    word-break: break-word;
-
-}
-
-.live-status {
-
-    margin-top: 15px;
-
-    padding: 13px;
-
-    border-radius: 8px;
-
-    background: #e9f8ee;
-
-    color: #16803c;
-
-    font-weight: bold;
-
-}
-
-.driver-found {
-
-    margin-top: 15px;
-
-    padding: 15px;
-
-    background: #fff8d6;
-
-    border-radius: 10px;
-
-}
-
+        #passengerLiveMap {
+            height: 400px;
+        }
+    }
 </style>
 
 
-<!-- =========================================
-     LIVE TRACKING UI
-========================================= -->
-
 <div id="passengerLiveBox">
 
-    <h2>
+    <div class="passenger-live-title">
         🚕 Live Ride Tracking
-    </h2>
+    </div>
 
 
-    <div class="live-info-grid">
+    <!-- =========================
+         CURRENT RIDE INFORMATION
+    ========================== -->
 
+    <div class="live-cards">
 
-        <div class="live-info-card">
+        <div class="live-card">
+            <h3>📍 Your Location</h3>
 
-            <b>
-                📍 Your Location
-            </b>
-
-            <p id="passengerOwnLocation">
+            <div
+                id="passengerOwnLocation"
+                class="live-value"
+            >
                 Waiting for GPS...
-            </p>
-
+            </div>
         </div>
 
 
-        <div class="live-info-card">
+        <div class="live-card">
+            <h3>🚕 Driver Location</h3>
 
-            <b>
-                🚕 Driver Location
-            </b>
-
-            <p id="passengerDriverLocation">
+            <div
+                id="passengerDriverLocation"
+                class="live-value"
+            >
                 Waiting for driver...
-            </p>
-
+            </div>
         </div>
 
 
-        <div class="live-info-card">
+        <div class="live-card">
+            <h3>🚕 Ride Status</h3>
 
-            <b>
-                🚕 Ride Status
-            </b>
-
-            <p id="passengerRideStatus">
+            <div
+                id="passengerRideStatus"
+                class="live-value"
+            >
                 Waiting...
-            </p>
-
+            </div>
         </div>
 
     </div>
 
 
-    <div
-        class="driver-found"
-        id="passengerDriverInfo">
+    <!-- =========================
+         DRIVER INFORMATION
+    ========================== -->
 
+    <div
+        id="passengerDriverInfo"
+        class="live-waiting"
+    >
         🔎 Waiting for driver assignment...
-
     </div>
 
 
     <div
-        class="live-status"
-        id="passengerLiveStatus">
-
+        id="passengerLiveStatus"
+        class="live-waiting"
+    >
         🟡 Starting live tracking...
-
     </div>
 
+
+    <!-- =========================
+         MAP
+    ========================== -->
 
     <div id="passengerLiveMap"></div>
+
+
+    <!-- =========================
+         NEARBY DRIVERS
+    ========================== -->
+
+    <div class="nearby-title">
+        🚗 Drivers Near You
+    </div>
+
+
+    <div class="driver-counts">
+
+        <div class="driver-count">
+
+            <div class="emoji">
+                🛺
+            </div>
+
+            <div>
+                Auto
+            </div>
+
+            <div
+                id="nearbyAutoCount"
+                class="number"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="driver-count">
+
+            <div class="emoji">
+                🏍️
+            </div>
+
+            <div>
+                Bike
+            </div>
+
+            <div
+                id="nearbyBikeCount"
+                class="number"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="driver-count">
+
+            <div class="emoji">
+                🚕
+            </div>
+
+            <div>
+                4-Seater
+            </div>
+
+            <div
+                id="nearbyCarCount"
+                class="number"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="driver-count">
+
+            <div class="emoji">
+                🚘
+            </div>
+
+            <div>
+                Other
+            </div>
+
+            <div
+                id="nearbyOtherCount"
+                class="number"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="nearbyDriverList"
+        class="driver-list"
+    >
+        <div class="live-waiting">
+            🔎 Searching for nearby drivers...
+        </div>
+    </div>
 
 </div>
 
 
 <script>
 
-/* =========================================
-   PASSENGER LIVE TRACKING
-========================================= */
+/* =========================================================
+   CONFIG
+========================================================= */
 
 const PASSENGER_API = "";
 
+
+/* =========================================================
+   AUTH
+========================================================= */
+
 const PASSENGER_TOKEN =
-    localStorage.getItem("udanToken");
-
-
-const PASSENGER_USER =
-    JSON.parse(
-        localStorage.getItem(
-            "udanUser"
-        ) || "null"
-    );
-
-
-let PASSENGER_RIDE_ID =
     localStorage.getItem(
-        "udanCurrentRide"
+        "udanToken"
     );
 
 
-/* MAP */
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 let passengerLiveMap = null;
 
@@ -212,24 +364,92 @@ let passengerOwnMarker = null;
 
 let passengerDriverMarker = null;
 
-
-/* TIMERS */
-
-let passengerRideTimer = null;
+let nearbyDriverMarkers = [];
 
 let passengerGpsWatch = null;
 
+let passengerRideTimer = null;
 
-/* =========================================
-   CREATE MAP
-========================================= */
+let nearbyDriversTimer = null;
 
-function createPassengerLiveMap(
-    lat,
-    lng
-) {
+let passengerLatitude = null;
 
-    if (passengerLiveMap) {
+let passengerLongitude = null;
+
+let currentPassengerRideId = null;
+
+
+/* =========================================================
+   GET CURRENT RIDE ID
+========================================================= */
+
+function getPassengerRideId() {
+
+    return localStorage.getItem(
+        "udanCurrentRide"
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function passengerEscape(value) {
+
+    return String(
+        value ?? ""
+    ).replace(
+        /[&<>"']/g,
+        function(char) {
+
+            return {
+                "&":
+                    "&amp;",
+
+                "<":
+                    "&lt;",
+
+                ">":
+                    "&gt;",
+
+                '"':
+                    "&quot;",
+
+                "'":
+                    "&#39;"
+            }[char];
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE MAP
+========================================================= */
+
+function initializePassengerMap() {
+
+    if (
+        passengerLiveMap
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        typeof L ===
+        "undefined"
+    ) {
+
+        console.error(
+            "Leaflet is not loaded."
+        );
 
         return;
 
@@ -240,24 +460,22 @@ function createPassengerLiveMap(
         L.map(
             "passengerLiveMap"
         ).setView(
-            [lat, lng],
-            14
+            [
+                20,
+                78
+            ],
+            5
         );
 
 
     L.tileLayer(
-
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-
         {
-
             maxZoom: 19,
 
             attribution:
                 "&copy; OpenStreetMap"
-
         }
-
     ).addTo(
         passengerLiveMap
     );
@@ -265,45 +483,55 @@ function createPassengerLiveMap(
 }
 
 
-/* =========================================
+/* =========================================================
    PASSENGER MARKER
-========================================= */
+========================================================= */
 
 function updatePassengerOwnMarker(
     lat,
     lng
 ) {
 
-    if (!passengerLiveMap) {
+    initializePassengerMap();
 
-        createPassengerLiveMap(
-            lat,
-            lng
-        );
+
+    if (
+        !passengerLiveMap
+    ) {
+
+        return;
 
     }
 
 
-    if (!passengerOwnMarker) {
+    if (
+        passengerOwnMarker
+    ) {
 
-        passengerOwnMarker =
-            L.marker(
-                [lat, lng]
-            )
-            .addTo(
-                passengerLiveMap
-            )
-            .bindPopup(
-                "📍 You"
+        passengerOwnMarker
+            .setLatLng(
+                [
+                    lat,
+                    lng
+                ]
             );
 
     }
 
     else {
 
-        passengerOwnMarker
-            .setLatLng(
-                [lat, lng]
+        passengerOwnMarker =
+            L.marker(
+                [
+                    lat,
+                    lng
+                ]
+            )
+            .addTo(
+                passengerLiveMap
+            )
+            .bindPopup(
+                "📍 Your Location"
             );
 
     }
@@ -314,7 +542,6 @@ function updatePassengerOwnMarker(
             "passengerOwnLocation"
         )
         .innerText =
-
         lat.toFixed(5) +
         ", " +
         lng.toFixed(5);
@@ -322,45 +549,55 @@ function updatePassengerOwnMarker(
 }
 
 
-/* =========================================
-   DRIVER MARKER
-========================================= */
+/* =========================================================
+   CURRENT DRIVER MARKER
+========================================================= */
 
 function updatePassengerDriverMarker(
     lat,
     lng
 ) {
 
-    if (!passengerLiveMap) {
+    initializePassengerMap();
 
-        createPassengerLiveMap(
-            lat,
-            lng
-        );
+
+    if (
+        !passengerLiveMap
+    ) {
+
+        return;
 
     }
 
 
-    if (!passengerDriverMarker) {
+    if (
+        passengerDriverMarker
+    ) {
 
-        passengerDriverMarker =
-            L.marker(
-                [lat, lng]
-            )
-            .addTo(
-                passengerLiveMap
-            )
-            .bindPopup(
-                "🚕 Driver - LIVE"
+        passengerDriverMarker
+            .setLatLng(
+                [
+                    lat,
+                    lng
+                ]
             );
 
     }
 
     else {
 
-        passengerDriverMarker
-            .setLatLng(
-                [lat, lng]
+        passengerDriverMarker =
+            L.marker(
+                [
+                    lat,
+                    lng
+                ]
+            )
+            .addTo(
+                passengerLiveMap
+            )
+            .bindPopup(
+                "🚕 Your Driver"
             );
 
     }
@@ -371,229 +608,129 @@ function updatePassengerDriverMarker(
             "passengerDriverLocation"
         )
         .innerText =
-
         lat.toFixed(5) +
         ", " +
         lng.toFixed(5);
 
 
-    fitPassengerLiveMap();
-
-}
-
-
-/* =========================================
-   FIT BOTH MARKERS
-========================================= */
-
-function fitPassengerLiveMap() {
-
-    if (
-
-        !passengerLiveMap ||
-
-        !passengerOwnMarker ||
-
-        !passengerDriverMarker
-
-    ) {
-
-        return;
-
-    }
-
-
-    const group =
-        L.featureGroup([
-
-            passengerOwnMarker,
-
-            passengerDriverMarker
-
-        ]);
-
-
-    passengerLiveMap.fitBounds(
-
-        group
-            .getBounds()
-            .pad(.25)
-
+    passengerLiveMap.setView(
+        [
+            lat,
+            lng
+        ],
+        15
     );
 
 }
 
 
-/* =========================================
-   SEND PASSENGER LOCATION
-========================================= */
+/* =========================================================
+   NEARBY DRIVER MARKER
+========================================================= */
 
-function sendPassengerLiveLocation() {
+function clearNearbyDriverMarkers() {
 
-    if (
+    nearbyDriverMarkers.forEach(
+        function(marker) {
 
-        !PASSENGER_TOKEN ||
+            if (
+                passengerLiveMap
+            ) {
 
-        !PASSENGER_RIDE_ID
-
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        !navigator.geolocation
-    ) {
-
-        return;
-
-    }
-
-
-    navigator.geolocation.getCurrentPosition(
-
-        async function(position) {
-
-            const lat =
-                position.coords.latitude;
-
-
-            const lng =
-                position.coords.longitude;
-
-
-            const accuracy =
-                position.coords.accuracy;
-
-
-            /* SHOW PASSENGER LOCATION */
-
-            updatePassengerOwnMarker(
-                lat,
-                lng
-            );
-
-
-            /* SEND TO BACKEND */
-
-            try {
-
-                const response =
-                    await fetch(
-
-                        PASSENGER_API +
-                        "/api/rides/" +
-                        PASSENGER_RIDE_ID +
-                        "/passenger-location",
-
-                        {
-
-                            method:
-                                "PATCH",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json",
-
-                                "Authorization":
-                                    "Bearer " +
-                                    PASSENGER_TOKEN
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    latitude:
-                                        lat,
-
-                                    longitude:
-                                        lng,
-
-                                    accuracy:
-                                        accuracy
-
-                                })
-
-                        }
-
+                passengerLiveMap
+                    .removeLayer(
+                        marker
                     );
 
-
-                if (!response.ok) {
-
-                    const data =
-                        await response
-                            .json()
-                            .catch(
-                                () => ({})
-                            );
-
-
-                    console.log(
-                        "Passenger location:",
-                        data.message
-                    );
-
-                }
-
             }
-
-            catch(error) {
-
-                console.error(
-                    "Passenger GPS error:",
-                    error
-                );
-
-            }
-
-        },
-
-
-        function(error) {
-
-            console.log(
-                "Passenger GPS:",
-                error.message
-            );
-
-        },
-
-
-        {
-
-            enableHighAccuracy:
-                true,
-
-            maximumAge:
-                3000,
-
-            timeout:
-                10000
 
         }
-
     );
+
+
+    nearbyDriverMarkers = [];
 
 }
 
 
-/* =========================================
-   LOAD RIDE + DRIVER LOCATION
-========================================= */
+/* =========================================================
+   VEHICLE ICON
+========================================================= */
 
-async function loadPassengerLiveRide() {
+function vehicleEmoji(
+    vehicleType
+) {
+
+    const type =
+        String(
+            vehicleType ||
+            ""
+        ).toLowerCase();
+
 
     if (
+        type.includes(
+            "auto"
+        )
+    ) {
 
-        !PASSENGER_TOKEN ||
+        return "🛺";
 
-        !PASSENGER_RIDE_ID
+    }
 
+
+    if (
+        type.includes(
+            "bike"
+        )
+    ) {
+
+        return "🏍️";
+
+    }
+
+
+    if (
+        type.includes(
+            "4-seater"
+        ) ||
+        type.includes(
+            "car"
+        )
+    ) {
+
+        return "🚕";
+
+    }
+
+
+    return "🚘";
+
+}
+
+
+/* =========================================================
+   LOAD NEARBY DRIVERS
+========================================================= */
+
+async function loadNearbyDrivers() {
+
+    if (
+        !PASSENGER_TOKEN
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(
+            passengerLatitude
+        ) ||
+        !Number.isFinite(
+            passengerLongitude
+        )
     ) {
 
         return;
@@ -603,15 +740,598 @@ async function loadPassengerLiveRide() {
 
     try {
 
+        const url =
+            PASSENGER_API +
+            "/api/drivers/nearby" +
+            "?lat=" +
+            encodeURIComponent(
+                passengerLatitude
+            ) +
+            "&lng=" +
+            encodeURIComponent(
+                passengerLongitude
+            );
+
+
+        const response =
+            await fetch(
+                url,
+                {
+                    headers: {
+                        "Authorization":
+                            "Bearer " +
+                            PASSENGER_TOKEN
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok
+        ) {
+
+            console.error(
+                "Nearby driver error:",
+                data.message
+            );
+
+            return;
+
+        }
+
+
+        const drivers =
+            Array.isArray(
+                data.drivers
+            )
+                ? data.drivers
+                : [];
+
+
+        /* =========================
+           COUNTS
+        ========================== */
+
+        let autoCount = 0;
+
+        let bikeCount = 0;
+
+        let carCount = 0;
+
+        let otherCount = 0;
+
+
+        drivers.forEach(
+            function(driver) {
+
+                const type =
+                    String(
+                        driver.vehicleType ||
+                        ""
+                    ).toLowerCase();
+
+
+                if (
+                    type.includes(
+                        "auto"
+                    )
+                ) {
+
+                    autoCount++;
+
+                }
+
+                else if (
+                    type.includes(
+                        "bike"
+                    )
+                ) {
+
+                    bikeCount++;
+
+                }
+
+                else if (
+                    type.includes(
+                        "car"
+                    ) ||
+                    type.includes(
+                        "4-seater"
+                    )
+                ) {
+
+                    carCount++;
+
+                }
+
+                else {
+
+                    otherCount++;
+
+                }
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "nearbyAutoCount"
+            )
+            .innerText =
+            autoCount;
+
+
+        document
+            .getElementById(
+                "nearbyBikeCount"
+            )
+            .innerText =
+            bikeCount;
+
+
+        document
+            .getElementById(
+                "nearbyCarCount"
+            )
+            .innerText =
+            carCount;
+
+
+        document
+            .getElementById(
+                "nearbyOtherCount"
+            )
+            .innerText =
+            otherCount;
+
+
+        /* =========================
+           MAP MARKERS
+        ========================== */
+
+        initializePassengerMap();
+
+        clearNearbyDriverMarkers();
+
+
+        drivers.forEach(
+            function(driver) {
+
+                const lat =
+                    Number(
+                        driver.latitude
+                    );
+
+                const lng =
+                    Number(
+                        driver.longitude
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        lat
+                    ) ||
+                    !Number.isFinite(
+                        lng
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const icon =
+                    vehicleEmoji(
+                        driver.vehicleType
+                    );
+
+
+                const marker =
+                    L.marker(
+                        [
+                            lat,
+                            lng
+                        ]
+                    )
+                    .addTo(
+                        passengerLiveMap
+                    )
+                    .bindPopup(
+
+                        "<b>" +
+                        icon +
+                        " " +
+                        passengerEscape(
+                            driver.name ||
+                            "Driver"
+                        ) +
+                        "</b><br>" +
+
+                        "Vehicle: " +
+                        passengerEscape(
+                            driver.vehicleType ||
+                            "-"
+                        ) +
+                        "<br>" +
+
+                        "Distance: " +
+                        Number(
+                            driver.distanceKm ||
+                            0
+                        ).toFixed(2) +
+                        " km"
+
+                    );
+
+
+                nearbyDriverMarkers
+                    .push(
+                        marker
+                    );
+
+            }
+        );
+
+
+        /* =========================
+           DRIVER LIST
+        ========================== */
+
+        const list =
+            document
+                .getElementById(
+                    "nearbyDriverList"
+                );
+
+
+        if (
+            drivers.length === 0
+        ) {
+
+            list.innerHTML =
+                `
+                <div class="live-waiting">
+                    😔 Abhi aapke aas-paas
+                    koi online driver nahi hai.
+                </div>
+                `;
+
+            return;
+
+        }
+
+
+        list.innerHTML =
+            drivers
+                .map(
+                    function(driver) {
+
+                        const icon =
+                            vehicleEmoji(
+                                driver.vehicleType
+                            );
+
+
+                        return `
+                        <div class="nearby-driver">
+
+                            <h4>
+                                ${icon}
+                                ${passengerEscape(
+                                    driver.name ||
+                                    "Driver"
+                                )}
+                            </h4>
+
+                            <p>
+                                🚗 Vehicle:
+                                ${passengerEscape(
+                                    driver.vehicleType ||
+                                    "-"
+                                )}
+                            </p>
+
+                            <p>
+                                🔢 Vehicle No:
+                                ${passengerEscape(
+                                    driver.vehicleNumber ||
+                                    "-"
+                                )}
+                            </p>
+
+                            <p>
+                                ⭐ Rating:
+                                ${Number(
+                                    driver.rating ||
+                                    0
+                                ).toFixed(1)}
+                            </p>
+
+                            <p class="driver-distance">
+                                📏
+                                ${Number(
+                                    driver.distanceKm ||
+                                    0
+                                ).toFixed(2)}
+                                km away
+                            </p>
+
+                        </div>
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Nearby driver request failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SEND PASSENGER LOCATION
+========================================================= */
+
+async function sendPassengerLocation(
+    position
+) {
+
+    if (
+        !position
+    ) {
+
+        return;
+
+    }
+
+
+    const lat =
+        Number(
+            position.coords.latitude
+        );
+
+    const lng =
+        Number(
+            position.coords.longitude
+        );
+
+
+    if (
+        !Number.isFinite(
+            lat
+        ) ||
+        !Number.isFinite(
+            lng
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    passengerLatitude =
+        lat;
+
+    passengerLongitude =
+        lng;
+
+
+    updatePassengerOwnMarker(
+        lat,
+        lng
+    );
+
+
+    /* =========================
+       NEARBY DRIVERS
+    ========================== */
+
+    loadNearbyDrivers();
+
+
+    const rideId =
+        getPassengerRideId();
+
+
+    if (
+        !rideId ||
+        !PASSENGER_TOKEN
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await fetch(
+
+            PASSENGER_API +
+            "/api/rides/" +
+            encodeURIComponent(
+                rideId
+            ) +
+            "/passenger-location",
+
+            {
+                method:
+                    "PATCH",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        "Bearer " +
+                        PASSENGER_TOKEN
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        lat:
+                            lat,
+
+                        lng:
+                            lng,
+
+                        accuracy:
+                            position.coords
+                                .accuracy || null
+
+                    })
+
+            }
+
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Passenger location update error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GPS ERROR
+========================================================= */
+
+function passengerGpsError(
+    error
+) {
+
+    console.error(
+        "Passenger GPS error:",
+        error
+    );
+
+
+    document
+        .getElementById(
+            "passengerOwnLocation"
+        )
+        .innerText =
+        "GPS permission required";
+
+
+    document
+        .getElementById(
+            "passengerLiveStatus"
+        )
+        .innerText =
+        "🔴 Please allow location permission.";
+
+}
+
+
+/* =========================================================
+   START GPS
+========================================================= */
+
+function startPassengerGPS() {
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        document
+            .getElementById(
+                "passengerLiveStatus"
+            )
+            .innerText =
+            "❌ GPS not supported.";
+
+        return;
+
+    }
+
+
+    passengerGpsWatch =
+        navigator.geolocation.watchPosition(
+
+            sendPassengerLocation,
+
+            passengerGpsError,
+
+            {
+                enableHighAccuracy:
+                    true,
+
+                maximumAge:
+                    2000,
+
+                timeout:
+                    15000
+            }
+
+        );
+
+}
+
+
+/* =========================================================
+   LOAD CURRENT RIDE
+========================================================= */
+
+async function loadCurrentPassengerRide() {
+
+    const rideId =
+        getPassengerRideId();
+
+
+    if (
+        !rideId ||
+        !PASSENGER_TOKEN
+    ) {
+
+        return;
+
+    }
+
+
+    currentPassengerRideId =
+        rideId;
+
+
+    try {
+
         const response =
             await fetch(
 
                 PASSENGER_API +
                 "/api/rides/" +
-                PASSENGER_RIDE_ID,
+                encodeURIComponent(
+                    rideId
+                ),
 
                 {
-
                     headers: {
 
                         "Authorization":
@@ -619,7 +1339,6 @@ async function loadPassengerLiveRide() {
                             PASSENGER_TOKEN
 
                     }
-
                 }
 
             );
@@ -629,10 +1348,11 @@ async function loadPassengerLiveRide() {
             await response.json();
 
 
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
-            console.log(
-                "Ride tracking:",
+            console.error(
                 data.message
             );
 
@@ -645,16 +1365,18 @@ async function loadPassengerLiveRide() {
             data.ride;
 
 
-        if (!ride) {
+        if (
+            !ride
+        ) {
 
             return;
 
         }
 
 
-        /* =================================
+        /* =========================
            RIDE STATUS
-        ================================= */
+        ========================== */
 
         document
             .getElementById(
@@ -665,9 +1387,9 @@ async function loadPassengerLiveRide() {
             "Processing";
 
 
-        /* =================================
-           DRIVER INFORMATION
-        ================================= */
+        /* =========================
+           DRIVER INFO
+        ========================== */
 
         if (
             ride.driverId
@@ -686,7 +1408,7 @@ async function loadPassengerLiveRide() {
                 "🚕 <b>Driver Assigned</b><br>" +
 
                 "Name: " +
-                escapePassengerLive(
+                passengerEscape(
                     driver.name ||
                     "Driver"
                 ) +
@@ -694,7 +1416,7 @@ async function loadPassengerLiveRide() {
                 "<br>" +
 
                 "Vehicle: " +
-                escapePassengerLive(
+                passengerEscape(
                     driver.vehicleType ||
                     "-"
                 ) +
@@ -702,10 +1424,63 @@ async function loadPassengerLiveRide() {
                 "<br>" +
 
                 "Vehicle No: " +
-                escapePassengerLive(
+                passengerEscape(
                     driver.vehicleNumber ||
                     "-"
                 );
+
+        }
+
+
+        /* =========================
+           DRIVER LOCATION
+        ========================== */
+
+        if (
+            ride.driverLocation &&
+            Number.isFinite(
+                Number(
+                    ride.driverLocation.lat
+                )
+            ) &&
+            Number.isFinite(
+                Number(
+                    ride.driverLocation.lng
+                )
+            )
+        ) {
+
+            const driverLat =
+                Number(
+                    ride.driverLocation.lat
+                );
+
+            const driverLng =
+                Number(
+                    ride.driverLocation.lng
+                );
+
+
+            updatePassengerDriverMarker(
+                driverLat,
+                driverLng
+            );
+
+
+            document
+                .getElementById(
+                    "passengerLiveStatus"
+                )
+                .className =
+                "live-success";
+
+
+            document
+                .getElementById(
+                    "passengerLiveStatus"
+                )
+                .innerText =
+                "🟢 Driver live location active";
 
         }
 
@@ -713,60 +1488,11 @@ async function loadPassengerLiveRide() {
 
             document
                 .getElementById(
-                    "passengerDriverInfo"
+                    "passengerLiveStatus"
                 )
-                .innerText =
-                "🔎 Searching for nearest driver...";
+                .className =
+                "live-waiting";
 
-        }
-
-
-        /* =================================
-           DRIVER LOCATION
-        ================================= */
-
-        if (
-            ride.driverLocation
-        ) {
-
-            const lat =
-                Number(
-                    ride.driverLocation.lat
-                );
-
-
-            const lng =
-                Number(
-                    ride.driverLocation.lng
-                );
-
-
-            if (
-
-                Number.isFinite(lat) &&
-
-                Number.isFinite(lng)
-
-            ) {
-
-                updatePassengerDriverMarker(
-                    lat,
-                    lng
-                );
-
-
-                document
-                    .getElementById(
-                        "passengerLiveStatus"
-                    )
-                    .innerText =
-                    "🟢 Driver Live Location Active";
-
-            }
-
-        }
-
-        else {
 
             document
                 .getElementById(
@@ -778,59 +1504,18 @@ async function loadPassengerLiveRide() {
         }
 
 
-        /* =================================
-           PASSENGER LOCATION
-        ================================= */
+        /* =========================
+           COMPLETED / CANCELLED
+        ========================== */
 
         if (
-            ride.passengerLocation
-        ) {
-
-            const lat =
-                Number(
-                    ride.passengerLocation.lat
-                );
-
-
-            const lng =
-                Number(
-                    ride.passengerLocation.lng
-                );
-
-
-            if (
-
-                Number.isFinite(lat) &&
-
-                Number.isFinite(lng)
-
-            ) {
-
-                updatePassengerOwnMarker(
-                    lat,
-                    lng
-                );
-
-            }
-
-        }
-
-
-        /* =================================
-           STOP AFTER COMPLETION
-        ================================= */
-
-        if (
-
             ride.status ===
                 "Completed" ||
-
             ride.status ===
                 "Cancelled"
-
         ) {
 
-            stopPassengerLiveTracking();
+            stopPassengerTracking();
 
         }
 
@@ -839,7 +1524,7 @@ async function loadPassengerLiveRide() {
     catch(error) {
 
         console.error(
-            "Passenger live ride error:",
+            "Passenger ride error:",
             error
         );
 
@@ -848,18 +1533,14 @@ async function loadPassengerLiveRide() {
 }
 
 
-/* =========================================
-   START PASSENGER LIVE TRACKING
-========================================= */
+/* =========================================================
+   START PASSENGER TRACKING
+========================================================= */
 
-function startPassengerLiveTracking() {
+function startPassengerTracking() {
 
     if (
-
-        !PASSENGER_TOKEN ||
-
-        !PASSENGER_RIDE_ID
-
+        !PASSENGER_TOKEN
     ) {
 
         return;
@@ -875,15 +1556,20 @@ function startPassengerLiveTracking() {
         "block";
 
 
-    /* FIRST LOAD */
-
-    loadPassengerLiveRide();
+    initializePassengerMap();
 
 
-    sendPassengerLiveLocation();
+    /* =========================
+       GPS
+    ========================== */
+
+    startPassengerGPS();
 
 
-    /* PREVENT DUPLICATE TIMER */
+    /* =========================
+       RIDE POLLING
+       3 SECOND
+    ========================== */
 
     if (
         passengerRideTimer
@@ -899,105 +1585,75 @@ function startPassengerLiveTracking() {
     passengerRideTimer =
         setInterval(
 
-            loadPassengerLiveRide,
+            function() {
+
+                loadCurrentPassengerRide();
+
+            },
 
             3000
 
         );
 
 
-    /* GPS */
+    /* =========================
+       NEARBY DRIVER POLLING
+       5 SECOND
+    ========================== */
 
     if (
-        passengerGpsWatch === null
+        nearbyDriversTimer
     ) {
 
-        if (
-            navigator.geolocation
-        ) {
-
-            passengerGpsWatch =
-                navigator.geolocation.watchPosition(
-
-                    function(position) {
-
-                        const lat =
-                            position.coords.latitude;
-
-                        const lng =
-                            position.coords.longitude;
-
-
-                        updatePassengerOwnMarker(
-                            lat,
-                            lng
-                        );
-
-
-                        sendPassengerLiveLocation();
-
-                    },
-
-
-                    function(error) {
-
-                        console.log(
-                            "Passenger GPS:",
-                            error.message
-                        );
-
-                    },
-
-
-                    {
-
-                        enableHighAccuracy:
-                            true,
-
-                        maximumAge:
-                            3000,
-
-                        timeout:
-                            10000
-
-                    }
-
-                );
-
-        }
+        clearInterval(
+            nearbyDriversTimer
+        );
 
     }
 
 
-    /* MAP SIZE FIX */
+    nearbyDriversTimer =
+        setInterval(
 
-    setTimeout(
+            function() {
 
-        function() {
+                loadNearbyDrivers();
 
-            if (
-                passengerLiveMap
-            ) {
+            },
 
-                passengerLiveMap
-                    .invalidateSize();
+            5000
 
-            }
+        );
 
-        },
 
-        500
+    /* FIRST LOAD */
 
-    );
+    loadCurrentPassengerRide();
 
 }
 
 
-/* =========================================
+/* =========================================================
    STOP TRACKING
-========================================= */
+========================================================= */
 
-function stopPassengerLiveTracking() {
+function stopPassengerTracking() {
+
+    if (
+        passengerGpsWatch !==
+        null
+    ) {
+
+        navigator.geolocation
+            .clearWatch(
+                passengerGpsWatch
+            );
+
+        passengerGpsWatch =
+            null;
+
+    }
+
 
     if (
         passengerRideTimer
@@ -1014,75 +1670,81 @@ function stopPassengerLiveTracking() {
 
 
     if (
-        passengerGpsWatch !== null
+        nearbyDriversTimer
     ) {
 
-        navigator.geolocation.clearWatch(
-            passengerGpsWatch
+        clearInterval(
+            nearbyDriversTimer
         );
 
-        passengerGpsWatch =
+        nearbyDriversTimer =
             null;
 
     }
 
-
-    document
-        .getElementById(
-            "passengerLiveStatus"
-        )
-        .innerText =
-        "⚪ Live ride tracking stopped.";
-
 }
 
 
-/* =========================================
-   ESCAPE HTML
-========================================= */
+/* =========================================================
+   IMPORTANT:
+   CHECK RIDE ID CONTINUOUSLY
+========================================================= */
 
-function escapePassengerLive(
-    value
-) {
+setInterval(
 
-    return String(
-        value ?? ""
-    ).replace(
+    function() {
 
-        /[&<>"']/g,
+        const newRideId =
+            getPassengerRideId();
 
-        function(char) {
 
-            return {
+        if (
+            newRideId &&
+            newRideId !==
+            currentPassengerRideId
+        ) {
 
-                "&":
-                    "&amp;",
+            currentPassengerRideId =
+                newRideId;
 
-                "<":
-                    "&lt;",
 
-                ">":
-                    "&gt;",
-
-                '"':
-                    "&quot;",
-
-                "'":
-                    "&#39;"
-
-            }[char];
+            startPassengerTracking();
 
         }
+
+    },
+
+    1000
+
+);
+
+
+/* =========================================================
+   PAGE LOAD
+========================================================= */
+
+if (
+    PASSENGER_TOKEN
+) {
+
+    setTimeout(
+
+        function() {
+
+            if (
+                getPassengerRideId()
+            ) {
+
+                startPassengerTracking();
+
+            }
+
+        },
+
+        500
 
     );
 
 }
-
-
-/* =========================================
-   START
-========================================= */
-
-startPassengerLiveTracking();
 
 </script>
