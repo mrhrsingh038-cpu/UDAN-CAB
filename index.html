@@ -1,561 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<meta charset="UTF-8">
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification"
+        content="JbvB2lwatdL5Wr9EoSVTlZVI7lls3eFxWQIYSVJwsp4">
 
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>UDAN CAB</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-<style>
+    <title>UDAN CAB - Your Ride. Your Way.</title>
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial,sans-serif;
-}
+    <style>
 
-body{
-background:#111;
-color:white;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-nav{
-height:70px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 7%;
-}
+        body {
+            background: #111;
+            color: white;
+        }
 
-.logo{
-font-size:30px;
-font-weight:bold;
-}
+        nav {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+        }
 
-.logo span{
-color:#ffd000;
-}
+        .logo {
+            font-size: 30px;
+            font-weight: bold;
+        }
 
-nav a{
-text-decoration:none;
-color:#111;
-background:#ffd000;
-padding:12px 22px;
-border-radius:8px;
-font-weight:bold;
-}
+        .logo span {
+            color: #ffd000;
+        }
 
-.hero{
-min-height:calc(100vh - 70px);
-display:flex;
-align-items:center;
-padding:60px 8%;
-background:
-linear-gradient(
-135deg,
-#111 0%,
-#222 60%,
-#333 100%
-);
-}
+        nav a {
+            text-decoration: none;
+            color: #111;
+            background: #ffd000;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
 
-.hero-content{
-max-width:700px;
-}
+        nav a:hover {
+            background: #ffdf45;
+        }
 
-.hero h1{
-font-size:65px;
-line-height:1.05;
-margin-bottom:25px;
-}
+        .hero {
+            min-height: calc(100vh - 70px);
 
-.hero h1 span{
-color:#ffd000;
-}
+            display: flex;
+            align-items: center;
 
-.hero p{
-font-size:20px;
-line-height:1.7;
-color:#ddd;
-margin-bottom:30px;
-}
+            padding: 60px 8%;
 
-.buttons{
-display:flex;
-gap:15px;
-flex-wrap:wrap;
-}
+            background:
+                linear-gradient(
+                    135deg,
+                    #111 0%,
+                    #222 60%,
+                    #333 100%
+                );
+        }
 
-.btn{
-display:inline-block;
-padding:15px 25px;
-border-radius:9px;
-text-decoration:none;
-font-weight:bold;
-}
+        .hero-content {
+            max-width: 700px;
+        }
 
-.primary{
-background:#ffd000;
-color:#111;
-}
+        .hero h1 {
+            font-size: 65px;
+            line-height: 1.05;
+            margin-bottom: 25px;
+        }
 
-.secondary{
-border:2px solid white;
-color:white;
-}
+        .hero h1 span {
+            color: #ffd000;
+        }
 
-.services{
-padding:60px 8%;
-background:#f4f5f7;
-color:#111;
-}
+        .hero p {
+            font-size: 20px;
+            line-height: 1.7;
+            color: #ddd;
+            margin-bottom: 30px;
+        }
 
-.services h2{
-text-align:center;
-font-size:35px;
-margin-bottom:30px;
-}
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
 
-.grid{
-max-width:1000px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:20px;
-}
+        .btn {
+            display: inline-block;
+            padding: 15px 25px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-.card{
-background:white;
-padding:30px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 5px 20px rgba(0,0,0,.08);
-}
+        .primary {
+            background: #ffd000;
+            color: #111;
+        }
 
-.card .icon{
-font-size:50px;
-margin-bottom:15px;
-}
+        .primary:hover {
+            background: #ffdf45;
+        }
 
-.card h3{
-margin-bottom:10px;
-}
+        .secondary {
+            border: 2px solid white;
+            color: white;
+        }
 
-.card p{
-color:#666;
-line-height:1.5;
-}
+        .secondary:hover {
+            background: white;
+            color: #111;
+        }
 
-@media(max-width:700px){
+        .services {
+            padding: 60px 8%;
+            background: #f4f5f7;
+            color: #111;
+        }
 
-.hero h1{
-font-size:45px;
-}
+        .services h2 {
+            text-align: center;
+            font-size: 35px;
+            margin-bottom: 30px;
+        }
 
-.grid{
-grid-template-columns:1fr;
-}
+        .grid {
+            max-width: 1000px;
+            margin: auto;
 
-}
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
 
-</style>
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 15px;
+
+            text-align: center;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .card .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        footer {
+            background: #111;
+            color: #aaa;
+
+            text-align: center;
+
+            padding: 25px;
+        }
+
+        @media (max-width: 700px) {
+
+            .hero h1 {
+                font-size: 45px;
+            }
+
+            .hero p {
+                font-size: 17px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 0 5%;
+            }
+
+            .logo {
+                font-size: 25px;
+            }
+
+            nav a {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-<nav>
 
-<div class="logo">
-UDAN<span>CAB</span>
-</div>
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
 
-<a href="/login.html">
-Login / Register
-</a>
+    <nav>
 
-</nav>
+        <div class="logo">
+            UDAN<span>CAB</span>
+        </div>
 
-<section class="hero">
+        <a href="/login.html">
+            Login / Register
+        </a>
 
-<div class="hero-content">
+    </nav>
 
-<h1>
-Your Ride.<br>
-<span>Your Way.</span>
-</h1>
 
-<p>
-UDAN CAB is a simple ride and parcel
-delivery platform designed to connect
-passengers and drivers quickly.
-</p>
+    <!-- =========================
+         HERO SECTION
+    ========================== -->
 
-<div class="buttons">
+    <section class="hero">
 
-<a
-class="btn primary"
-href="/login.html">
-Book a Ride
-</a>
+        <div class="hero-content">
 
-<a
-class="btn secondary"
-href="/parcel.html">
-Parcel Delivery
-</a>
+            <h1>
+                Your Ride.<br>
+                <span>Your Way.</span>
+            </h1>
 
-</div>
+            <p>
+                UDAN CAB is a simple ride and parcel
+                delivery platform designed to connect
+                passengers and drivers quickly.
+            </p>
 
-</div>
 
-</section>
+            <div class="buttons">
 
-<section class="services">
+                <a
+                    class="btn primary"
+                    href="/login.html"
+                >
+                    Book a Ride
+                </a>
 
-<h2>
-What UDAN Offers
-</h2>
 
-<div class="grid">
+                <a
+                    class="btn secondary"
+                    href="/parcel.html"
+                >
+                    Parcel Delivery
+                </a>
 
-<div class="card">
+            </div>
 
-<div class="icon">
-🚕
-</div>
+        </div>
 
-<h3>
-Cab Booking
-</h3>
+    </section>
 
-<p>
-Book a nearby cab, auto or bike
-and track your ride.
-</p>
 
-</div>
+    <!-- =========================
+         SERVICES
+    ========================== -->
 
-<div class="card">
+    <section class="services">
 
-<div class="icon">
-📦
-</div>
+        <h2>
+            What UDAN Offers
+        </h2>
 
-<h3>
-Parcel Delivery
-</h3>
 
-<p>
-Send documents, groceries and
-products through local drivers.
-</p>
+        <div class="grid">
 
-</div>
 
-<div class="card">
+            <!-- CAB -->
 
-<div class="icon">
-🚗
-</div>
+            <div class="card">
 
-<h3>
-Driver Partner
-</h3>
+                <div class="icon">
+                    🚕
+                </div>
 
-<p>
-Drivers can go online and accept
-nearby ride requests.
-</p>
+                <h3>
+                    Cab Booking
+                </h3>
 
-</div>
+                <p>
+                    Book a nearby cab, auto or bike
+                    and track your ride.
+                </p>
 
-</div>
+            </div>
 
-</section>
+
+            <!-- PARCEL -->
+
+            <div class="card">
+
+                <div class="icon">
+                    📦
+                </div>
+
+                <h3>
+                    Parcel Delivery
+                </h3>
+
+                <p>
+                    Send documents, groceries and
+                    products through local drivers.
+                </p>
+
+            </div>
+
+
+            <!-- DRIVER -->
+
+            <div class="card">
+
+                <div class="icon">
+                    🚗
+                </div>
+
+                <h3>
+                    Driver Partner
+                </h3>
+
+                <p>
+                    Drivers can go online and accept
+                    nearby ride requests.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        © 2026 UDAN CAB.
+        All Rights Reserved.
+
+    </footer>
+
 
 </body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
 
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
-
-<title>UDAN CAB</title>
-
-<style>
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial,sans-serif;
-}
-
-body{
-background:#111;
-color:white;
-}
-
-nav{
-height:70px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 7%;
-}
-
-.logo{
-font-size:30px;
-font-weight:bold;
-}
-
-.logo span{
-color:#ffd000;
-}
-
-nav a{
-text-decoration:none;
-color:#111;
-background:#ffd000;
-padding:12px 22px;
-border-radius:8px;
-font-weight:bold;
-}
-
-.hero{
-min-height:calc(100vh - 70px);
-display:flex;
-align-items:center;
-padding:60px 8%;
-background:
-linear-gradient(
-135deg,
-#111 0%,
-#222 60%,
-#333 100%
-);
-}
-
-.hero-content{
-max-width:700px;
-}
-
-.hero h1{
-font-size:65px;
-line-height:1.05;
-margin-bottom:25px;
-}
-
-.hero h1 span{
-color:#ffd000;
-}
-
-.hero p{
-font-size:20px;
-line-height:1.7;
-color:#ddd;
-margin-bottom:30px;
-}
-
-.buttons{
-display:flex;
-gap:15px;
-flex-wrap:wrap;
-}
-
-.btn{
-display:inline-block;
-padding:15px 25px;
-border-radius:9px;
-text-decoration:none;
-font-weight:bold;
-}
-
-.primary{
-background:#ffd000;
-color:#111;
-}
-
-.secondary{
-border:2px solid white;
-color:white;
-}
-
-.services{
-padding:60px 8%;
-background:#f4f5f7;
-color:#111;
-}
-
-.services h2{
-text-align:center;
-font-size:35px;
-margin-bottom:30px;
-}
-
-.grid{
-max-width:1000px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:20px;
-}
-
-.card{
-background:white;
-padding:30px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 5px 20px rgba(0,0,0,.08);
-}
-
-.card .icon{
-font-size:50px;
-margin-bottom:15px;
-}
-
-.card h3{
-margin-bottom:10px;
-}
-
-.card p{
-color:#666;
-line-height:1.5;
-}
-
-@media(max-width:700px){
-
-.hero h1{
-font-size:45px;
-}
-
-.grid{
-grid-template-columns:1fr;
-}
-
-}
-
-</style>
-</head>
-
-<body>
-
-<nav>
-
-<div class="logo">
-UDAN<span>CAB</span>
-</div>
-
-<a href="/login.html">
-Login / Register
-</a>
-
-</nav>
-
-<section class="hero">
-
-<div class="hero-content">
-
-<h1>
-Your Ride.<br>
-<span>Your Way.</span>
-</h1>
-
-<p>
-UDAN CAB is a simple ride and parcel
-delivery platform designed to connect
-passengers and drivers quickly.
-</p>
-
-<div class="buttons">
-
-<a
-class="btn primary"
-href="/login.html">
-Book a Ride
-</a>
-
-<a
-class="btn secondary"
-href="/parcel.html">
-Parcel Delivery
-</a>
-
-</div>
-
-</div>
-
-</section>
-
-<section class="services">
-
-<h2>
-What UDAN Offers
-</h2>
-
-<div class="grid">
-
-<div class="card">
-
-<div class="icon">
-🚕
-</div>
-
-<h3>
-Cab Booking
-</h3>
-
-<p>
-Book a nearby cab, auto or bike
-and track your ride.
-</p>
-
-</div>
-
-<div class="card">
-
-<div class="icon">
-📦
-</div>
-
-<h3>
-Parcel Delivery
-</h3>
-
-<p>
-Send documents, groceries and
-products through local drivers.
-</p>
-
-</div>
-
-<div class="card">
-
-<div class="icon">
-🚗
-</div>
-
-<h3>
-Driver Partner
-</h3>
-
-<p>
-Drivers can go online and accept
-nearby ride requests.
-</p>
-
-</div>
-
-</div>
-
-</section>
-
-</body>
 </html>
