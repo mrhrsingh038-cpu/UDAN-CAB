@@ -799,6 +799,30 @@
 
 
 
+
+    <!-- NEARBY DRIVERS -->
+    <section id="nearbyDriversSection" style="display:none;background:#fff;padding:50px 7%;text-align:center;">
+        <h2 style="font-size:32px;margin-bottom:10px;">🚕 Nearby Drivers</h2>
+        <p style="color:#666;margin-bottom:18px;">Live location of online drivers near you</p>
+
+        <div style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-bottom:20px;">
+            <div style="background:#f5f5f5;padding:15px 25px;border-radius:12px;">
+                <div style="font-size:14px;color:#666;">Available Drivers</div>
+                <div id="nearbyDriverCount" style="font-size:28px;font-weight:bold;">0</div>
+            </div>
+            <div style="background:#f5f5f5;padding:15px 25px;border-radius:12px;">
+                <div style="font-size:14px;color:#666;">Status</div>
+                <div id="nearbyDriverStatus" style="font-size:16px;font-weight:bold;color:#198754;">Waiting for GPS...</div>
+            </div>
+        </div>
+
+        <div id="nearbyDriversMap"
+             style="width:100%;height:420px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,.15);"></div>
+
+        <div id="nearbyDriverList"
+             style="margin-top:20px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap;"></div>
+    </section>
+
     <!-- CAB RESULTS -->
 
     <section id="cabResults">
@@ -1180,6 +1204,9 @@
                     alert(
                         "📍 Your current location has been selected!"
                     );
+
+                    document.getElementById("nearbyDriversSection").style.display = "block";
+                    startNearbyDriversPolling();
 
                 },
 
@@ -1770,16 +1797,27 @@ const UDAN_API="";
 let passengerLocationWatch=null;
 let passengerLocationRideId=null;
 
+let nearbyDriversMap=null;
+let nearbyPassengerMarker=null;
+let nearbyDriverMarkers={};
+let nearbyDriverTimer=null;
+
 function startPassengerLiveLocation(rideId){
- if(passengerLocationWatch!==null){
+ if(passengerLocationWatch!==null && navigator.geolocation){
   navigator.geolocation.clearWatch(passengerLocationWatch);
  }
  if(!navigator.geolocation || !rideId) return;
+
  passengerLocationRideId=rideId;
+
  passengerLocationWatch=navigator.geolocation.watchPosition(async p=>{
   try{
+   currentLatitude=p.coords.latitude;
+   currentLongitude=p.coords.longitude;
+
    const token=localStorage.getItem("udanToken");
    if(!token || !passengerLocationRideId) return;
+
    await fetch("/api/rides/"+passengerLocationRideId+"/passenger-location",{
     method:"PATCH",
     headers:{
@@ -1792,10 +1830,16 @@ function startPassengerLiveLocation(rideId){
      accuracy:p.coords.accuracy
     })
    });
+
+   updateNearbyDrivers();
   }catch(e){
    console.log("Passenger live location error:",e);
   }
- },e=>console.log("Passenger GPS:",e.message),{
+ },e=>{
+  console.log("Passenger GPS:",e.message);
+  const s=document.getElementById("nearbyDriverStatus");
+  if(s)s.innerText="⚠️ GPS permission required";
+ },{
   enableHighAccuracy:true,
   maximumAge:5000,
   timeout:10000
@@ -1803,24 +1847,244 @@ function startPassengerLiveLocation(rideId){
 }
 
 function stopPassengerLiveLocation(){
- if(passengerLocationWatch!==null){
+ if(passengerLocationWatch!==null && navigator.geolocation){
   navigator.geolocation.clearWatch(passengerLocationWatch);
-  passengerLocationWatch=null;
  }
+ passengerLocationWatch=null;
  passengerLocationRideId=null;
+ stopNearbyDriversPolling();
+}
+
+function initNearbyDriversMap(){
+ if(nearbyDriversMap) return;
+
+ nearbyDriversMap=L.map("nearbyDriversMap");
+ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  attribution:"&copy; OpenStreetMap contributors"
+ }).addTo(nearbyDriversMap);
+}
+
+function updatePassengerMarker(){
+ if(!nearbyDriversMap || !Number.isFinite(Number(currentLatitude)) || !Number.isFinite(Number(currentLongitude))) return;
+
+ if(nearbyPassengerMarker){
+  nearbyPassengerMarker.setLatLng([Number(currentLatitude),Number(currentLongitude)]);
+ }else{
+  nearbyPassengerMarker=L.marker(
+   [Number(currentLatitude),Number(currentLongitude)]
+  ).addTo(nearbyDriversMap)
+   .bindPopup("📍 Your current location");
+ }
+}
+
+function normalizeDriverLocation(driver){
+ const loc=driver.location || driver.driverLocation || driver.currentLocation || {};
+ const lat=Number(loc.lat ?? loc.latitude ?? driver.latitude);
+ const lng=Number(loc.lng ?? loc.longitude ?? driver.longitude);
+
+ if(!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+ return {lat,lng};
+}
+
+async function updateNearbyDrivers(){
+ if(!Number.isFinite(Number(currentLatitude)) || !Number.isFinite(Number(currentLongitude))){
+  const status=document.getElementById("nearbyDriverStatus");
+  if(status)status.innerText="📍 Select your current location first";
+  return;
+ }
+
+ const token=localStorage.getItem("udanToken");
+ if(!token) return;
+
+ const section=document.getElementById("nearbyDriversSection");
+ if(section)section.style.display="block";
+
+ initNearbyDriversMap();
+ updatePassengerMarker();
+
+ try{
+  const url="/api/drivers/nearby?latitude="+encodeURIComponent(currentLatitude)+
+            "&longitude="+encodeURIComponent(currentLongitude);
+
+  const response=await fetch(url,{
+   headers:{
+    "Authorization":"Bearer "+token
+   }
+  });
+
+  const data=await response.json();
+
+  if(!response.ok){
+   throw new Error(data.message || "Unable to find nearby drivers");
+  }
+
+  const drivers=Array.isArray(data.drivers) ? data.drivers : [];
+
+  const count=document.getElementById("nearbyDriverCount");
+  const status=document.getElementById("nearbyDriverStatus");
+  const list=document.getElementById("nearbyDriverList");
+
+  if(count)count.innerText=drivers.length;
+  if(status)status.innerText=drivers.length
+    ? "🟢 Drivers available"
+    : "🟡 No driver nearby";
+
+  if(list){
+   if(!drivers.length){
+    list.innerHTML='<div style="color:#666;padding:15px;">No online driver found within your nearby area.</div>';
+   }else{
+    list.innerHTML=drivers.map((driver,index)=>{
+     const name=String(driver.name || "Driver");
+     const vehicle=String(driver.vehicleType || driver.vehicle || "Vehicle");
+     const number=String(driver.vehicleNumber || "");
+     return `
+      <div style="background:#f8f8f8;border:1px solid #eee;border-radius:12px;padding:15px 20px;min-width:210px;text-align:left;">
+       <b>🚕 ${name}</b><br>
+       <span style="color:#666;">${vehicle}</span>
+       ${number ? `<br><span style="font-size:13px;color:#777;">${number}</span>` : ""}
+       <br><span style="color:#198754;font-size:13px;">● Online</span>
+      </div>`;
+   }).join("");
+   }
+  }
+
+  const seen={};
+
+  drivers.forEach((driver,index)=>{
+   const loc=normalizeDriverLocation(driver);
+   if(!loc) return;
+
+   const id=String(driver._id || driver.id || driver.userId || ("driver-"+index));
+   seen[id]=true;
+
+   if(nearbyDriverMarkers[id]){
+    nearbyDriverMarkers[id].setLatLng([loc.lat,loc.lng]);
+   }else{
+    nearbyDriverMarkers[id]=L.marker([loc.lat,loc.lng])
+      .addTo(nearbyDriversMap)
+      .bindPopup(
+       "🚕 <b>"+String(driver.name || "Driver")+"</b><br>"+
+       String(driver.vehicleType || driver.vehicle || "Vehicle")+
+       "<br>🟢 Online"
+      );
+   }
+  });
+
+  Object.keys(nearbyDriverMarkers).forEach(id=>{
+   if(!seen[id]){
+    nearbyDriversMap.removeLayer(nearbyDriverMarkers[id]);
+    delete nearbyDriverMarkers[id];
+   }
+  });
+
+  const points=[[Number(currentLatitude),Number(currentLongitude)]];
+  Object.keys(nearbyDriverMarkers).forEach(id=>{
+   const pos=nearbyDriverMarkers[id].getLatLng();
+   points.push([pos.lat,pos.lng]);
+  });
+
+  if(points.length>1){
+   nearbyDriversMap.fitBounds(points,{
+    padding:[40,40],
+    maxZoom:15
+   });
+  }else{
+   nearbyDriversMap.setView(
+    [Number(currentLatitude),Number(currentLongitude)],
+    15
+   );
+  }
+
+ }catch(e){
+  console.log("Nearby driver error:",e);
+  const status=document.getElementById("nearbyDriverStatus");
+  if(status)status.innerText="⚠️ "+e.message;
+ }
+}
+
+function startNearbyDriversPolling(){
+ if(nearbyDriverTimer)clearInterval(nearbyDriverTimer);
+ updateNearbyDrivers();
+ nearbyDriverTimer=setInterval(updateNearbyDrivers,5000);
+}
+
+function stopNearbyDriversPolling(){
+ if(nearbyDriverTimer)clearInterval(nearbyDriverTimer);
+ nearbyDriverTimer=null;
+
+ Object.keys(nearbyDriverMarkers).forEach(id=>{
+  if(nearbyDriversMap){
+   nearbyDriversMap.removeLayer(nearbyDriverMarkers[id]);
+  }
+ });
+ nearbyDriverMarkers={};
 }
 
 const UDAN_TOKEN=localStorage.getItem("udanToken");
 const UDAN_USER=JSON.parse(localStorage.getItem("udanUser")||"null");
-if(!UDAN_TOKEN||!UDAN_USER||UDAN_USER.role!=="user"&&UDAN_USER.role!=="passenger"){alert("Please login as passenger first.");location.href="login.html";}
+
+if(!UDAN_TOKEN || !UDAN_USER || UDAN_USER.role!=="user"&&UDAN_USER.role!=="passenger"){
+ alert("Please login as passenger first.");
+ location.href="login.html";
+}
+
 async function udanBookRide(cabName){
  if(!UDAN_TOKEN){location.href="login.html";return;}
- const pickup=document.getElementById("pickup").value.trim(),destination=document.getElementById("destination").value.trim();
- const rates={"Mini Car":12,"Sedan":15,"Auto":10,"Bike":8};const fare=Math.round(routeDistance*(rates[cabName]||10));
- try{const r=await fetch(UDAN_API+"/api/rides",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+UDAN_TOKEN},body:JSON.stringify({pickup,destination,cabType:cabName,vehicleType:(cabName==="Auto"?"Auto":cabName==="Bike"?"Bike":"4-Seater Car"),fare,pickupLatitude:currentLatitude,pickupLongitude:currentLongitude})});const d=await r.json();if(!r.ok)throw new Error(d.message||"Booking failed");document.getElementById("selectedCab").innerText="Cab: "+cabName;document.getElementById("selectedRoute").innerText="Route: "+pickup+" → "+destination;document.getElementById("selectedFare").innerText="Total Fare: ₹"+fare+" | Ride ID: "+d.ride._id;document.getElementById("confirmation").style.display="block";document.getElementById("confirmation").scrollIntoView({behavior:"smooth"});localStorage.setItem("udanCurrentRide",d.ride._id);startPassengerLiveLocation(d.ride._id);alert("🎉 Ride booked successfully!");}catch(e){alert("❌ "+e.message);if(String(e.message).toLowerCase().includes("token"))location.href="login.html";}
+
+ const pickup=document.getElementById("pickup").value.trim();
+ const destination=document.getElementById("destination").value.trim();
+ const rates={"Mini Car":12,"Sedan":15,"Auto":10,"Bike":8};
+ const fare=Math.round(routeDistance*(rates[cabName]||10));
+
+ try{
+  const r=await fetch(UDAN_API+"/api/rides",{
+   method:"POST",
+   headers:{
+    "Content-Type":"application/json",
+    "Authorization":"Bearer "+UDAN_TOKEN
+   },
+   body:JSON.stringify({
+    pickup,
+    destination,
+    cabType:cabName,
+    vehicleType:(cabName==="Auto"?"Auto":cabName==="Bike"?"Bike":"4-Seater Car"),
+    fare,
+    pickupLatitude:currentLatitude,
+    pickupLongitude:currentLongitude
+   })
+  });
+
+  const d=await r.json();
+
+  if(!r.ok)throw new Error(d.message||"Booking failed");
+
+  document.getElementById("selectedCab").innerText="Cab: "+cabName;
+  document.getElementById("selectedRoute").innerText="Route: "+pickup+" → "+destination;
+  document.getElementById("selectedFare").innerText="Total Fare: ₹"+fare+" | Ride ID: "+d.ride._id;
+  document.getElementById("confirmation").style.display="block";
+  document.getElementById("confirmation").scrollIntoView({behavior:"smooth"});
+
+  localStorage.setItem("udanCurrentRide",d.ride._id);
+
+  startPassengerLiveLocation(d.ride._id);
+  startNearbyDriversPolling();
+
+  alert("🎉 Ride booked successfully!");
+ }catch(e){
+  alert("❌ "+e.message);
+  if(String(e.message).toLowerCase().includes("token"))location.href="login.html";
+ }
 }
+
 window.selectCab=udanBookRide;
-function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");localStorage.removeItem("udanCurrentRide");location.href="login.html";}
+
+function logout(){
+ localStorage.removeItem("udanToken");
+ localStorage.removeItem("udanUser");
+ localStorage.removeItem("udanCurrentRide");
+ stopPassengerLiveLocation();
+ location.href="login.html";
+}
 </script>
 <script>
 let startCodeTimer=null;
