@@ -999,6 +999,13 @@
             <p id="selectedRoute"></p>
 
             <p id="selectedFare"></p>
+            <button id="passengerCancelRideBtn"
+                    onclick="cancelPassengerRide()"
+                    style="display:inline-block;margin-top:20px;padding:13px 24px;background:#d93025;color:white;border:none;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer;">
+                🛑 Cancel Ride
+            </button>
+            <div id="passengerRideStatus" style="margin-top:15px;font-weight:bold;color:#555;">Searching for driver...</div>
+            <div id="passengerDriverInfo" style="margin-top:10px;color:#444;"></div>
 
         </div>
 
@@ -1760,6 +1767,49 @@
 
 <script>
 const UDAN_API="";
+let passengerLocationWatch=null;
+let passengerLocationRideId=null;
+
+function startPassengerLiveLocation(rideId){
+ if(passengerLocationWatch!==null){
+  navigator.geolocation.clearWatch(passengerLocationWatch);
+ }
+ if(!navigator.geolocation || !rideId) return;
+ passengerLocationRideId=rideId;
+ passengerLocationWatch=navigator.geolocation.watchPosition(async p=>{
+  try{
+   const token=localStorage.getItem("udanToken");
+   if(!token || !passengerLocationRideId) return;
+   await fetch("/api/rides/"+passengerLocationRideId+"/passenger-location",{
+    method:"PATCH",
+    headers:{
+     "Content-Type":"application/json",
+     "Authorization":"Bearer "+token
+    },
+    body:JSON.stringify({
+     latitude:p.coords.latitude,
+     longitude:p.coords.longitude,
+     accuracy:p.coords.accuracy
+    })
+   });
+  }catch(e){
+   console.log("Passenger live location error:",e);
+  }
+ },e=>console.log("Passenger GPS:",e.message),{
+  enableHighAccuracy:true,
+  maximumAge:5000,
+  timeout:10000
+ });
+}
+
+function stopPassengerLiveLocation(){
+ if(passengerLocationWatch!==null){
+  navigator.geolocation.clearWatch(passengerLocationWatch);
+  passengerLocationWatch=null;
+ }
+ passengerLocationRideId=null;
+}
+
 const UDAN_TOKEN=localStorage.getItem("udanToken");
 const UDAN_USER=JSON.parse(localStorage.getItem("udanUser")||"null");
 if(!UDAN_TOKEN||!UDAN_USER||UDAN_USER.role!=="user"&&UDAN_USER.role!=="passenger"){alert("Please login as passenger first.");location.href="login.html";}
@@ -1767,41 +1817,126 @@ async function udanBookRide(cabName){
  if(!UDAN_TOKEN){location.href="login.html";return;}
  const pickup=document.getElementById("pickup").value.trim(),destination=document.getElementById("destination").value.trim();
  const rates={"Mini Car":12,"Sedan":15,"Auto":10,"Bike":8};const fare=Math.round(routeDistance*(rates[cabName]||10));
- try{const r=await fetch(UDAN_API+"/api/rides",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+UDAN_TOKEN},body:JSON.stringify({pickup,destination,cabType:cabName,vehicleType:(cabName==="Auto"?"Auto":cabName==="Bike"?"Bike":"4-Seater Car"),fare,pickupLatitude:currentLatitude,pickupLongitude:currentLongitude})});const d=await r.json();if(!r.ok)throw new Error(d.message||"Booking failed");document.getElementById("selectedCab").innerText="Cab: "+cabName;document.getElementById("selectedRoute").innerText="Route: "+pickup+" → "+destination;document.getElementById("selectedFare").innerText="Total Fare: ₹"+fare+" | Ride ID: "+d.ride._id;document.getElementById("confirmation").style.display="block";document.getElementById("confirmation").scrollIntoView({behavior:"smooth"});localStorage.setItem("udanCurrentRide",d.ride._id);alert("🎉 Ride booked successfully!");}catch(e){alert("❌ "+e.message);if(String(e.message).toLowerCase().includes("token"))location.href="login.html";}
+ try{const r=await fetch(UDAN_API+"/api/rides",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+UDAN_TOKEN},body:JSON.stringify({pickup,destination,cabType:cabName,vehicleType:(cabName==="Auto"?"Auto":cabName==="Bike"?"Bike":"4-Seater Car"),fare,pickupLatitude:currentLatitude,pickupLongitude:currentLongitude})});const d=await r.json();if(!r.ok)throw new Error(d.message||"Booking failed");document.getElementById("selectedCab").innerText="Cab: "+cabName;document.getElementById("selectedRoute").innerText="Route: "+pickup+" → "+destination;document.getElementById("selectedFare").innerText="Total Fare: ₹"+fare+" | Ride ID: "+d.ride._id;document.getElementById("confirmation").style.display="block";document.getElementById("confirmation").scrollIntoView({behavior:"smooth"});localStorage.setItem("udanCurrentRide",d.ride._id);startPassengerLiveLocation(d.ride._id);alert("🎉 Ride booked successfully!");}catch(e){alert("❌ "+e.message);if(String(e.message).toLowerCase().includes("token"))location.href="login.html";}
 }
 window.selectCab=udanBookRide;
 function logout(){localStorage.removeItem("udanToken");localStorage.removeItem("udanUser");localStorage.removeItem("udanCurrentRide");location.href="login.html";}
 </script>
 <script>
-/* =========================================================
-   🔐 PASSENGER RIDE START CODE
-========================================================= */
 let startCodeTimer=null;
+
 function createStartCodeBox(){
  let box=document.getElementById("rideStartCodeBox");
  if(box)return box;
- box=document.createElement("div"); box.id="rideStartCodeBox";
+ box=document.createElement("div");
+ box.id="rideStartCodeBox";
  box.style.cssText="margin-top:20px;padding:22px;border-radius:15px;background:#111;color:white;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.15);";
- box.innerHTML=`<div style="font-size:15px;color:#ffd000;font-weight:bold;margin-bottom:8px">🔐 RIDE START CODE</div><div id="passengerStartCode" style="font-size:38px;font-weight:bold;letter-spacing:8px;color:#ffd000;margin:8px 0">----</div><div id="startCodeMessage" style="font-size:14px;color:#ddd;line-height:1.5">Waiting for driver...</div>`;
+ box.innerHTML=`<div style="font-size:15px;color:#ffd000;font-weight:bold;margin-bottom:8px">🔐 RIDE START CODE</div>
+ <div id="passengerStartCode" style="font-size:38px;font-weight:bold;letter-spacing:8px;color:#ffd000;margin:8px 0">----</div>
+ <div id="startCodeMessage" style="font-size:14px;color:#ddd;line-height:1.5">Waiting for driver...</div>`;
  const confirmation=document.getElementById("confirmation");
- if(confirmation){const target=confirmation.querySelector(".confirmation-box"); if(target)target.appendChild(box);}
+ if(confirmation){
+   const target=confirmation.querySelector(".confirmation-box");
+   if(target)target.appendChild(box);
+ }
  return box;
 }
+
+async function cancelPassengerRide(){
+ const rideId=localStorage.getItem("udanCurrentRide");
+ const token=localStorage.getItem("udanToken");
+ const button=document.getElementById("passengerCancelRideBtn");
+ if(!rideId||!token){alert("No active ride found.");return;}
+ if(!confirm("Are you sure you want to cancel this ride?")) return;
+ if(button){button.disabled=true;button.innerText="Cancelling...";}
+ try{
+   const response=await fetch("/api/rides/"+encodeURIComponent(rideId)+"/cancel",{
+     method:"PATCH",headers:{Authorization:"Bearer "+token}
+   });
+   const data=await response.json();
+   if(!response.ok)throw new Error(data.message||"Unable to cancel ride.");
+   const code=document.getElementById("passengerStartCode");
+   const msg=document.getElementById("startCodeMessage");
+   if(code)code.innerText="—";
+   if(msg)msg.innerText="❌ Ride cancelled.";
+   if(button)button.style.display="none";
+   if(document.getElementById("passengerRideStatus"))document.getElementById("passengerRideStatus").innerText="Cancelled";
+   localStorage.removeItem("udanCurrentRide");
+   stopPassengerLiveLocation();
+   clearInterval(startCodeTimer);
+   alert("✅ Ride cancelled successfully.");
+ }catch(e){
+   if(button){button.disabled=false;button.innerText="🛑 Cancel Ride";}
+   alert("❌ "+e.message);
+ }
+}
+
 async function checkPassengerRide(){
- const rideId=localStorage.getItem("udanCurrentRide"); const token=localStorage.getItem("udanToken");
+ const rideId=localStorage.getItem("udanCurrentRide");
+ const token=localStorage.getItem("udanToken");
  if(!rideId||!token)return;
  try{
-  const response=await fetch("/api/rides/"+rideId,{headers:{Authorization:"Bearer "+token}}); const data=await response.json(); if(!response.ok||!data.ride)return;
-  const ride=data.ride; const box=createStartCodeBox(); box.style.display="block";
-  const code=document.getElementById("passengerStartCode"), msg=document.getElementById("startCodeMessage");
-  if(ride.status==="Searching for driver"){code.innerText="----";msg.innerText="🔎 Searching for a nearby driver...";}
-  else if(ride.status==="Driver accepted"){code.innerText=ride.startCode||"----";msg.innerHTML=ride.startCode?"📢 Ye 4-digit code driver ko bataiye.<br>Driver code verify karne ke baad hi ride start karega.":"Waiting for ride code...";}
-  else if(ride.status==="Ride started"){code.innerText="✓✓✓✓";msg.innerText="🚕 Ride started successfully.";}
-  else if(ride.status==="Completed"){code.innerText="✓";msg.innerText="🎉 Ride completed.";clearInterval(startCodeTimer);}
-  else if(ride.status==="Cancelled"){code.innerText="—";msg.innerText="❌ Ride cancelled.";clearInterval(startCodeTimer);}
+   const response=await fetch("/api/rides/"+encodeURIComponent(rideId),{headers:{Authorization:"Bearer "+token}});
+   const data=await response.json();
+   if(!response.ok||!data.ride)return;
+   const ride=data.ride;
+   createStartCodeBox();
+   const code=document.getElementById("passengerStartCode");
+   const msg=document.getElementById("startCodeMessage");
+   const statusBox=document.getElementById("passengerRideStatus");
+   const cancelButton=document.getElementById("passengerCancelRideBtn");
+   const status=String(ride.status||"").toLowerCase();
+
+   if(statusBox)statusBox.innerText=ride.status||"Processing";
+
+   if(ride.driverId){
+     const d=ride.driverId;
+     const info=document.getElementById("passengerDriverInfo");
+     if(info)info.innerHTML="🚕 <b>Driver Assigned</b><br>Name: "+String(d.name||"Driver")+
+       "<br>Vehicle: "+String(d.vehicleType||"-")+
+       "<br>Vehicle No: "+String(d.vehicleNumber||"-");
+   }
+
+   const canCancel=!["completed","cancelled","ride started"].includes(status);
+   if(cancelButton){
+     cancelButton.style.display=canCancel?"inline-block":"none";
+     cancelButton.disabled=false;
+     cancelButton.innerText="🛑 Cancel Ride";
+   }
+
+   if(status==="searching for driver"){
+     code.innerText="----";
+     msg.innerText="🔎 Searching for a nearby driver...";
+   }else if(status==="driver accepted"){
+     if(ride.startCode){
+       code.innerText=ride.startCode;
+       msg.innerHTML="📢 Ye 4-digit code driver ko bataiye.<br>Driver code verify karne ke baad hi ride start karega.";
+     }else{
+       code.innerText="----";
+       msg.innerText="⚠️ Driver accepted. Waiting for start code...";
+     }
+   }else if(status==="ride started"){
+     code.innerText="✓✓✓✓";
+     msg.innerText="🚕 Ride started successfully.";
+   }else if(status==="completed"){
+     code.innerText="✓";
+     msg.innerText="🎉 Ride completed.";
+     if(cancelButton)cancelButton.style.display="none";
+     clearInterval(startCodeTimer);
+     stopPassengerLiveLocation();
+     localStorage.removeItem("udanCurrentRide");
+   }else if(status==="cancelled"){
+     code.innerText="—";
+     msg.innerText="❌ Ride cancelled.";
+     if(cancelButton)cancelButton.style.display="none";
+     clearInterval(startCodeTimer);
+     stopPassengerLiveLocation();
+     localStorage.removeItem("udanCurrentRide");
+   }
  }catch(e){console.log("Ride status error:",e);}
 }
-checkPassengerRide(); startCodeTimer=setInterval(checkPassengerRide,3000);
+checkPassengerRide();
+startCodeTimer=setInterval(checkPassengerRide,3000);
 </script>
 </body>
 

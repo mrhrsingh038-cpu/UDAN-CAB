@@ -463,15 +463,19 @@ async function loadRides(){
 }
 
 async function acceptRide(id){
- try{const d=await api("/api/rides/"+id+"/accept",{method:"POST",headers:AUTH});activeRide=d.ride._id;renderActive(d.ride);startGPS();startPassengerLocationPolling();alert("🎉 Ride Accepted!");}
+ try{const d=await api("/api/rides/"+id+"/accept",{method:"POST",headers:AUTH});activeRide=d.ride._id;localStorage.setItem("udanCurrentRide",activeRide);renderActive(d.ride);startGPS();startPassengerLocationPolling();alert("🎉 Ride Accepted!");}
  catch(e){alert("❌ "+e.message);loadRides();}
 }
 
 function renderActive(ride){
  const box=document.getElementById("rides");let action="";
- if(ride.status==="Driver assigned")action=`<button class="action-btn start-btn" onclick="startRide('${ride._id}')">🚕 Start Ride</button>`;
+ if(ride.status==="Driver assigned" || ride.status==="Driver accepted")action=`<button class="action-btn start-btn" onclick="startRide('${ride._id}')">🚕 Start Ride</button>`;
  if(ride.status==="Ride started")action=`<button class="action-btn complete-btn" onclick="completeRide('${ride._id}')">🎉 Complete Ride</button>`;
- box.innerHTML=`<div class="ride-card"><div class="ride-header"><div class="ride-id">🚕 Ride #${ride._id.slice(-6)}</div><div class="status">${escapeHtml(ride.status)}</div></div><div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div><div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div><div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||"-")}</div><div class="fare">💰 ₹${Number(ride.fare||0)}</div>${action}</div>`;
+ box.innerHTML=`<div class="ride-card"><div class="ride-header"><div class="ride-id">🚕 Ride #${ride._id.slice(-6)}</div><div class="status">${escapeHtml(ride.status)}</div></div><div class="location">📍 <strong>Pickup:</strong> ${escapeHtml(ride.pickup)}</div><div class="location">🎯 <strong>Destination:</strong> ${escapeHtml(ride.destination)}</div><div class="location">🚗 <strong>Vehicle:</strong> ${escapeHtml(ride.cabType||"-")}</div><div class="fare">💰 ₹${Number(ride.fare||0)}</div>
+ <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px">
+ ${action}
+ <button class="action-btn" style="background:#d93025" onclick="cancelRide('${ride._id}')">🛑 Cancel Ride</button>
+ </div></div>`;
 }
 async function startRide(id){
   const code=prompt("🔐 Passenger se 4-digit Ride Start Code poochhiye:");
@@ -485,6 +489,17 @@ async function startRide(id){
   }catch(e){alert("❌ "+e.message);}
 }
 async function completeRide(id){try{const d=await api("/api/rides/"+id+"/complete",{method:"PATCH",headers:AUTH});stopPassengerLocationPolling();alert("🎉 Ride Completed Successfully!");loadRides()}catch(e){alert("❌ "+e.message)}}
+async function cancelRide(id){
+ try{
+   if(!confirm("Are you sure you want to cancel this ride?"))return;
+   await api("/api/rides/"+id+"/cancel",{method:"PATCH",headers:AUTH});
+   activeRide=null;
+   localStorage.removeItem("udanCurrentRide");
+   stopPassengerLocationPolling();
+   alert("✅ Ride cancelled successfully.");
+   loadRides();
+ }catch(e){alert("❌ "+e.message);}
+}
 function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
 async function restoreActiveRide(){
   const savedRide=localStorage.getItem("udanCurrentRide");
